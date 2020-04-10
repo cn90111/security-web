@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>l-Diversity</title>
+		{% load static %}
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    	<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
+    	<script src="{% static 'js/docs.min.js' %}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+	</head>
+	<body  style="padding-top:50px;">
+        {% include 'navbar.html' %}
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h2>l-Diversity</h2>
+                <h5 style="font-weight:bold;color:red">說明： </h5>
+                <p>
+                    Description : 
+                </p>
+            </div>
+        </div>
+    	<div class="container" style="width:inherit;">
+            <form id="parameter_form" data-toggle="validator">
+                {% csrf_token %}
+                <div class="form-row" style="height:110px">
+                    <div class="form-group col-md-4">
+                        <label for="csv_name_select">CSV_Name：</label>
+                        <select class="form-control" id="csv_name_select" >
+                            {% for key in s %}
+                                <option value="{{ key }}">{{ key }}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="SA">Sensitive Attribute：(填欄位名稱)</label>
+                        <input type="text" class="form-control" id="SA" placeholder="" value="Age" disabled="disabled">
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="k">K：</label>
+                        <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" disabled="disabled" value="2">
+                        <div class="help-block with-errors"></div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="l">L：</label>
+                        <input type="text" class="form-control" id="l" placeholder="" disabled="disabled" value="2">
+                        <div class="help-block with-errors"></div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <button id="L_exe" type="submit" class="btn btn-primary" style="width:100%">執行</button>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <div onclick="location.href='/l_Diversity/File_List_Output/'"  type="button" class="btn btn-primary" style="width:100%">已完成檔案列表</div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <div onclick="location.href='/l_Diversity/'" class="btn btn-primary" type="button" style="width:100%">返回主頁</div>
+                    </div>
+                    <!-- <a href="/home/DPSyn_Exe/" type="button" class="btn btn-primary">執行</a> -->
+                </div>
+            </form>
+    	</div>
+        <!-- 進度條-->
+        <div  class="progress-div" style="position:absolute; width:90%;  left:5%;">
+            <label> 進度條 </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span id="Check_Txt" style="color:red">執行時間：<span id="Check_i">0小時0分0秒</span>
+            <div id="bar" class="progress progress-striped active">
+                    <div class="progress-bar progress-bar-warning" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" style="width:0%">
+                    </div>
+            </div>
+            <div class="progress-text progress-bar-striped active"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; ">
+            </div>
+        </div>
+    	<script>
+            var SetMinute = 0;
+            var run = true
+            function Check_Time() {
+                if(run)
+                {
+                    SetMinute += 1;
+                    var Check_i = document.getElementById("Check_i");
+                    var Cal_Hour = Math.floor(SetMinute / 3600);
+                    var Cal_Minute = Math.floor(Math.floor(SetMinute % 3600) / 60);
+                    var Cal_Second = SetMinute % 60;
+                    Check_i.innerHTML = Cal_Hour + "小時" + Cal_Minute + "分" + Cal_Second + "秒";
+                }
+                else
+                    return
+            }
+            
+            
+ 			$(function () {
+        		$('#L_exe').on('click', function () {               // on() : 做到動態事件綁定
+                    var mm = window.setInterval("Check_Time()", 1000);
+                    $('#L_exe').attr('disabled', 'disabled');        // 避免多次執行, 所以將按鈕鎖住
+                	console.log("come in ")
+                    var csv_name_value = document.getElementById("csv_name_select").options[document.getElementById("csv_name_select").selectedIndex].value;
+                    var SA_value = document.getElementById("SA").value;
+                    var k_value = document.getElementById("k").value;
+                    var l_value = document.getElementById("l").value;
+                	var log = "";
+                	var sitv = setInterval(function(){             // setInterval() 則是固定延遲了某段時間之後，才去執行對應的程式碼，然後「不斷循環」。 當然也會回傳一個獨立的 timer ID
+                    	var prog_url = '/l_Diversity/show_l_progress/'      // 查詢後台進度的的url，後面會在Django中設置
+                    	$.getJSON(prog_url, function(data){
+                            {# console.log("come in num_progress="+num_progress)#}
+                        	$('.progress-div').css('visibility', 'visible');
+                        	$('.progress-bar').css('width', data.num_progress + '%');
+                        	$('.progress-bar').text(data.num_progress + '%');
+                        	$('.progress-text').text( '目前進度：'+ data.log );
+                        	$('.progress-text').css('width', '100%');
+            	        	$('#prog_in').width(data.num_progress + '%');     // 更改進度條進度，注意這裡是內層的div
+                    	});
+                	}, 1000);                                 // 每100毫秒查詢後台
+            		var thisurl = '/l_Diversity/Execute_l_diversity/'     // 執行的程式url
+            		$.getJSON(thisurl,
+                        {
+                            csv_name : csv_name_value,
+                            SA : SA_value,
+                            k : k_value,
+                            l : l_value,
+                        }, function(num_progress){
+            			// ...
+                		clearInterval(sitv);                   // 此時請求成功返回成果，結束對後台的查詢
+                        $('.progress-bar').css('width', '100%');
+                        $('.progress-bar').text('100%');
+                        $('#bar').removeClass('active');
+                        $('.progress-text').text('執行完成');
+                        $('#DPSyn_exe').removeAttr('disabled');
+                        run = false;
+            		});
+        		})
+			})
+
+		</script>
+	</body>
+</html>

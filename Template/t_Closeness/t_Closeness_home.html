@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>t-Closeness</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    	<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	</head>
+	<body  style="padding-top:50px;">
+        {% include 'navbar.html' %}
+        <div class="jumbotron jumbotron-fluid">
+          <div class="container">
+            <h2>t-Closeness</h2>
+            <h5 style="font-weight:bold;color:red">注意事項1：文件格式( 資料筆數不可超過200筆，資料欄位不可超過4欄 )</h5>
+            <h5 style="font-weight:bold;color:red">注意事項2：命名格式( CSV:XXXX.csv,  JSON: XXXX_dict.json )</h5>
+            <p>
+            Description : 
+          </p>
+          </div>
+        </div>
+	   	<div class="container">
+            <form id="form_file" action = "" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="custom-file center" style="height:80px">
+                    <input type="file" class="custom-file-input" name="file" id="customFile_csv" accept=".csv" >
+                    <label class="custom-file-label" for="customFile_csv">請選擇CSV檔案 (.csv)</label>
+                </div>
+                <div class="custom-file center" style="height:80px">
+                    <input type="file" class="custom-file-input" name="file" id="customFile_json" accept=".json">
+                    <label class="custom-file-label" for="customFile_json">請選擇JSON檔案 (.json)</label>
+                </div>
+                <div aligh="center" style = "height:80px;">
+                    <button type="button" id="btn_preview" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#myModal">1.  預 覽 檔 案</button>
+                </div>
+                <div aligh="center" style = "height:80px;">
+                    <button id="btn_upload_file" type="button" class="btn btn-primary btn-lg btn-block">2.  上 傳 檔 案</button>
+                </div>
+                <div aligh="center" style = "height:80px;">
+                    <button onclick="location.href='/t_Closeness/Execute_Page/'" id="btn_exec" type="button" class="btn btn-primary btn-lg btn-block">3.  執 行 檔 案</button>
+                </div>
+                <div aligh="center" style = "height:80px;">
+                    <button onclick="location.href='/t_Closeness/File_List_Upload/'" id="btn_upload" type="button" class="btn btn-primary btn-lg btn-block">4.  已 上 傳 檔 案</button>
+                </div>
+                <div aligh="center" style = "height:80px;">
+                    <button onclick="location.href='/t_Closeness/File_List_Output/'" id="btn_output" type="button" class="btn btn-primary btn-lg btn-block">5.  已 完 成 檔 案</button>
+                </div>
+            </form>
+        </div>
+        <!-- modal -->
+        <div class="modal" id="myModal">
+          <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+              <!-- Modal Header -->
+              <div class="modal-header">
+                <div class="modal-title">
+                    <h2>預覽資料(前200筆)</h2>
+                    <h4>Data Preview (The first two hundred)</h4>
+                </div>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <!-- Modal body -->
+              <div class="modal-body">
+                <div aligh="center" id="showText" style = "height:500px; overflow:scroll; border:2px black solid; " >
+                    {{ tables|safe }}
+                </div>
+              </div>
+              <!-- Modal footer -->
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+              </div>
+        
+            </div>
+          </div>
+        </div>
+        <script>
+            $("#customFile_csv").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+            $("#customFile_json").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+            const selectElement = document.querySelector('#customFile_csv');
+                selectElement.addEventListener('change', (event) => {
+                    $('#btn_preview').attr('disabled', 'disabled');
+                    $('#btn_upload_file').attr('disabled', 'disabled');
+                    $('#btn_exec').attr('disabled', 'disabled');
+                    $('#btn_upload').attr('disabled', 'disabled');
+                    $('#btn_output').attr('disabled', 'disabled');
+                    let formData = new FormData($('#form_file').get(0));
+                    $.ajax({
+                        url: '/t_Closeness/Web_View_CSV/',
+                        type: 'POST',
+                        data: formData,
+                        dataType: 'json',
+                        contentType: false, // 不設置Content-Type
+                        processData: false, // 不處理發送的數據 
+                        success: function (tables) {
+                            $('#showText').html(tables);
+                            alert("您的檔案已可預覽及上傳");
+                            $('#btn_preview').removeAttr('disabled');
+                            $('#btn_upload_file').removeAttr('disabled');
+                            $('#btn_exec').removeAttr('disabled');
+                            $('#btn_upload').removeAttr('disabled');
+                            $('#btn_output').removeAttr('disabled');
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert(xhr.status);
+                            var jsonObj = JSON.parse(xhr.responseText);
+                            alert(jsonObj.status +"：\n" + jsonObj.message );
+                        }
+                    });
+                });
+            $('#btn_upload_file').click(function(){
+                $('#btn_preview').attr('disabled', 'disabled');
+                $('#btn_upload_file').attr('disabled', 'disabled');
+                $('#btn_exec').attr('disabled', 'disabled');
+                $('#btn_upload').attr('disabled', 'disabled');
+                $('#btn_output').attr('disabled', 'disabled');
+                let formData = new FormData($('#form_file').get(0));
+                    console.log($('#customFile_csv').get(0));
+                    $.ajax({
+                        url: '/t_Closeness/File_Upload/',
+                        type: 'POST',
+                        data: formData,
+                        dataType: 'json',
+                        contentType: false, // 不設置Content-Type
+                        processData: false, // 不處理發送的數據 
+                        success: function (saved) {
+                            if(saved == true){
+                                alert('您的檔案已成功上傳');
+                            } else{
+                                alert('Your profile was not saved.');
+                            }
+                            $('#btn_preview').removeAttr('disabled');
+                            $('#btn_upload_file').removeAttr('disabled');
+                            $('#btn_exec').removeAttr('disabled');
+                            $('#btn_upload').removeAttr('disabled');
+                            $('#btn_output').removeAttr('disabled');
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert(xhr.status);
+                            alert(thrownError);
+                        }
+                    });
+            })
+        </script>
+	</body>
+</html>
