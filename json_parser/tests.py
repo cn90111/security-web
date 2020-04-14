@@ -12,29 +12,28 @@ import pandas as pd
 
 class TestParser(unittest.TestCase):
     
-    def __init__(self, name):
-        self.csv_path = 'test.csv'
+    csv_path = 'test.csv'
     
     @classmethod
     def setUpClass(cls):
-        with open(csv_path, 'w', newline='') as csv_file:
-            writer = csv.writer(file)
+        with open(cls.csv_path, 'w', newline='') as csv_file:
+            writer = csv.writer(csv_file)
             writer.writerow(['String','Integer','Float'])
             writer.writerow(['a','1','1.1'])
             writer.writerow(['b','22','22.22'])
             writer.writerow(['c','333','333.333'])
             
-            self.df = pd.read_csv(csv_path)
-            self.categorical = df.loc['String'].values.tolist()
-            self.number_int = df.loc['Integer'].values.tolist()
-            self.number_float = df.loc['Float'].values.tolist()
-            self.mixing = [a,2,c,4,d]
-            self.empty = []
+        cls.df = pd.read_csv(cls.csv_path)
+        cls.categorical = cls.df.loc[:, 'String'].values.tolist()
+        cls.number_int = cls.df.loc[:, 'Integer'].values.tolist()
+        cls.number_float = cls.df.loc[:, 'Float'].values.tolist()
+        cls.mixing = ['a',2,'c',4,'d']
+        cls.empty = []
        
     @classmethod       
     def tearDownClass(cls):
         try:
-            os.remove(csv_path)
+            os.remove(cls.csv_path)
         except OSError as e:
             print(e)
         else:
@@ -42,38 +41,38 @@ class TestParser(unittest.TestCase):
     
 
     def test_is_categorical(self):
-        self.assertTrue(josn_parser.is_categorical(categorical))
-        self.assertFalse(josn_parser.is_categorical(number_int))
-        self.assertFalse(josn_parser.is_categorical(number_float))
-        self.assertFalse(josn_parser.is_categorical(mixing))
-        self.assertFalse(josn_parser.is_categorical(empty))
+        self.assertTrue(json_parser.is_categorical(self.categorical))
+        self.assertFalse(json_parser.is_categorical(self.number_int))
+        self.assertFalse(json_parser.is_categorical(self.number_float))
+        self.assertFalse(json_parser.is_categorical(self.mixing))
+        self.assertFalse(json_parser.is_categorical(self.empty))
 
     def test_is_numerical(self):
-        self.assertFalse(josn_parser.is_numerical(categorical))
-        self.assertTrue(josn_parser.is_numerical(number_int))
-        self.assertTrue(josn_parser.is_numerical(number_float))
-        self.assertFalse(josn_parser.is_numerical(mixing))
-        self.assertFalse(josn_parser.is_numerical(empty))
+        self.assertFalse(json_parser.is_numerical(self.categorical))
+        self.assertTrue(json_parser.is_numerical(self.number_int))
+        self.assertTrue(json_parser.is_numerical(self.number_float))
+        self.assertFalse(json_parser.is_numerical(self.mixing))
+        self.assertFalse(json_parser.is_numerical(self.empty))
     
     def test_get_max(self):
-        self.assertEqual(josn_parser.get_max(number_int), 333)
-        self.assertEqual(josn_parser.get_max(number_float), 333.333)
+        self.assertEqual(json_parser.get_max(self.number_int), 333)
+        self.assertEqual(json_parser.get_max(self.number_float), 333.333)
         with self.assertRaises(TypeError):
-            josn_parser.get_max(categorical)
+            json_parser.get_max(self.categorical)
         with self.assertRaises(TypeError):
-            josn_parser.get_max(mixing)
+            json_parser.get_max(self.mixing)
     
     def test_get_min(self):
-        self.assertEqual(josn_parser.get_min(number_int),1)
-        self.assertEqual(josn_parser.get_min(number_float),1.1)
+        self.assertEqual(json_parser.get_min(self.number_int),1)
+        self.assertEqual(json_parser.get_min(self.number_float),1.1)
         with self.assertRaises(TypeError):
-            josn_parser.get_max(categorical)
+            json_parser.get_max(self.categorical)
         with self.assertRaises(TypeError):
-            josn_parser.get_max(mixing)
+            json_parser.get_max(self.mixing)
             
     def test_calculate_interval(self):
-        number_int_interval = josn_parser.get_interval(number_int)
-        number_float_interval = josn_parser.get_interval(number_float)
+        number_int_interval = json_parser.get_interval(self.number_int)
+        number_float_interval = json_parser.get_interval(self.number_float)
         
         test_int_interval = [[1,36],[36,72],\
                             [72,108],[108,144],\
@@ -99,7 +98,7 @@ class TestParser(unittest.TestCase):
     
     def test_unrelated_structure(self):
         test_structure = {'String':'String', 'a':'String', 'b':'String', 'c':'String'}
-        structure = josn_parser.get_unrelated_structure(self.categorical, 'String')
+        structure = json_parser.get_unrelated_structure(self.categorical, 'String')
         for key in structure.keys():
             self.assertEqual(structure.get(key), test_structure.get(key))
         
@@ -120,7 +119,7 @@ class TestParser(unittest.TestCase):
                         '台中市清水區護岸路123號',\
                         '台中市南區學府路16號']
                         
-        structure = josn_parser.get_tw_address_structure(address_list)
+        structure = json_parser.get_tw_address_structure(address_list)
         
         for key in structure.keys():
             self.assertEqual(structure.get(key), test_structure.get(key))
