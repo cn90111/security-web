@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-import json_parser
+from json_parser import JsonParser
 
 import unittest
 import json
@@ -13,6 +13,7 @@ import pandas as pd
 class TestParser(unittest.TestCase):
     
     csv_path = 'test.csv'
+    json_parser = JsonParser()
     
     @classmethod
     def setUpClass(cls):
@@ -39,66 +40,61 @@ class TestParser(unittest.TestCase):
         else:
             print("Test file is deleted successfully")
     
+    def test_is_string(self):
+        self.assertTrue(self.json_parser.is_string(self.categorical))
+        self.assertFalse(self.json_parser.is_string(self.number_int))
+        self.assertFalse(self.json_parser.is_string(self.number_float))
+        self.assertFalse(self.json_parser.is_string(self.mixing))
+        self.assertFalse(self.json_parser.is_string(self.empty))
 
-    def test_is_categorical(self):
-        self.assertTrue(json_parser.is_categorical(self.categorical))
-        self.assertFalse(json_parser.is_categorical(self.number_int))
-        self.assertFalse(json_parser.is_categorical(self.number_float))
-        self.assertFalse(json_parser.is_categorical(self.mixing))
-        self.assertFalse(json_parser.is_categorical(self.empty))
-
-    def test_is_numerical(self):
-        self.assertFalse(json_parser.is_numerical(self.categorical))
-        self.assertTrue(json_parser.is_numerical(self.number_int))
-        self.assertTrue(json_parser.is_numerical(self.number_float))
-        self.assertFalse(json_parser.is_numerical(self.mixing))
-        self.assertFalse(json_parser.is_numerical(self.empty))
+    def test_is_number(self):
+        self.assertFalse(self.json_parser.is_number(self.categorical))
+        self.assertTrue(self.json_parser.is_number(self.number_int))
+        self.assertTrue(self.json_parser.is_number(self.number_float))
+        self.assertFalse(self.json_parser.is_number(self.mixing))
+        self.assertFalse(self.json_parser.is_number(self.empty))
+        
+    def test_is_float(self):
+        self.assertFalse(self.json_parser.is_float(self.categorical))
+        self.assertFalse(self.json_parser.is_float(self.number_int))
+        self.assertTrue(self.json_parser.is_float(self.number_float))
+        self.assertFalse(self.json_parser.is_float(self.mixing))
+        self.assertFalse(self.json_parser.is_float(self.empty))
     
-    def test_get_max(self):
-        self.assertEqual(json_parser.get_max(self.number_int), 333)
-        self.assertEqual(json_parser.get_max(self.number_float), 333.333)
-        with self.assertRaises(TypeError):
-            json_parser.get_max(self.categorical)
-        with self.assertRaises(TypeError):
-            json_parser.get_max(self.mixing)
-    
-    def test_get_min(self):
-        self.assertEqual(json_parser.get_min(self.number_int),1)
-        self.assertEqual(json_parser.get_min(self.number_float),1.1)
-        with self.assertRaises(TypeError):
-            json_parser.get_max(self.categorical)
-        with self.assertRaises(TypeError):
-            json_parser.get_max(self.mixing)
-            
     def test_calculate_interval(self):
-        number_int_interval = json_parser.get_interval(self.number_int)
-        number_float_interval = json_parser.get_interval(self.number_float)
+        number_int_interval = self.json_parser.get_interval(self.number_int)
+        number_float_interval = self.json_parser.get_interval(self.number_float)
         
-        test_int_interval = [[1,36],[36,72],\
-                            [72,108],[108,144],\
-                            [144,180],[108,216],\
-                            [216,252],[252,288],\
-                            [288,324],[324,360]]
+        test_int_interval = [[1,35],[35,69],\
+                            [69,103],[103,137],\
+                            [137,171],[171,205],\
+                            [205,239],[239,273],\
+                            [273,307],[307,341]]
         
-        test_float_interval = [[1.1,36.6553],[36.6553,72.2106],\
-                                [72.2106,107.7659],[107.7659,143.3212],\
-                                [143.3212,178.8765],[178.8765,214.4318],\
-                                [214.4318,249.9871],[249.9871,285.5424],\
-                                [285.5424,321.0977],[321.0977,356.653]]
+        test_float_interval = [[1.1,34.3233],[34.3233,67.5466],\
+                                [67.5466,100.7699],[100.7699,133.9932],\
+                                [133.9932,167.2165],[167.2165,200.4398],\
+                                [200.4398,233.6631],[233.6631,266.8864],\
+                                [266.8864,300.1097],[300.1097,333.333]]
         
-        for i in len(number_int_interval):
-            for j in  len(number_int_interval[i]):
+        for i in range(len(number_int_interval)):
+            for j in range(len(number_int_interval[i])):
                 self.assertEqual\
                     (number_int_interval[i][j], test_int_interval[i][j])
         
-        for i in len(number_float_interval):
-            for j in  len(number_float_interval[i]):
+        for i in range(len(number_float_interval)):
+            for j in range(len(number_float_interval[i])):
                 self.assertAlmostEqual\
                     (number_float_interval[i][j], test_float_interval[i][j])
+                    
+        with self.assertRaises(Exception):
+            self.json_parser.get_interval(self.categorical)
+            self.json_parser.get_interval(self.mixing)
+            self.json_parser.get_interval(self.empty)
     
     def test_unrelated_structure(self):
         test_structure = {'String':'String', 'a':'String', 'b':'String', 'c':'String'}
-        structure = json_parser.get_unrelated_structure(self.categorical, 'String')
+        structure = self.json_parser.get_unrelated_structure(self.categorical, 'String')
         for key in structure.keys():
             self.assertEqual(structure.get(key), test_structure.get(key))
         
@@ -119,10 +115,46 @@ class TestParser(unittest.TestCase):
                         '台中市清水區護岸路123號',\
                         '台中市南區學府路16號']
                         
-        structure = json_parser.get_tw_address_structure(address_list)
+        structure = self.json_parser.get_tw_address_structure(address_list)
         
         for key in structure.keys():
             self.assertEqual(structure.get(key), test_structure.get(key))
 
+    def test_us_address_structure(self):
+        test_structure = {'678 Montgomery St, Jersey City, NJ 07306':'Jersey City, NJ 07306',\
+                        '30 Mall Dr W, Jersey City, NJ 07310':'Jersey City, NJ 07310',\
+                        '75 Grasslands Rd, Valhalla, NY 10595':'Valhalla, NY 10595',\
+                        'Jersey City, NJ 07306':'NJ 07306',\
+                        'Jersey City, NJ 07310':'NJ 07310',\
+                        'Valhalla, NY 10595':'NY 10595',\
+                        'NJ 07306':'NJ',\
+                        'NJ 07310':'NJ',\
+                        'NY 10595':'NY',\
+                        'NJ':'NJ',\
+                        'NY':'NY'}
+                        
+        address_list = ['678 Montgomery St, Jersey City, NJ 07306',\
+                        '30 Mall Dr W, Jersey City, NJ 07310',\
+                        '75 Grasslands Rd, Valhalla, NY 10595']
+                        
+        structure = self.json_parser.get_us_address_structure(address_list)
+        
+        for key in structure.keys():
+            self.assertEqual(structure.get(key), test_structure.get(key))
+    
+    def test_split_tw_address(self):
+        test_split = [['台北市','大安區','忠孝東路','100號'],\
+                        ['台中市','清水區','護岸路','123號'],\
+                        ['台中市','南區','學府路','16號']]
+                        
+        address_list = ['台北市大安區忠孝東路100號',\
+                        '台中市清水區護岸路123號',\
+                        '台中市南區學府路16號']
+        split_list = []
+        for address in address_list:
+            split_list.append(self.json_parser.split_tw_address(address))
+        for i in range(len(split_list)):
+            for j in range(len(split_list[i])):
+                self.assertEqual(split_list[i][j], test_split[i][j])
 if __name__ == '__main__':
     unittest.main()
