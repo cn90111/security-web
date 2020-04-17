@@ -120,9 +120,8 @@
                 $('#btn_upload').attr('disabled', 'disabled');
                 $('#btn_output').attr('disabled', 'disabled');
                 let formData = new FormData($('#form_file').get(0));
-                    console.log($('#customFile_csv').get(0));
                     $.ajax({
-                        url: '/t_Closeness/File_Upload/',
+                        url: '/json_parser/File_Upload/',
                         type: 'POST',
                         data: formData,
                         dataType: 'json',

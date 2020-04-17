@@ -121,7 +121,7 @@
                 $('#btn_output').attr('disabled', 'disabled');
                 let formData = new FormData($('#form_file').get(0));
                     $.ajax({
-                        url: '/k_Anonymity/File_Upload/',
+                        url: '/json_parser/File_Upload/',
                         type: 'POST',
                         data: formData,
                         dataType: 'json',

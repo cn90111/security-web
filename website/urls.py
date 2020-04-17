@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^DPSyn/',include('DPSyn.urls')),
     url(r'^l_Diversity/',include('l_Diversity.urls')),
     url(r'^k_Anonymity/',include('k_Anonymity.urls')),
+    url(r'^json_parser/',include('json_parser.urls')),
 ]
