@@ -19,10 +19,10 @@ class TestParser(unittest.TestCase):
     def setUpClass(cls):
         with open(cls.csv_path, 'w', newline='') as csv_file:
             writer = csv.writer(csv_file)
-            writer.writerow(['String','Integer','Float'])
-            writer.writerow(['a','1','1.1'])
-            writer.writerow(['b','22','22.22'])
-            writer.writerow(['c','333','333.333'])
+            writer.writerow(['String','Integer','String2','Float'])
+            writer.writerow(['a','1','x','1.1'])
+            writer.writerow(['b','22','y','22.22'])
+            writer.writerow(['c','333','x','333.333'])
             
         cls.df = pd.read_csv(cls.csv_path)
         cls.categorical = cls.df.loc[:, 'String'].values.tolist()
@@ -156,5 +156,78 @@ class TestParser(unittest.TestCase):
         for i in range(len(split_list)):
             for j in range(len(split_list[i])):
                 self.assertEqual(split_list[i][j], test_split[i][j])
+    
+    def test_get_file_string_element(self):
+        test_element = {'String':{'a','b','c'},'String2':{'x','y'}}
+        file_string_element = self.json_parser.get_file_string_element(self.csv_path)
+        for column_name in file_string_element.keys():
+            self.assertEqual(file_string_element[column_name],\
+                                test_element[column_name])
+        
+    def test_get_column_element(self):
+        column = ['a','r','d','a','d']
+        test_element = {'a','r','d'}
+        element = self.json_parser.get_column_element(column)
+        self.assertEqual(element, test_element)
+    
+    def test_parser_to_json(self):
+        test_json = {
+                        'String':{
+                            'type':'categorical',
+                            'structure':{
+                                'String':'String',
+                                'a':'String',
+                                'b':'String',
+                                'c':'String'
+                            }
+                        },
+                        'Integer':{
+                            'type':'numerical', 
+                            'min':1, 
+                            'max':333, 
+                            'num_type':'int',
+                            'interval':[[1,35],[35,69],\
+                            [69,103],[103,137],\
+                            [137,171],[171,205],\
+                            [205,239],[239,273],\
+                            [273,307],[307,341]]
+                        },
+                        'String2':{
+                            'type':'categorical',
+                            'structure':{
+                                'x':'x',
+                                'y':'x'
+                            }
+                        },
+                        'Float':{
+                            'type':'numerical', 
+                            'min':1.1, 
+                            'max':333.333, 
+                            'num_type':'float',
+                            'interval':[[1.1,34.3233],[34.3233,67.5466],\
+                                [67.5466,100.7699],[100.7699,133.9932],\
+                                [133.9932,167.2165],[167.2165,200.4398],\
+                                [200.4398,233.6631],[233.6631,266.8864],\
+                                [266.8864,300.1097],[300.1097,333.333]]
+                        }
+                    }
+        test_json_string = json.dumps(test_json)
+        structure = {
+                        'String':{
+                            'String':'String',
+                            'a':'String',
+                            'b':'String',
+                            'c':'String'
+                        },
+                        'String2':{
+                            'x':'x',
+                            'y':'x'
+                        },
+                    }
+        json_string = json.dumps(self.json_parser.parser_to_json\
+                                (self.csv_path, structure))
+        
+        self.assertEqual(test_json_string,json_string)
+    
 if __name__ == '__main__':
     unittest.main()

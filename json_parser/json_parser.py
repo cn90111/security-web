@@ -8,7 +8,8 @@ import pandas as pd
 class JsonParser():
     
     __n_parts = 10
-    tw_address_accuracy_pattern = '縣市鄉鎮市區街路村里巷弄號樓室'
+    __float_accuracy = 4
+    __tw_address_accuracy_pattern = '縣市鄉鎮市區街路村里巷弄號樓室'
 
     def is_string(self, item_list):
         if not item_list:
@@ -45,7 +46,9 @@ class JsonParser():
         else:
             gap = math.ceil((max_value - min_value) / self.__n_parts)
         for i in range(self.__n_parts):
-            interval.append([min_value + gap*i, min_value + gap*(i+1)])
+            upper_limit = round(min_value + gap*(i+1), self.__float_accuracy)
+            lower_limit = round(min_value + gap*i, self.__float_accuracy)
+            interval.append([lower_limit, upper_limit])
         return interval
         
     def get_unrelated_structure(self, string_list, ancestor):
@@ -70,8 +73,8 @@ class JsonParser():
         return genealogy
         
     def split_tw_address(self, address):
-        pattern = '[^'+self.tw_address_accuracy_pattern+']*\
-                    ['+self.tw_address_accuracy_pattern+']'
+        pattern = '[^'+self.__tw_address_accuracy_pattern+']*\
+                    ['+self.__tw_address_accuracy_pattern+']'
         token_list = re.findall(pattern, address)
         return token_list
         
@@ -92,3 +95,63 @@ class JsonParser():
                 temp = key
                 key = ', ' + key
         return genealogy
+    
+    def get_column_element(self, column):
+        if self.is_string(column):
+            return set(column)
+        else:
+            return None
+        
+    def get_file_string_element(self, file_path):
+        dataframe = pd.read_csv(file_path)
+        column_element = {}
+        for column_title in dataframe:
+            element = self.get_column_element(dataframe.loc[:, column_title].values.tolist())
+            if element:
+                column_element[column_title] = element
+        return column_element
+                
+    def parser_to_json(self, file_path, structure):
+        json_dict = {}
+        dataframe = pd.read_csv(file_path)
+        for column_title in dataframe:
+            temp = {}
+            column = dataframe.loc[:, column_title].values.tolist()
+            if self.is_string(column):
+                temp['type'] = 'categorical'
+                temp['structure'] = structure[column_title]
+            elif self.is_number(column):
+                temp['type'] = 'numerical'
+                temp['min'] = min(column)
+                temp['max'] = max(column)
+                if self.is_float(column):
+                    temp['num_type'] = 'float'
+                else:
+                    temp['num_type'] = 'int'
+                temp['interval'] = self.get_interval(column)
+            json_dict[column_title] = temp
+        return json_dict
+        
+    def create_json_file(self, request):
+        file_path = str(request.GET.get('path', None))
+        csv_file_name = str(request.GET.get('csv_name', None))
+        structure_mode = request.GET.get('structure_mode', None)
+        structure_dict = request.Get.get('structure', None)
+        
+        for key in structure_mode:
+            mode = structure_mode[key]
+            if mode is 'tw_address':
+                structure_dict[key] = \
+                    self.get_tw_address_structure(structure_dict[key].keys())
+            elif mode is 'us_address':
+                structure_dict[key] = \
+                    self.get_us_address_structure(structure_dict[key].keys())
+            elif mode is 'unrelated':
+                structure_dict[key] = \
+                    self.get_unrelated_structure(structure_dict[key].keys(), key)
+        
+        json_path = file_path + csv_file_name.split(".")[-2] + '_dict.json'
+        json_object = json.dumps(self.parser_to_json\
+                                (file_path+csv_file_name, structure_dict))
+        with open(json_path, 'w') as file:
+            file.write(json_object)
