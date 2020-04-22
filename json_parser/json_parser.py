@@ -55,6 +55,7 @@ class JsonParser():
         genealogy = {}
         for item in string_list:
             genealogy[item] = ancestor
+        print('genealogy ',genealogy)
         return genealogy
         
     def get_tw_address_structure(self, address_list):
@@ -98,7 +99,7 @@ class JsonParser():
     
     def get_column_element(self, column):
         if self.is_string(column):
-            return set(column)
+            return list(set(column))
         else:
             return None
         
@@ -132,26 +133,26 @@ class JsonParser():
             json_dict[column_title] = temp
         return json_dict
         
-    def create_json_file(self, request):
-        file_path = str(request.GET.get('path', None))
-        csv_file_name = str(request.GET.get('csv_name', None))
-        structure_mode = request.GET.get('structure_mode', None)
-        structure_dict = request.Get.get('structure', None)
-        
+    def create_json_file(self, file_path, csv_file_name, structure_mode, structure_dict):
         for key in structure_mode:
+            print(structure_mode)
             mode = structure_mode[key]
-            if mode is 'tw_address':
+            print(mode)
+            if mode == 'tw_address':
                 structure_dict[key] = \
                     self.get_tw_address_structure(structure_dict[key].keys())
-            elif mode is 'us_address':
+            elif mode == 'us_address':
                 structure_dict[key] = \
                     self.get_us_address_structure(structure_dict[key].keys())
-            elif mode is 'unrelated':
+            elif mode == 'unrelated':
                 structure_dict[key] = \
                     self.get_unrelated_structure(structure_dict[key].keys(), key)
-        
-        json_path = file_path + csv_file_name.split(".")[-2] + '_dict.json'
-        json_object = json.dumps(self.parser_to_json\
-                                (file_path+csv_file_name, structure_dict))
-        with open(json_path, 'w') as file:
-            file.write(json_object)
+                print(structure_dict[key])
+        for name in csv_file_name:
+            directory_name = name.split(".")[-2]
+            file_path = file_path + directory_name + '/'
+            json_path = file_path + directory_name + '_dict.json'
+            json_object = json.dumps(self.parser_to_json\
+                                (file_path+name, structure_dict))
+            with open(json_path, 'w') as file:
+                file.write(json_object)

@@ -1,7 +1,8 @@
 from django.urls import path
 from . import views
-from . import json_parser
 
 urlpatterns = [
-    path('File_Upload/', views.ParserView.File_Upload),
+    path('File_Upload/', views.FileView.as_view()),
+    path('string_pair/csv_name=<str:csv_name>/', views.FileView.as_view()),
+    path('create_json/', views.ParserView.as_view()),
 ]

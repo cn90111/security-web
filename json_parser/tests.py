@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 
-from json_parser import JsonParser
+from json_parser.json_parser import JsonParser
 
 import unittest
 import json
