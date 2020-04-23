@@ -58,12 +58,8 @@ class FileView(View):
                 if element_dict:
                     finlish = False
             if finlish:
-                csv_file_name = []
-                structure_mode = {}
-                structure_dict = {}
                 for f in files:
-                    csv_file_name.append(f.name)
-                parser.create_json_file(file_path, csv_file_name, structure_mode, structure_dict)
+                    parser.create_json_file(file_path, f.name, {}, {})
             return JsonResponse(finlish, safe=False)
         else:
             form = UploadFileForm()
