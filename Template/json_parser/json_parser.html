@@ -43,14 +43,14 @@
                                 {% for element in element_list %}
                                     <tr>
                                         <td>
-                                            <input type="text" class="form-control" id="element_{{forloop.counter0}}" value={{element}} disabled="disabled"> 
+                                            <input type="text" class="form-control" id="{{file_name}}_{{column_title}}_element_{{forloop.counter0}}" value={{element}} disabled="disabled"> 
                                         </td>
                                         <td>
                                             對應
                                         </td>
                                         <td>
-                                            <input list="select_pair_{{forloop.counter0}}" id="pair_label_{{forloop.counter0}}" value="" class="col-sm-6 custom-select custom-select-sm">
-                                            <datalist id="select_pair_{{forloop.counter0}}" >
+                                            <input list="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}" id="{{file_name}}_{{column_title}}_pair_label_{{forloop.counter0}}" value="" class="col-sm-6 custom-select custom-select-sm">
+                                            <datalist id="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}" >
                                                 {% for element in element_list %}
                                                     <option value="{{ element }}">{{ element }}</option>
                                                 {%endfor%}
@@ -95,7 +95,7 @@
                 
                 for (var count = 0; count<table.tBodies[0].rows.length; count++) {
                     var pair_to_element = document.
-                        getElementById('pair_label_'+count);
+                        getElementById(file_name+'_'+column_title+'_pair_label_'+count);
                     pair_to_element.disabled = !pair_to_element.disabled
                 }
             }
@@ -130,9 +130,9 @@
                             var temp = {};
                             for (var count = 0; count<table.tBodies[0].rows.length; count++) {
                                 var element = document.
-                                    getElementById('element_'+count).value;
+                                    getElementById(name+'_'+column_title+'_element_'+count).value;
                                 var pair_to_element = document.
-                                    getElementById('pair_label_'+count).value;
+                                    getElementById(name+'_'+column_title+'_pair_label_'+count).value;
                                 if (!pair_to_element) {
                                     pair_to_element = '0'
                                 }
