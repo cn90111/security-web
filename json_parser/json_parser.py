@@ -135,9 +135,7 @@ class JsonParser():
         
     def create_json_file(self, file_path, csv_file_name, structure_mode, structure_dict):
         for key in structure_mode:
-            print(structure_mode)
             mode = structure_mode[key]
-            print(mode)
             if mode == 'tw_address':
                 structure_dict[key] = \
                     self.get_tw_address_structure(structure_dict[key].keys())
@@ -147,12 +145,10 @@ class JsonParser():
             elif mode == 'unrelated':
                 structure_dict[key] = \
                     self.get_unrelated_structure(structure_dict[key].keys(), key)
-                print(structure_dict[key])
-        for name in csv_file_name:
-            directory_name = name.split(".")[-2]
-            file_path = file_path + directory_name + '/'
-            json_path = file_path + directory_name + '_dict.json'
-            json_object = json.dumps(self.parser_to_json\
-                                (file_path+name, structure_dict))
-            with open(json_path, 'w') as file:
-                file.write(json_object)
+        directory_name = csv_file_name.split(".")[-2]
+        file_path = file_path + directory_name + '/'
+        json_path = file_path + directory_name + '_dict.json'
+        json_object = json.dumps(self.parser_to_json\
+                            (file_path+csv_file_name, structure_dict))
+        with open(json_path, 'w') as file:
+            file.write(json_object)
