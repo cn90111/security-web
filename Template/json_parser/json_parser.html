@@ -14,7 +14,7 @@
                 <div class="container">
                     <h2>Pair</h2>
                     <h5 style="font-weight:bold;color:red">
-                    說明：配對檔案裡文字的上下關係，例如：gmail 屬於 google
+                        說明：配對檔案裡文字的上下關係，例如：gmail 屬於 google，可自行輸入或使用下拉式選單
                     </h5>
                     <p>
                         Description : 
@@ -50,9 +50,9 @@
                                         </td>
                                         <td>
                                             <input list="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}" id="{{file_name}}_{{column_title}}_pair_label_{{forloop.counter0}}" value="" class="col-sm-6 custom-select custom-select-sm">
-                                            <datalist id="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}" >
+                                            <datalist id="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}">
                                                 {% for element in element_list %}
-                                                    <option value="{{ element }}">{{ element }}</option>
+                                                    <option value="{{ element }}">{{ element }}</option>                                                    
                                                 {%endfor%}
                                             </datalist>
                                         </td>
@@ -63,7 +63,7 @@
 
                         <div class="form-row justify-content-between">
                             <div class="btn-group col-md-2">
-                                <button id="custom_{{forloop.counter0}}" class="btn btn-primary" onclick="add_field({{forloop.counter0}})">新增欄位</button>
+                                <button id="{{file_name}}_{{column_title}}_custom" type="button" class="btn btn-primary" onclick="add_field('{{file_name}}', '{{column_title}}', {{element_list}})">新增欄位</button>
                             </div>
                             {% if forloop.last %}
                                 <div class="btn-group col-md-2">
@@ -99,6 +99,32 @@
                     pair_to_element.disabled = !pair_to_element.disabled
                 }
             }
+            function add_field(file_name, column_title, element_list) {
+                var table = document.getElementById
+                    (file_name+'_'+column_title+'_table');
+                var count_id = table.tBodies[0].rows.length;
+                var tr = table.insertRow(-1);
+                var td = tr.insertCell(-1);
+                
+                
+                td.innerHTML = 
+                    '<input type="text" class="form-control" id="'+file_name+'_'+column_title+'_element_'+count_id+'">';
+                var td = tr.insertCell(-1);
+                td.innerHTML = 
+                    "對應";
+                var td = tr.insertCell(-1);
+                td.innerHTML = 
+                    '\
+                    <input list="'+file_name+'_'+column_title+'_select_pair_'+count_id+'" id="'+file_name+'_'+column_title+'_pair_label_'+count_id+'" value="" class="col-sm-6 custom-select custom-select-sm">\
+                    <datalist id="'+file_name+'_'+column_title+'_select_pair_'+count_id+'">\
+                    </datalist>\
+                    ';
+                var datalist = document.getElementById(file_name+'_'+column_title+'_select_pair_'+count_id)
+                for (var element of element_list) {
+                    datalist.innerHTML = datalist.innerHTML + '<option value="'+ element +'">'+ element +'</option>'
+                }
+            }
+            
  			$(function () {
         		$('#submit').on('click', function () {
                     $('#submit').attr('disabled', 'disabled'); 
