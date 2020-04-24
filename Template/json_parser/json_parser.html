@@ -48,7 +48,7 @@
                                         <td>
                                             對應
                                         </td>
-                                        <td>
+                                        <td id="{{file_name}}_{{column_title}}_datalist_td_{{forloop.counter0}}">
                                             <input list="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}" id="{{file_name}}_{{column_title}}_pair_label_{{forloop.counter0}}" required="required" class="col-sm-6 custom-select custom-select-sm">
                                             <datalist id="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}">
                                                 {% for element in element_list %}
@@ -118,8 +118,8 @@
                 td.innerHTML = 
                     "對應";
                 var td = tr.insertCell(-1);
-                
-                td.innerHTML = '<input list="'+file_name+'_'+column_title+'_select_pair_'+count_id+'" id="'+file_name+'_'+column_title+'_pair_label_'+count_id+'" value="" class="col-sm-6 custom-select custom-select-sm">'
+                td.id = file_name+'_'+column_title+'_datalist_td_'+count_id;
+                td.innerHTML = '<input list="'+file_name+'_'+column_title+'_select_pair_'+count_id+'" id="'+file_name+'_'+column_title+'_pair_label_'+count_id+'" required="required" class="col-sm-6 custom-select custom-select-sm">'
                 if (checkbox_address.checked || checkbox_unrelated.checked) {
                     var label = document.getElementById(file_name+'_'+column_title+'_pair_label_'+count_id)
                     label.disabled = true
@@ -137,12 +137,16 @@
                 }
             }
             
+            function removeRed (classList) {
+                classList.remove('table-danger')
+            }
+            
  			$(function () {
         		$('#submit').on('click', function () {
-                    $('#submit').attr('disabled', 'disabled'); 
                     var path = 'upload/{{ caller }}/';
                     var file_string_element_dict = {{ file_string_element_dict|safe }};
                     var csv_name = Object.keys(file_string_element_dict);
+                    var lose_required = false;
                     
                     var structure_mode = {};
                     for (var name of csv_name) {
@@ -172,35 +176,44 @@
                             var temp = {};
                             for (var count = 0; count<table.tBodies[0].rows.length; count++) {
                                 var element = document.
-                                    getElementById(name+'_'+column_title+'_element_'+count).value;
+                                    getElementById(name+'_'+column_title+'_element_'+count);
                                 var pair_to_element = document.
-                                    getElementById(name+'_'+column_title+'_pair_label_'+count).value;
-                                if (!pair_to_element) {
-                                    pair_to_element = '0';
+                                    getElementById(name+'_'+column_title+'_pair_label_'+count);
+                                if (!pair_to_element.value && pair_to_element.required) {
+                                    lose_required = true;
+                                    datalist_td = document.
+                                    getElementById(name+'_'+column_title+'_datalist_td_'+count);
+                                    datalist_td.classList.add('table-danger');
+                                    datalist_td.addEventListener('change', removeRed.bind(this, datalist_td.classList), false)
                                 }
-                                temp[element] = pair_to_element;
+                                temp[element.value] = pair_to_element.value;
                             }
                             file_element[column_title] = temp;
                         }
                         structure_dict[name] = file_element;
                     }
                     
-            		var url = '/json_parser/create_json/';
-            		$.getJSON(url,
-                        {
-                            'path' : path,
-                            'csv_name' : JSON.stringify(csv_name),
-                            'structure_mode' : JSON.stringify(structure_mode),
-                            'structure_dict' : JSON.stringify(structure_dict),
-                        }, function(finlish){
-                            if(finlish == true){
-                                alert('您的檔案已成功上傳');
-                                window.location = '/{{ caller }}/';
-                            } else {
-                                alert('系統異常');
+                    if (lose_required) {
+                        alert('尚有對應關係還沒填寫');                        
+                    }
+                    else {
+                        var url = '/json_parser/create_json/';
+                        $.getJSON(url,
+                            {
+                                'path' : path,
+                                'csv_name' : JSON.stringify(csv_name),
+                                'structure_mode' : JSON.stringify(structure_mode),
+                                'structure_dict' : JSON.stringify(structure_dict),
+                            }, function(finlish){
+                                if(finlish == true){
+                                    alert('您的檔案已成功上傳');
+                                    window.location = '/{{ caller }}/';
+                                } else {
+                                    alert('系統異常');
+                                }
                             }
-                        }
-            		);
+                        );
+                    }
         		})
 			})
 		</script>
