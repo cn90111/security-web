@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>structure</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    	<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+	</head>
+	<body  style="padding-top:50px;">
+        {% include 'navbar.html' %}
+            <div class="jumbotron jumbotron-fluid">
+                <div class="container">
+                    <h2>Pair</h2>
+                    <h5 style="font-weight:bold;color:red">
+                        說明：配對檔案裡文字的上下關係，例如：gmail 屬於 google，可自行輸入或使用下拉式選單
+                    </h5>
+                    <p>
+                        Description : 
+                    </p>
+                </div>
+            </div>
+        {% for file_name, element_dict in file_string_element_dict.items %}
+            <div class="container" style="width:inherit;">
+                <h2>檔名：{{file_name}}</h2>
+                <form id="parameter_form" data-toggle="validator">
+                    {% csrf_token %}
+                    {% for column_title, element_list in element_dict.items %}
+                        <h2>欄位：{{column_title}}</h2>
+                        <div class="form-row justify-content-center">
+                            <div class="form-check col-md-4">
+                                <input type="checkbox" class="form-check-input" id="{{file_name}}_{{column_title}}_is_address" onclick="click_checkbox('{{file_name}}', '{{column_title}}', 'address')">
+                                <label class="form-check-label" for="{{file_name}}_{{column_title}}_is_address">資料為地址</label>
+                            </div>
+                            <div class="form-check col-md-4">
+                                <input type="checkbox" class="form-check-input" id="{{file_name}}_{{column_title}}_is_unrelated" onclick="click_checkbox('{{file_name}}','{{column_title}}', 'unrelated')">
+                                <label class="form-check-label" for="{{file_name}}_{{column_title}}_is_unrelated">資料間無關聯</label>
+                            </div>
+                        </div>
+                        <table class="table table-striped" id="{{file_name}}_{{column_title}}_table">
+                            <tbody id="{{file_name}}_{{column_title}}_tbody">
+                                {% for element in element_list %}
+                                    <tr>
+                                        <td>
+                                            <input type="text" class="form-control" id="{{file_name}}_{{column_title}}_element_{{forloop.counter0}}" value={{element}} disabled="disabled"> 
+                                        </td>
+                                        <td>
+                                            對應
+                                        </td>
+                                        <td id="{{file_name}}_{{column_title}}_datalist_td_{{forloop.counter0}}">
+                                            <input list="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}" id="{{file_name}}_{{column_title}}_pair_label_{{forloop.counter0}}" required="required" class="col-sm-6 custom-select custom-select-sm">
+                                            <datalist id="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}">
+                                                {% for element in element_list %}
+                                                    <option value="{{ element }}">{{ element }}</option>                                                    
+                                                {%endfor%}
+                                            </datalist>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div class="form-row justify-content-between">
+                            <div class="btn-group col-md-2">
+                                <button id="{{file_name}}_{{column_title}}_custom" type="button" class="btn btn-primary" onclick="add_field('{{file_name}}', '{{column_title}}', {{element_list}})">新增欄位</button>
+                            </div>
+                            {% if forloop.last %}
+                                <div class="btn-group col-md-2">
+                                    <button id="submit" type="submit" class="btn btn-primary">送出</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </form>
+            </div>
+        {% endfor %}
+        
+    	<script>
+            function click_checkbox(file_name, column_title, box_name) {
+                var checkbox_address = document.getElementById
+                        (file_name+'_'+column_title+'_is_address');
+                var checkbox_unrelated = document.getElementById
+                        (file_name+'_'+column_title+'_is_unrelated');
+                var table = document.getElementById
+                        (file_name+'_'+column_title+'_table');
+
+                if (box_name == 'address'){
+                    checkbox_unrelated.disabled = !checkbox_unrelated.disabled
+                } else if (box_name == 'unrelated') {
+                    checkbox_address.disabled = !checkbox_address.disabled
+                } else {
+                    console.log("exception")
+                }
+                
+                for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+                    var pair_to_element = document.
+                        getElementById(file_name+'_'+column_title+'_pair_label_'+count);
+                    pair_to_element.disabled = !pair_to_element.disabled
+                    pair_to_element.required = !pair_to_element.required
+                }
+            }
+            function add_field(file_name, column_title, element_list) {
+                var table = document.getElementById
+                    (file_name+'_'+column_title+'_table');
+                var checkbox_address = document.getElementById
+                    (file_name+'_'+column_title+'_is_address');
+                var checkbox_unrelated = document.getElementById
+                    (file_name+'_'+column_title+'_is_unrelated');
+                var count_id = table.tBodies[0].rows.length;
+                var tr = table.insertRow(-1);
+                var td = tr.insertCell(-1);
+                
+                
+                td.innerHTML = 
+                    '<input type="text" class="form-control" id="'+file_name+'_'+column_title+'_element_'+count_id+'">';
+                var td = tr.insertCell(-1);
+                td.innerHTML = 
+                    "對應";
+                var td = tr.insertCell(-1);
+                td.id = file_name+'_'+column_title+'_datalist_td_'+count_id;
+                td.innerHTML = '<input list="'+file_name+'_'+column_title+'_select_pair_'+count_id+'" id="'+file_name+'_'+column_title+'_pair_label_'+count_id+'" required="required" class="col-sm-6 custom-select custom-select-sm">'
+                if (checkbox_address.checked || checkbox_unrelated.checked) {
+                    var label = document.getElementById(file_name+'_'+column_title+'_pair_label_'+count_id)
+                    label.disabled = true
+                    label.required = false
+                }
+                
+                td.innerHTML += 
+                    '\
+                    <datalist id="'+file_name+'_'+column_title+'_select_pair_'+count_id+'">\
+                    </datalist>\
+                    ';
+                var datalist = document.getElementById(file_name+'_'+column_title+'_select_pair_'+count_id)
+                for (var element of element_list) {
+                    datalist.innerHTML += '<option value="'+ element +'">'+ element +'</option>'
+                }
+            }
+            
+            function removeRed (classList) {
+                classList.remove('table-danger')
+            }
+            
+ 			$(function () {
+        		$('#submit').on('click', function () {
+                    var path = 'upload/{{ caller }}/';
+                    var file_string_element_dict = {{ file_string_element_dict|safe }};
+                    var csv_name = Object.keys(file_string_element_dict);
+                    var lose_required = false;
+                    
+                    var structure_mode = {};
+                    for (var name of csv_name) {
+                        var file_mode = {};
+                        for (var column_title in file_string_element_dict[name]) {
+                            if (document.getElementById
+                                (name+'_'+column_title+'_is_address').checked) {
+                                file_mode[column_title] = 'tw_address';
+                            }
+                            else if (document.getElementById
+                                (name+'_'+column_title+'_is_unrelated').checked) {
+                                file_mode[column_title] = 'unrelated';
+                            }
+                            else {
+                                file_mode[column_title] = 'custom';
+                            }
+                        }
+                        structure_mode[name] = file_mode
+                    }
+                    
+                    var structure_dict = {};
+                    for (var name of csv_name) {
+                        var file_element = {};
+                        for (var column_title in file_string_element_dict[name]) {
+                            var table = document.
+                                getElementById(name+'_'+column_title+'_table');
+                            var temp = {};
+                            for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+                                var element = document.
+                                    getElementById(name+'_'+column_title+'_element_'+count);
+                                var pair_to_element = document.
+                                    getElementById(name+'_'+column_title+'_pair_label_'+count);
+                                if (!pair_to_element.value && pair_to_element.required) {
+                                    lose_required = true;
+                                    datalist_td = document.
+                                    getElementById(name+'_'+column_title+'_datalist_td_'+count);
+                                    datalist_td.classList.add('table-danger');
+                                    datalist_td.addEventListener('change', removeRed.bind(this, datalist_td.classList), false)
+                                }
+                                temp[element.value] = pair_to_element.value;
+                            }
+                            file_element[column_title] = temp;
+                        }
+                        structure_dict[name] = file_element;
+                    }
+                    
+                    if (lose_required) {
+                        alert('尚有對應關係還沒填寫');                        
+                    }
+                    else {
+                        var url = '/json_parser/create_json/';
+                        $.getJSON(url,
+                            {
+                                'path' : path,
+                                'csv_name' : JSON.stringify(csv_name),
+                                'structure_mode' : JSON.stringify(structure_mode),
+                                'structure_dict' : JSON.stringify(structure_dict),
+                            }, function(finlish){
+                                if(finlish == true){
+                                    alert('您的檔案已成功上傳');
+                                    window.location = '/{{ caller }}/';
+                                } else {
+                                    alert('系統異常');
+                                }
+                            }
+                        );
+                    }
+        		})
+			})
+		</script>
+	</body>
+</html>

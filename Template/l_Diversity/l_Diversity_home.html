@@ -26,10 +26,6 @@
                     <input type="file" class="custom-file-input" name="file" id="customFile_csv" accept=".csv">
                     <label class="custom-file-label" for="customFile_csv">請選擇CSV檔案 (.csv)</label>
                 </div>
-                <div class="custom-file center" style="height:80px">
-                    <input type="file" class="custom-file-input" name="file" id="customFile_json" accept=".json">
-                    <label class="custom-file-label" for="customFile_json">請選擇JSON檔案 (.json)</label>
-                </div>
                 <div aligh="center" style = "height:80px;">
                     <button type="button" id="btn_preview" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#myModal">1.  預 覽 檔 案</button>
                 </div>
@@ -78,10 +74,6 @@
                 var fileName = $(this).val().split("\\").pop();
                 $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
             });
-            $("#customFile_json").on("change", function() {
-                var fileName = $(this).val().split("\\").pop();
-                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-            });
             const selectElement = document.querySelector('#customFile_csv');
                 selectElement.addEventListener('change', (event) => {
                     $('#btn_preview').attr('disabled', 'disabled');
@@ -119,31 +111,34 @@
                 $('#btn_exec').attr('disabled', 'disabled');
                 $('#btn_upload').attr('disabled', 'disabled');
                 $('#btn_output').attr('disabled', 'disabled');
+                var csv_name = document.getElementById('customFile_csv').value;
+                csv_name = csv_name.split("\\").pop()
                 let formData = new FormData($('#form_file').get(0));
                     $.ajax({
-                        url: '/l_Diversity/File_Upload/',
+                        url: '/json_parser/File_Upload/',
                         type: 'POST',
                         data: formData,
                         dataType: 'json',
                         contentType: false, // 不設置Content-Type
                         processData: false, // 不處理發送的數據 
-                        success: function (saved) {
-                            if(saved == true){
+                        success: function (finlish) {
+                            if(finlish == true){
                                 alert('您的檔案已成功上傳');
                             } else{
-                                alert('Your profile was not saved.');
-                            }
-                            $('#btn_preview').removeAttr('disabled');
-                            $('#btn_upload_file').removeAttr('disabled');
-                            $('#btn_exec').removeAttr('disabled');
-                            $('#btn_upload').removeAttr('disabled');
-                            $('#btn_output').removeAttr('disabled');
+                                console.log("配對字串關係");
+                                window.location = '/json_parser/string_pair/csv_name='+csv_name+'/';
+                            }                          
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             alert(xhr.status);
                             alert(thrownError);
                         }
                     });
+                $('#btn_preview').removeAttr('disabled');
+                $('#btn_upload_file').removeAttr('disabled');
+                $('#btn_exec').removeAttr('disabled');
+                $('#btn_upload').removeAttr('disabled');
+                $('#btn_output').removeAttr('disabled');
             })
         </script>
 	</body>
