@@ -109,7 +109,7 @@
                         	$('.progress-text').css('width', '100%');
             	        	$('#prog_in').width(data.num_progress + '%');     // 更改進度條進度，注意這裡是內層的div
                     	});
-                	}, 1000);                                 // 每100毫秒查詢後台
+                	}, 10000);
             		var thisurl = '/t_Closeness/Execute_t_closeness/'     // 執行的程式url
             		$.getJSON(thisurl,
                         {
