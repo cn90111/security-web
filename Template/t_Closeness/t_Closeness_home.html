@@ -43,11 +43,9 @@
                 </div>
             </form>
         </div>
-        <!-- modal -->
         <div class="modal" id="myModal">
           <div class="modal-dialog modal-xl">
             <div class="modal-content">
-              <!-- Modal Header -->
               <div class="modal-header">
                 <div class="modal-title">
                     <h2>預覽資料(前200筆)</h2>
@@ -55,13 +53,11 @@
                 </div>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
               </div>
-              <!-- Modal body -->
               <div class="modal-body">
                 <div aligh="center" id="showText" style = "height:500px; overflow:scroll; border:2px black solid; " >
                     {{ tables|safe }}
                 </div>
               </div>
-              <!-- Modal footer -->
               <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
               </div>
@@ -83,8 +79,8 @@
                         type: 'POST',
                         data: formData,
                         dataType: 'json',
-                        contentType: false, // 不設置Content-Type
-                        processData: false, // 不處理發送的數據 
+                        contentType: false,
+                        processData: false,
                         success: function (tables) {
                             $('#showText').html(tables);
                             alert("您的檔案已可預覽及上傳");
@@ -101,14 +97,19 @@
                 $('#btn_upload_file').attr('disabled', 'disabled');
                 var csv_name = document.getElementById('customFile_csv').value;
                 csv_name = csv_name.split("\\").pop()
-                let formData = new FormData($('#form_file').get(0));
+                
+                if (!csv_name) {
+                    alert('請先選擇檔案');
+                }
+                else {
+                    let formData = new FormData($('#form_file').get(0));
                     $.ajax({
                         url: '/json_parser/File_Upload/',
                         type: 'POST',
                         data: formData,
                         dataType: 'json',
-                        contentType: false, // 不設置Content-Type
-                        processData: false, // 不處理發送的數據 
+                        contentType: false,
+                        processData: false,
                         success: function (finlish) {
                             if(finlish == true){
                                 alert('您的檔案已成功上傳');
@@ -122,6 +123,7 @@
                             alert(thrownError);
                         }
                     });
+                }
                 $('#btn_upload_file').removeAttr('disabled');
             });
         </script>
