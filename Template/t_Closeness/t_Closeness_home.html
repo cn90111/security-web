@@ -77,10 +77,6 @@
             const selectElement = document.querySelector('#customFile_csv');
                 selectElement.addEventListener('change', (event) => {
                     $('#btn_preview').attr('disabled', 'disabled');
-                    $('#btn_upload_file').attr('disabled', 'disabled');
-                    $('#btn_exec').attr('disabled', 'disabled');
-                    $('#btn_upload').attr('disabled', 'disabled');
-                    $('#btn_output').attr('disabled', 'disabled');
                     let formData = new FormData($('#form_file').get(0));
                     $.ajax({
                         url: '/t_Closeness/Web_View_CSV/',
@@ -92,11 +88,6 @@
                         success: function (tables) {
                             $('#showText').html(tables);
                             alert("您的檔案已可預覽及上傳");
-                            $('#btn_preview').removeAttr('disabled');
-                            $('#btn_upload_file').removeAttr('disabled');
-                            $('#btn_exec').removeAttr('disabled');
-                            $('#btn_upload').removeAttr('disabled');
-                            $('#btn_output').removeAttr('disabled');
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             alert(xhr.status);
@@ -104,13 +95,10 @@
                             alert(jsonObj.status +"：\n" + jsonObj.message );
                         }
                     });
+                    $('#btn_preview').removeAttr('disabled');
                 });
             $('#btn_upload_file').click(function(){
-                $('#btn_preview').attr('disabled', 'disabled');
                 $('#btn_upload_file').attr('disabled', 'disabled');
-                $('#btn_exec').attr('disabled', 'disabled');
-                $('#btn_upload').attr('disabled', 'disabled');
-                $('#btn_output').attr('disabled', 'disabled');
                 var csv_name = document.getElementById('customFile_csv').value;
                 csv_name = csv_name.split("\\").pop()
                 let formData = new FormData($('#form_file').get(0));
@@ -134,12 +122,8 @@
                             alert(thrownError);
                         }
                     });
-                $('#btn_preview').removeAttr('disabled');
                 $('#btn_upload_file').removeAttr('disabled');
-                $('#btn_exec').removeAttr('disabled');
-                $('#btn_upload').removeAttr('disabled');
-                $('#btn_output').removeAttr('disabled');
-            })
+            });
         </script>
 	</body>
 </html>
