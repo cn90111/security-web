@@ -79,17 +79,12 @@
             var SetMinute = 0;
             var run = true
             function Check_Time() {
-                if(run)
-                {
-                    SetMinute += 1;
-                    var Check_i = document.getElementById("Check_i");
-                    var Cal_Hour = Math.floor(SetMinute / 3600);
-                    var Cal_Minute = Math.floor(Math.floor(SetMinute % 3600) / 60);
-                    var Cal_Second = SetMinute % 60;
-                    Check_i.innerHTML = Cal_Hour + "小時" + Cal_Minute + "分" + Cal_Second + "秒";
-                }
-                else
-                    return
+                SetMinute += 1;
+                var Check_i = document.getElementById("Check_i");
+                var Cal_Hour = Math.floor(SetMinute / 3600);
+                var Cal_Minute = Math.floor(Math.floor(SetMinute % 3600) / 60);
+                var Cal_Second = SetMinute % 60;
+                Check_i.innerHTML = Cal_Hour + "小時" + Cal_Minute + "分" + Cal_Second + "秒";
             }
             
             
@@ -114,7 +109,7 @@
                         	$('.progress-text').css('width', '100%');
             	        	$('#prog_in').width(data.num_progress + '%');     // 更改進度條進度，注意這裡是內層的div
                     	});
-                	}, 1000);                                 // 每100毫秒查詢後台
+                	}, 10000);
             		var thisurl = '/t_Closeness/Execute_t_closeness/'     // 執行的程式url
             		$.getJSON(thisurl,
                         {
@@ -125,12 +120,12 @@
                         }, function(num_progress){
             			// ...
                 		clearInterval(sitv);                   // 此時請求成功返回成果，結束對後台的查詢
+                        clearInterval(mm);
                         $('.progress-bar').css('width', '100%');
                         $('.progress-bar').text('100%');
                         $('#bar').removeClass('active');
                         $('.progress-text').text('執行完成');
                         $('#DPSyn_exe').removeAttr('disabled');
-                        run = false;
             		});
         		})
 			})
