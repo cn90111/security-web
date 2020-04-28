@@ -22,23 +22,62 @@
         {% include 'navbar.html' %}
 		<div class="container">
             <h1 class="page-header">FileList_Output:</h1>
-			<form action = "/t_Closeness/Download_Output/" method="post" enctype="multipart/form-data">
+			<form enctype="multipart/form-data">
                 {% csrf_token %}
+                {% if not s %}
+                    <div class="form-group">
+                        <h2>尚無完成檔案</h2>
+                    </div>                    
+                {% endif %}
                 {% for key in s %}
                 <div class="form-check">
   					<input class="form-check-input" id="radio_{{key}}" type="radio" name="File" value="{{ key }}" checked>
   					<label class="form-check-label" for="radio_{{key}}"> {{ key }} </label>
 				</div>
 	    		{%endfor%}
-	    		<button type="submit" class="btn btn-primary">下載</button>
-            	<button formaction="/t_Closeness/CSV_View_Output/" method="post" type="submit" class="btn btn-primary">預覽</button>
+	    		<button id="download" type="button" class="btn btn-primary">下載</button>
+            	<button id="preview" type="button" class="btn btn-primary">預覽</button>
                 <input type="button" class="btn btn-primary" onclick="history.back()" value="返回上一頁"></input>
             	<a href="/t_Closeness/" type="button" class="btn btn-primary">返回主頁</a>
             </form>
         </div>
         <p>
-    	<div align="center" style = "height:550px; overflow:scroll; border:2px black solid; position:absolute; width:90%;  left:5%;" >
-    		{{ tables|safe }}
+    	<div id="preview_table" align="center" style = "height:550px; overflow:scroll; border:2px black solid; position:absolute; width:90%;  left:5%;" >
     	</div>
+        
+        <script>
+            $(function () {
+                var download = $('#download');
+                download.click(function () {
+                    var csv_name = $('[name=File]:checked').val();
+                    if (!csv_name) {
+                        alert('請先選擇檔案');
+                    }
+                    else {
+                        window.location ='/t_Closeness/Download_Output/?File='+csv_name
+                    }
+                })
+            })
+            $(function () {
+                var preview = $('#preview');
+                var preview_table = $('#preview_table');
+                preview.click(function () {
+                    var csv_name = $('[name=File]:checked').val();
+                    if (!csv_name) {
+                        alert('請先選擇檔案');
+                    }
+                    else {
+                        var url = '/t_Closeness/CSV_View_Output/';
+                        $.getJSON(url,
+                            {
+                                'File' : csv_name,
+                            }, function (table) {
+                                preview_table.html(table)
+                            }
+                        )
+                    }
+                })
+            })
+        </script>
 	</body>
 </html>
