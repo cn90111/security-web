@@ -71,7 +71,7 @@
                 $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
             });
             const selectElement = document.querySelector('#customFile_csv');
-                selectElement.addEventListener('change', (event) => 
+                selectElement.addEventListener('change', (event) => {
                     let formData = new FormData($('#form_file').get(0));
                     $.ajax({
                         url: '/t_Closeness/Web_View_CSV/',
@@ -91,7 +91,7 @@
                         }
                     });
                 });
-            $('#btn_upload_file').click(function(){
+            $('#btn_upload_file').click( function () {
                 var csv_name = document.getElementById('customFile_csv').value;
                 csv_name = csv_name.split("\\").pop()
                 
