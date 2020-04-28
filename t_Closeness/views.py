@@ -94,8 +94,8 @@ def File_List_Output(request):
     return render(request, 't_Closeness/file_list_output.html', locals())
 
 def Download_Output(request):
-    file = request.POST.get('File',None)	# 取得單選項的值
-    name = request.POST.get('File',None).split("/")[-1]
+    file = request.GET.get('File',None)	# 取得單選項的值
+    name = file.split("/")[-1]
     df = pd.read_csv(file)
     response = HttpResponse(content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename=%s' %name
@@ -111,11 +111,10 @@ def CSV_View_Output(request):
             if not os.path.isdir(file):		#判斷是否是文件夾, 不是文件夾才開
                 if(file.split(".")[1] == 'csv'):
                     s.append(os.path.join(dirPath, f).replace('\\','/'))
-    name = request.POST.get('File',None)	# 取得單選項的值
+    name = request.GET.get('File',None)	# 取得單選項的值
     df = pd.read_csv(name)
     tables = df.head(2000).to_html()
-    #return HttpResponse(tables)
-    return render(request, 't_Closeness/file_list_output.html', locals())
+    return JsonResponse(tables, safe=False)
 
 def CSV_View_Upload(request):
     path = 'upload/t_Closeness/'
@@ -126,8 +125,7 @@ def CSV_View_Upload(request):
             if not os.path.isdir(file):		#判斷是否是文件夾, 不是文件夾才開
                 if(file.split(".")[1] == 'csv'):
                     s.append(os.path.join(dirPath, f).replace('\\','/'))
-    name = request.POST.get('File',None)	# 取得單選項的值
+    name = request.GET.get('File',None)	# 取得單選項的值
     df = pd.read_csv(name)
     tables = df.head(2000).to_html()
-    #return HttpResponse(tables)
-    return render(request, 't_Closeness/file_list_upload.html', locals())
+    return JsonResponse(tables, safe=False)

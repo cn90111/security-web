@@ -71,8 +71,7 @@
                 $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
             });
             const selectElement = document.querySelector('#customFile_csv');
-                selectElement.addEventListener('change', (event) => {
-                    $('#btn_preview').attr('disabled', 'disabled');
+                selectElement.addEventListener('change', (event) => 
                     let formData = new FormData($('#form_file').get(0));
                     $.ajax({
                         url: '/t_Closeness/Web_View_CSV/',
@@ -91,10 +90,8 @@
                             alert(jsonObj.status +"：\n" + jsonObj.message );
                         }
                     });
-                    $('#btn_preview').removeAttr('disabled');
                 });
             $('#btn_upload_file').click(function(){
-                $('#btn_upload_file').attr('disabled', 'disabled');
                 var csv_name = document.getElementById('customFile_csv').value;
                 csv_name = csv_name.split("\\").pop()
                 
@@ -124,7 +121,6 @@
                         }
                     });
                 }
-                $('#btn_upload_file').removeAttr('disabled');
             });
         </script>
 	</body>
