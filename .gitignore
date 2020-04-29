@@ -3,13 +3,14 @@ DPSyn
 Template/DPSyn
 
 #Data files
-output
-upload
+output/*
+upload/*
 data
 *.csv
 *.json
 
 #log files
+log/*
 *_log.txt
 
 # Byte-compiled / optimized / DLL files
