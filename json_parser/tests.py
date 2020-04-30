@@ -17,10 +17,10 @@ class TestParser(unittest.TestCase):
     def setUpClass(cls):
         with open(cls.csv_path, 'w', newline='') as csv_file:
             writer = csv.writer(csv_file)
-            writer.writerow(['String','Integer','String2','Float'])
-            writer.writerow(['a','1','x','1.1'])
-            writer.writerow(['b','22','y','22.22'])
-            writer.writerow(['c','333','x','333.333'])
+            writer.writerow(['String','Integer','String2','Float','String3'])
+            writer.writerow(['a','1','x','1.1','a x'])
+            writer.writerow(['b','22','y','22.22','b/y'])
+            writer.writerow(['c','333','x','333.333','c-z'])
             
         cls.df = pd.read_csv(cls.csv_path)
         cls.categorical = cls.df.loc[:, 'String'].values.tolist()
@@ -172,7 +172,9 @@ class TestParser(unittest.TestCase):
                 self.assertEqual(split_list[i][j], test_split[i][j])
     
     def test_get_file_string_element(self):
-        test_element = {'String':{'a','b','c'},'String2':{'x','y'}}
+        test_element = {'String':{'a','b','c'},\
+                        'String2':{'x','y'},\
+                        'String3':{'a x','b/y','c-z'}}
         file_string_element = self.json_parser.get_file_string_element(self.csv_path)
         key_list = file_string_element.keys()
         self.assertEqual(len(key_list), len(test_element.keys()))
@@ -225,6 +227,14 @@ class TestParser(unittest.TestCase):
                                 [133.9932,167.2165],[167.2165,200.4398],\
                                 [200.4398,233.6631],[233.6631,266.8864],\
                                 [266.8864,300.1097],[300.1097,333.333]]
+                        },
+                        'String3':{
+                            'type':'categorical',
+                            'structure':{
+                                'a x':'x',
+                                'b/y':'x',
+                                'c-z':'x'
+                            }
                         }
                     }
         test_json_string = json.dumps(test_json)
@@ -238,6 +248,11 @@ class TestParser(unittest.TestCase):
                         'String2':{
                             'x':'x',
                             'y':'x'
+                        },
+                        'String3':{
+                            'a x':'x',
+                            'b/y':'x',
+                            'c-z':'x'
                         },
                     }
         json_string = json.dumps(self.json_parser.parser_to_json\

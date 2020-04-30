@@ -38,7 +38,6 @@ class JsonFileView(FileView):
         for name in file_name:
             file_string_element_dict[name] = parser.get_file_string_element\
                     (file_path+name.split(".")[-2]+'/'+name)
-                    
         request_dict['file_string_element_dict'] = file_string_element_dict
         request_dict['caller'] = caller
         return render(request, 'json_parser/json_parser.html', request_dict)
