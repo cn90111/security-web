@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>{% block title %}title{% endblock title %}</title>
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    	<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+	</head>
+	<body  style="padding-top:50px;">
+        {% include 'navbar.html' %}
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                {% block content %}
+                    <h2>function name</h2>
+                    <h5 style="font-weight:bold;color:red">說明：</h5>
+                    <p>
+                        Description : 
+                    </p>
+                {% endblock content %}
+            </div>
+        </div>
+    	<div class="container" style="width:inherit;">
+            <form id="parameter_form" data-toggle="validator">
+                {% csrf_token %}
+                {% block form %}
+                {% endblock form %}
+            </form>
+    	</div>
+        <div class="progress-div" style="position:absolute; width:90%;  left:5%;">
+            <label> 進度條 </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span id="Check_Txt" style="color:red">執行時間：<span id="Check_i">0小時0分0秒</span>
+            <div id="bar" class="progress progress-striped active">
+                    <div class="progress-bar progress-bar-warning" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" style="width:0%">
+                    </div>
+            </div>
+            <div class="progress-text progress-bar-striped active"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; ">
+            </div>
+        </div>
+        
+    	<script>
+            var SetMinute = 0;
+            var run = true
+            function Check_Time() {
+                SetMinute += 1;
+                var Check_i = document.getElementById("Check_i");
+                var Cal_Hour = Math.floor(SetMinute / 3600);
+                var Cal_Minute = Math.floor(Math.floor(SetMinute % 3600) / 60);
+                var Cal_Second = SetMinute % 60;
+                Check_i.innerHTML = Cal_Hour + "小時" + Cal_Minute + "分" + Cal_Second + "秒";
+            }
+            
+            $('#register_form').validator().on('submit', function(e) {
+                if (e.isDefaultPrevented()) { // 未驗證通過 則不處理
+                    return;
+                } else { // 通过后，送出表单
+                    alert("已送出表單");
+                }
+                e.preventDefault(); // 防止原始 form 提交表单
+            });
+		</script>
+            
+        {% block execute %} 
+            <script>
+                $(function () {
+                    $('#execute').on('click', function () {
+                        var mm = window.setInterval("Check_Time()", 1000);
+                        $('#execute').attr('disabled', 'disabled');
+                        console.log("come in ")
+                    })
+                })
+            </script>
+        {% endblock execute %}
+        
+        {% block script %}
+        {% endblock script %}
+	</body>
+</html>
