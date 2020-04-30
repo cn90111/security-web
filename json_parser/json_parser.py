@@ -55,7 +55,7 @@ class JsonParser():
         genealogy = {}
         for item in string_list:
             genealogy[item] = ancestor
-        print('genealogy ',genealogy)
+        genealogy[ancestor] = ancestor
         return genealogy
         
     def get_tw_address_structure(self, address_list):
@@ -74,8 +74,8 @@ class JsonParser():
         return genealogy
         
     def split_tw_address(self, address):
-        pattern = '[^'+self.__tw_address_accuracy_pattern+']*\
-                    ['+self.__tw_address_accuracy_pattern+']'
+        pattern = '[^'+self.__tw_address_accuracy_pattern+']*'+\
+                    '['+self.__tw_address_accuracy_pattern+']'
         token_list = re.findall(pattern, address)
         return token_list
         

@@ -8,8 +8,6 @@ import csv
 import os
 import pandas as pd
 
-# Create your tests here.
-
 class TestParser(unittest.TestCase):
     
     csv_path = 'test.csv'
@@ -77,13 +75,19 @@ class TestParser(unittest.TestCase):
                                 [200.4398,233.6631],[233.6631,266.8864],\
                                 [266.8864,300.1097],[300.1097,333.333]]
         
-        for i in range(len(number_int_interval)):
-            for j in range(len(number_int_interval[i])):
+        interval_quantity = len(number_int_interval)
+        self.assertEqual(interval_quantity, len(test_int_interval))
+        for i in range(interval_quantity):
+            self.assertEqual(len(number_int_interval[i]), 2)
+            for j in range(2):
                 self.assertEqual\
                     (number_int_interval[i][j], test_int_interval[i][j])
         
-        for i in range(len(number_float_interval)):
-            for j in range(len(number_float_interval[i])):
+        interval_quantity = len(number_float_interval)
+        self.assertEqual(interval_quantity, len(test_float_interval))
+        for i in range(interval_quantity):
+            self.assertEqual(len(number_int_interval[i]), 2)
+            for j in range(2):
                 self.assertAlmostEqual\
                     (number_float_interval[i][j], test_float_interval[i][j])
                     
@@ -95,7 +99,10 @@ class TestParser(unittest.TestCase):
     def test_unrelated_structure(self):
         test_structure = {'String':'String', 'a':'String', 'b':'String', 'c':'String'}
         structure = self.json_parser.get_unrelated_structure(self.categorical, 'String')
-        for key in structure.keys():
+        
+        key_list = structure.keys()
+        self.assertEqual(len(key_list), len(test_structure.keys()))
+        for key in key_list:
             self.assertEqual(structure.get(key), test_structure.get(key))
         
     def test_tw_address_structure(self):
@@ -116,8 +123,9 @@ class TestParser(unittest.TestCase):
                         '台中市南區學府路16號']
                         
         structure = self.json_parser.get_tw_address_structure(address_list)
-        
-        for key in structure.keys():
+        key_list = structure.keys()
+        self.assertEqual(len(key_list), len(test_structure.keys()))
+        for key in key_list:
             self.assertEqual(structure.get(key), test_structure.get(key))
 
     def test_us_address_structure(self):
@@ -138,8 +146,9 @@ class TestParser(unittest.TestCase):
                         '75 Grasslands Rd, Valhalla, NY 10595']
                         
         structure = self.json_parser.get_us_address_structure(address_list)
-        
-        for key in structure.keys():
+        key_list = structure.keys()
+        self.assertEqual(len(key_list), len(test_structure.keys()))
+        for key in key_list:
             self.assertEqual(structure.get(key), test_structure.get(key))
     
     def test_split_tw_address(self):
@@ -153,22 +162,29 @@ class TestParser(unittest.TestCase):
         split_list = []
         for address in address_list:
             split_list.append(self.json_parser.split_tw_address(address))
-        for i in range(len(split_list)):
-            for j in range(len(split_list[i])):
+        
+        address_quantity = len(split_list)
+        self.assertEqual(address_quantity, len(test_split))
+        for i in range(address_quantity):
+            token_quantity = len(split_list[i])
+            self.assertEqual(token_quantity, len(test_split[i]))
+            for j in range(token_quantity):
                 self.assertEqual(split_list[i][j], test_split[i][j])
     
     def test_get_file_string_element(self):
         test_element = {'String':{'a','b','c'},'String2':{'x','y'}}
         file_string_element = self.json_parser.get_file_string_element(self.csv_path)
-        for column_name in file_string_element.keys():
-            self.assertEqual(file_string_element[column_name],\
+        key_list = file_string_element.keys()
+        self.assertEqual(len(key_list), len(test_element.keys()))
+        for column_name in key_list:
+            self.assertEqual(set(file_string_element[column_name]),\
                                 test_element[column_name])
         
     def test_get_column_element(self):
         column = ['a','r','d','a','d']
         test_element = {'a','r','d'}
         element = self.json_parser.get_column_element(column)
-        self.assertEqual(element, test_element)
+        self.assertEqual(set(element), test_element)
     
     def test_parser_to_json(self):
         test_json = {
@@ -227,7 +243,7 @@ class TestParser(unittest.TestCase):
         json_string = json.dumps(self.json_parser.parser_to_json\
                                 (self.csv_path, structure))
         
-        self.assertEqual(test_json_string,json_string)
+        self.assertEqual(test_json_string, json_string)
     
 if __name__ == '__main__':
     unittest.main()
