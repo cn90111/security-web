@@ -2,41 +2,41 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
-		<title>已上傳檔案列表</title>
-		{% load static %}
+		<title>{% block title %}檔案列表{% endblock title %}</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
         <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
         <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
         <style type="text/css">
-        #view th {
-            text-align:center;
-        }
+            #view th {
+                text-align:center;
+            }
         </style>
 	</head>
 	<body>
         {% include 'navbar.html' %}
 		<div class="container">
-			<h1 class="page-header">FileList_Upload:</h1>
+            <h1 class="page-header">FileList_Output:</h1>
 			<form enctype="multipart/form-data">
                 {% csrf_token %}
                 {% if not s %}
                     <div class="form-group">
-                        <h2>尚無上傳檔案</h2>
+                        <h2>{% block no_file %}尚無檔案{% endblock no_file %}</h2>
                     </div>                    
                 {% endif %}
                 {% for key in s %}
-                    <div class="form-check">
-                        <input class="form-check-input" id="radio_{{key}}" type="radio" name="File" value="{{ key }}" checked>
-                        <label class="form-check-label" for="radio_{{key}}"> {{ key }} </label>
-                    </div>
+                <div class="form-check">
+  					<input class="form-check-input" id="radio_{{key}}" type="radio" name="File" value="{{ key }}" checked>
+  					<label class="form-check-label" for="radio_{{key}}"> {{ key }} </label>
+				</div>
 	    		{%endfor%}
-            	<button id="preview" type="button" class="btn btn-primary">預覽</button>
-            	<a href="/t_Closeness/" type="button" class="btn btn-primary">返回主頁</a>
+                {% block button %}
+                    <button id="preview" type="button" class="btn btn-primary">預覽</button>
+                    <a href="/{{caller}}/" type="button" class="btn btn-primary">返回主頁</a>
+                {% endblock button %}
             </form>
         </div>
-    	<p>
-    	<div id="preview_table" align="center" style = "height:550px; overflow:scroll; border:2px black solid; position:absolute; width:90%;  left:5%;" >
+        <p>
+            <div id="preview_table" align="center" style = "height:550px; overflow:scroll; border:2px black solid; position:absolute; width:90%;  left:5%;" >
     	</div>
         
         <script>
@@ -49,7 +49,7 @@
                         alert('請先選擇檔案');
                     }
                     else {
-                        var url = '/t_Closeness/CSV_View_Upload/';
+                        var url = '/{{caller}}/CSV_View_Output/';
                         $.getJSON(url,
                             {
                                 'File' : csv_name,
@@ -61,5 +61,7 @@
                 })
             })
         </script>
+        {% block script %}
+        {% endblock script %}
 	</body>
 </html>

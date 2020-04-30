@@ -67,11 +67,11 @@ class FileListView(View):
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[-2] # url like 127.0.0.1:8000/[caller]/
         path = method+'/'+caller
-        url = caller+'/file_list_'+method+'.html'
+        url = 'general/file_list_'+method+'.html'
         s = []
         for directory_name in os.listdir(path):
             s.append(directory_name+'.csv')
-        return render(request, url, {'s':s})
+        return render(request, url, {'s':s,'caller':caller})
         
 class DownloadView(View):
     def get(self, request, *arg, **kwargs):
