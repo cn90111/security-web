@@ -108,14 +108,14 @@
                         contentType: false,
                         processData: false,
                         success: function (finlish) {
-                            {% block upload_function %}
+                            {% block upload_success %}
                                 if(finlish == true){
                                     alert('您的檔案已成功上傳');
                                 } else{
                                     console.log("配對字串關係");
                                     window.location = '/json_parser/string_pair/csv_name='+csv_name+'/';
                                 }
-                            {% endblock upload_function %}
+                            {% endblock upload_success %}
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             alert(xhr.status);
