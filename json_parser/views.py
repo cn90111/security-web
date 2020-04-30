@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
-from django.views import View
 from django.http import JsonResponse
+
+from django.views import View
+from general.views import FileView
 
 from .forms import UploadFileForm
 from json_parser.json_parser import JsonParser
@@ -22,13 +24,12 @@ class ParserView(View):
         finlish = True
         return JsonResponse(finlish, safe=False)
         
-
-class FileView(View):
+class JsonFileView(FileView):
     def get(self, request, *arg, **kwargs):
         parser = JsonParser()
         file_string_element_dict = {} # file_name - column_title - element
         referer = request.META.get('HTTP_REFERER')
-        caller = referer.split('/')[-2] # url like 127.0.0.1:8000/[caller]/
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
         file_path = 'upload/'+caller+'/'        
         file_name = kwargs.get('csv_name')
         file_name = file_name.split(',')
@@ -47,7 +48,7 @@ class FileView(View):
         form = UploadFileForm(request.POST, request.FILES)
         files = request.FILES.getlist('file')
         referer = request.META.get('HTTP_REFERER')
-        caller = referer.split('/')[-2] # url like 127.0.0.1:8000/[caller]/
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
         file_path = 'upload/'+caller+'/'
         finlish = True
         if form.is_valid():
@@ -63,7 +64,3 @@ class FileView(View):
             return JsonResponse(finlish, safe=False)
         else:
             form = UploadFileForm()
-                
-    def handle_upload_file(self, f, file_path):
-        fs = FileSystemStorage()
-        fs.save(file_path+f.name.split(".")[-2]+'/'+f.name, f)

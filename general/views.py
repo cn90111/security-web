@@ -12,11 +12,30 @@ import pandas as pd
 today = date.today()
 logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(message)s',datefmt='%Y-%m-%d %H:%M:%S',filename= str(today) +'_log.txt')
 
-# Create your views here.
+class FileView(View):
+    def post(self, request):
+        form = UploadFileForm(request.POST, request.FILES)
+        files = request.FILES.getlist('file')
+        referer = request.META.get('HTTP_REFERER')
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        file_path = 'upload/'+caller+'/'
+        finlish = False
+        if form.is_valid():
+            for f in files:
+                self.handle_upload_file(f, file_path) 
+            finlish = True
+            return JsonResponse(finlish, safe=False)
+        else:
+            form = UploadFileForm()
+                
+    def handle_upload_file(self, f, file_path):
+        fs = FileSystemStorage()
+        fs.save(file_path+f.name.split(".")[-2]+'/'+f.name, f)
+        
 class ExecuteView(View):
     def get(self, request, *arg, **kwargs):
         referer = request.META.get('HTTP_REFERER')
-        caller = referer.split('/')[-2] # url like 127.0.0.1:8000/[caller]/
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
         path = 'upload/'+caller+'/'
         files = os.listdir(path)
         s = []
@@ -29,14 +48,13 @@ class ExecuteView(View):
 class PreviewCsvView(View):
     def get(self, request, *arg, **kwargs):
         referer = request.META.get('HTTP_REFERER')
-        caller = referer.split('/')[-3] # url like 127.0.0.1:8000/[caller]/[upload/output]
-        method = referer.split('/')[-2]
-        method = method.split('_')[-1].lower() # File_List_Output/File_List_Upload
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        method = kwargs.get('method')
         name = request.GET.get('File', None)
         directory_name = name.split(".")[-2]    
-        if method == 'output':
+        if method == 'Output':
             file_path = method+'/'+caller+'/'+directory_name+'/'+directory_name+'_output.csv'
-        elif method == 'upload':
+        elif method == 'Upload':
             file_path = method+'/'+caller+'/'+directory_name+'/'+name
         else:
             print("Exception")
@@ -65,7 +83,7 @@ class FileListView(View):
     def get(self, request, *arg, **kwargs):
         method = kwargs.get('method')
         referer = request.META.get('HTTP_REFERER')
-        caller = referer.split('/')[-2] # url like 127.0.0.1:8000/[caller]/
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
         path = method+'/'+caller
         url = 'general/file_list_'+method+'.html'
         s = []
@@ -78,7 +96,7 @@ class DownloadView(View):
         name = request.GET.get('File',None)
         directory_name = name.split(".")[-2]
         referer = request.META.get('HTTP_REFERER')
-        caller = referer.split('/')[-3] # url like 127.0.0.1:8000/[caller]/[upload/output]
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
         file_path = 'output/'+caller+'/'+directory_name+'/'+directory_name+'_output.csv'
         df = pd.read_csv(file_path)
         response = HttpResponse(content_type="text/csv")
