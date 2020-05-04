@@ -48,18 +48,18 @@ class JsonFileView(FileView):
         files = request.FILES.getlist('file')
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        file_path = 'upload/'+caller+'/'
+        root_path = 'upload/'+caller+'/'
         finlish = True
         if form.is_valid():
             for f in files:
-                self.handle_upload_file(f, file_path)
+                self.handle_upload_file(f, root_path)
                 element_dict = parser.get_file_string_element\
-                    (file_path+f.name.split(".")[-2]+'/'+f.name)
+                    (root_path+f.name.split(".")[-2]+'/'+f.name)
                 if element_dict:
                     finlish = False
             if finlish:
                 for f in files:
-                    parser.create_json_file(file_path, f.name, {}, {})
+                    parser.create_json_file(root_path, f.name, {}, {})
             return JsonResponse(finlish, safe=False)
         else:
             form = UploadFileForm()
