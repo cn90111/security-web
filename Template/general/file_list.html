@@ -49,7 +49,7 @@
                         alert('請先選擇檔案');
                     }
                     else {
-                        var url = '/{{caller}}/CSV_View_Output/';
+                        var url = '/{{caller}}/CSV_View_{% block method %}method{% endblock method %}/';
                         $.getJSON(url,
                             {
                                 'File' : csv_name,

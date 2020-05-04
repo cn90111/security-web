@@ -9,7 +9,6 @@ from .forms import UploadFileForm
 from json_parser.json_parser import JsonParser
 import json
 
-# Create your views here.
 class ParserView(View):
     def get(self, request, *arg, **kwargs):
         finlish = False
