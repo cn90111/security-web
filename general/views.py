@@ -18,19 +18,23 @@ class FileView(View):
         files = request.FILES.getlist('file')
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        file_path = 'upload/'+caller+'/'
+        root_path = 'upload/'+caller+'/'
         finlish = False
         if form.is_valid():
             for f in files:
-                self.handle_upload_file(f, file_path) 
+                self.handle_upload_file(f, root_path) 
             finlish = True
             return JsonResponse(finlish, safe=False)
         else:
             form = UploadFileForm()
                 
-    def handle_upload_file(self, f, file_path):
+    def handle_upload_file(self, f, root_path):
         fs = FileSystemStorage()
-        fs.save(file_path+f.name.split(".")[-2]+'/'+f.name, f)
+        directory_path = root_path+f.name.split(".")[-2]+'/'
+        file_path = directory_path+f.name
+        if fs.exists(file_path):
+            fs.delete(file_path)
+        fs.save(file_path, f)
         
 class ExecuteView(View):
     def get(self, request, *arg, **kwargs):
