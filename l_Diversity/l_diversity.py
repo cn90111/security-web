@@ -302,7 +302,7 @@ def l_diversity(request):
     for att in cate_data:
         print(df[att].value_counts())
         print('------------------------')
-        print(df[att].value_counts().argmax())
+        print(df[att].value_counts().index[0])
     
     
     # 建立中心點 center
@@ -312,7 +312,7 @@ def l_diversity(request):
     for att in num_data:
         center[att] = df[att].mean()
     for att in cate_data:
-        center[att] = df[att].value_counts().argmax()
+        center[att] = df[att].value_counts().index[0]
 
     center
 
