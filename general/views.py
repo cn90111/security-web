@@ -99,11 +99,12 @@ class DownloadView(View):
     def get(self, request, *arg, **kwargs):
         name = request.GET.get('File',None)
         directory_name = name.split(".")[-2]
+        name = directory_name + '_output.csv'
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        file_path = 'output/'+caller+'/'+directory_name+'/'+directory_name+'_output.csv'
+        file_path = 'output/'+caller+'/'+directory_name+'/'+name
         df = pd.read_csv(file_path)
         response = HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename=%s' %name
+        response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+name
         df.to_csv(path_or_buf=response,index=False,decimal=",")
         return response
