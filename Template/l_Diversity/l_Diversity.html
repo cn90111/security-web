@@ -46,6 +46,7 @@
     <script>
         $(function () {
             $('#execute').on('click', function () {
+                reset()
                 var mm = window.setInterval("Check_Time()", 1000);
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in l_Diversity.")
