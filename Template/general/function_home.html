@@ -66,6 +66,14 @@
             </div>
         </div>
         <script>
+            function isValidFile(file) {
+                var type = "." + file.value.split(".")[1];
+                if (type == file.accept) {
+                    return true;
+                }
+                return false;
+            }
+        
             $("#customFile_csv").on("change", function() {
                 var fileName = $(this).val().split("\\").pop();
                 $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
@@ -73,24 +81,33 @@
             const selectElement = document.querySelector('#customFile_csv');
                 selectElement.addEventListener('change', (event) => {
                     let formData = new FormData($('#form_file').get(0));
-                    $.ajax({
-                        url: '/{% block title_preview %}title{% endblock title_preview %}/Web_View_CSV/',
-                        type: 'POST',
-                        data: formData,
-                        dataType: 'json',
-                        contentType: false,
-                        processData: false,
-                        success: function (tables) {
-                            $('#showText').html(tables);
-                            alert("您的檔案已可預覽及上傳");
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.status);
-                            var jsonObj = JSON.parse(xhr.responseText);
-                            alert(jsonObj.status +"：\n" + jsonObj.message );
-                        }
-                    });
+                    $('#btn_preview').attr('disabled', 'disabled');
+                    $('#btn_upload_file').attr('disabled', 'disabled');
+                    if (isValidFile(document.getElementById('customFile_csv'))) {
+                        $.ajax({
+                            url: '/{% block title_preview %}title{% endblock title_preview %}/Web_View_CSV/',
+                            type: 'POST',
+                            data: formData,
+                            dataType: 'json',
+                            contentType: false,
+                            processData: false,
+                            success: function (tables) {
+                                $('#showText').html(tables);
+                                alert("您的檔案已可預覽及上傳");
+                                $('#btn_preview').removeAttr('disabled');
+                                $('#btn_upload_file').removeAttr('disabled');
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                var jsonObj = JSON.parse(xhr.responseText);
+                                alert(jsonObj.status +"：\n" + jsonObj.message );
+                            }
+                        });
+                    }
+                    else {
+                        alert("檔案類型錯誤");
+                    }
                 });
+                
             $('#btn_upload_file').click( function () {
                 var csv_name = document.getElementById('customFile_csv').value;
                 csv_name = csv_name.split("\\").pop()
@@ -118,7 +135,6 @@
                             {% endblock upload_success %}
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.status);
                             alert(thrownError);
                         }
                     });
