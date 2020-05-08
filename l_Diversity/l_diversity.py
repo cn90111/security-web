@@ -60,13 +60,13 @@ def l_diversity(request):
     
     df
     
-    
+    attributes = list(df.columns)
     print('--------------------')
-    print("all attributes :",list(df.columns))
+    print("all attributes :", attributes)
     print('--------------------')
     
     while(True):
-        sensitiveAttribute = str(request.GET.get('SA',None))
+        sensitiveAttribute = attributes[-1]
         #sensitiveAttribute = input("輸入Sensitive Atrribute : ")
         print('--------------------')
         if sensitiveAttribute not in list(df.columns):

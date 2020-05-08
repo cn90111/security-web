@@ -2,7 +2,7 @@
 {% block title %}l-Diversity{% endblock title %}
 {% block content %}
     <h2>l-Diversity</h2>
-    <h5 style="font-weight:bold;color:red">說明：</h5>
+    <h5 style="font-weight:bold;color:red">說明：去識別化後的檔案可用性高，但執行速度較慢，可先執行 t-Closeness 測試是否符合需求</h5>
     <p>
         Description : 
     </p>
@@ -19,11 +19,6 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="form-group col-md-4">
-            <label for="SA">Sensitive Attribute：(填欄位名稱)</label>
-            <input type="text" class="form-control" id="SA" placeholder="" value="Age" disabled="disabled">
-            <div class="help-block with-errors"></div>
-        </div>
         <div class="form-group col-md-4">
             <label for="k">K：</label>
             <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" disabled="disabled" value="2">
@@ -55,7 +50,6 @@
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in l_Diversity.")
                 var csv_name_value = document.getElementById("csv_name_select").options[document.getElementById("csv_name_select").selectedIndex].value;
-                var SA_value = document.getElementById("SA").value;
                 var k_value = document.getElementById("k").value;
                 var l_value = document.getElementById("l").value;
                 var log = "";
@@ -75,7 +69,6 @@
                 $.getJSON(thisurl,
                     {
                         csv_name : csv_name_value,
-                        SA : SA_value,
                         k : k_value,
                         l : l_value,
                     }, function (num_progress) {

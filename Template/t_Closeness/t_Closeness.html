@@ -2,7 +2,7 @@
 {% block title %}t-Closeness{% endblock title %}
 {% block content %}
     <h2>t-Closeness</h2>
-    <h5 style="font-weight:bold;color:red">說明：</h5>
+    <h5 style="font-weight:bold;color:red">說明：執行速度較快，但去識別化後的檔案不一定具備可用性</h5>
     <p>
         Description : 
     </p>
@@ -19,11 +19,6 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="form-group col-md-4">
-            <label for="sa_id">Sensitive Attribute：</label>
-            <input type="text" class="form-control" id="sa_id" placeholder="" required="required" pattern="^[0-9]+$" value="1" disabled="disabled">
-            <div class="help-block with-errors"></div>
-        </div>
         <div class="form-group col-md-4">
             <label for="k">K：</label>
             <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" value="2" disabled="disabled">
@@ -55,7 +50,6 @@
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in t_Closeness.")
                 var csv_name_value = document.getElementById("csv_name_select").options[document.getElementById("csv_name_select").selectedIndex].value;
-                var sa_id_value = document.getElementById("sa_id").value;
                 var k_value = document.getElementById("k").value;
                 var t_value = document.getElementById("t").value;
                 var log = "";
@@ -75,7 +69,6 @@
                 $.getJSON(thisurl,
                     {
                         csv_name : csv_name_value,
-                        sa_id : sa_id_value,
                         k : k_value,
                         t : t_value,
                     }, function (num_progress) {
