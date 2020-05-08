@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from datetime import date, datetime
 from django.core.files.storage import FileSystemStorage
 from django.views import View
+from django.conf import settings
 from .models import FileModel
 from .forms import UploadFileForm
 import os
@@ -18,7 +19,7 @@ class FileView(View):
         files = request.FILES.getlist('file')
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        root_path = 'upload/'+caller+'/'
+        root_path = settings.UPLOAD_ROOT+caller+'/'
         finlish = False
         if form.is_valid():
             for f in files:
@@ -40,7 +41,7 @@ class ExecuteView(View):
     def get(self, request, *arg, **kwargs):
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        path = 'upload/'+caller+'/'
+        path =  settings.UPLOAD_ROOT+caller+'/'
         files = os.listdir(path)
         s = []
         for filename in os.listdir(path):
@@ -57,9 +58,9 @@ class PreviewCsvView(View):
         name = request.GET.get('File', None)
         directory_name = name.split(".")[-2]    
         if method == 'Output':
-            file_path = method+'/'+caller+'/'+directory_name+'/'+directory_name+'_output.csv'
+            file_path = settings.OUTPUT_ROOT+caller+'/'+directory_name+'/'+directory_name+'_output.csv'
         elif method == 'Upload':
-            file_path = method+'/'+caller+'/'+directory_name+'/'+name
+            file_path = settings.UPLOAD_ROOT+caller+'/'+directory_name+'/'+name
         else:
             print("Exception")
         df = pd.read_csv(file_path)
@@ -102,7 +103,7 @@ class DownloadView(View):
         name = directory_name + '_output.csv'
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        file_path = 'output/'+caller+'/'+directory_name+'/'+name
+        file_path = settings.OUTPUT_ROOT+caller+'/'+directory_name+'/'+name
         df = pd.read_csv(file_path)
         response = HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+name

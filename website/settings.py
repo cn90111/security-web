@@ -126,3 +126,12 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+
+# upload/output files
+
+UPLOAD_ROOT = 'upload/'
+OUTPUT_ROOT = 'output/'
+
+# DPSyn temp
+
+DPSYN_TEMP_ROOT = 'dpsyn_temp/'

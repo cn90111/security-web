@@ -7,6 +7,7 @@ import math
 import os
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
+from django.conf import settings
 
 import json
 
@@ -35,7 +36,7 @@ def k_anonymity(request):
 
     print('--------------------')
     file_name = str(request.GET.get('csv_name',None))
-    inputFile = 'upload/k_Anonymity/' + file_name + '/' + file_name + '.csv'
+    inputFile = settings.UPLOAD_ROOT + 'k_Anonymity/' + file_name + '/' + file_name + '.csv'
     print('--------------------')
     
     # 開啟檔案
@@ -99,7 +100,7 @@ def k_anonymity(request):
     while(True):
         try:
             #a = input("請輸入字典檔案 :")
-            a = 'upload/k_Anonymity/' + file_name + '/' + file_name + '_dict'
+            a = settings.UPLOAD_ROOT + 'k_Anonymity/' + file_name + '/' + file_name + '_dict'
             print('--------------------')
             dic = load(a)
             break
@@ -619,9 +620,9 @@ def k_anonymity(request):
 
 # 設定顯示全部資料
     pd.set_option('display.max_rows',None)
-    if not os.path.isdir('output/k_Anonymity/' + file_name + '/'):
-        os.makedirs('output/k_Anonymity/' + file_name + '/')
-    output_df_with_dic.to_csv('output/k_Anonymity/' + file_name + '/' +  file_name + '_output.csv', encoding='cp950', index=False, columns=list(df.columns))
+    if not os.path.isdir(settings.OUTPUT_ROOT + 'k_Anonymity/' + file_name + '/'):
+        os.makedirs(settings.OUTPUT_ROOT + 'k_Anonymity/' + file_name + '/')
+    output_df_with_dic.to_csv(settings.OUTPUT_ROOT + 'k_Anonymity/' + file_name + '/' +  file_name + '_output.csv', encoding='cp950', index=False, columns=list(df.columns))
     
     log = "All Success!!"
     num_progress = 100
