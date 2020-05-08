@@ -20,11 +20,6 @@
     </div>
     <div class="form-row">
         <div class="form-group col-md-4">
-            <label for="SA">Sensitive Attribute：(填欄位名稱)</label>
-            <input type="text" class="form-control" id="SA" value="Age"  disabled="disabled" placeholder="">
-            <div class="help-block with-errors"></div>
-        </div>
-        <div class="form-group col-md-4">
             <label for="k">K：</label>
             <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" disabled="disabled" value="2">
             <div class="help-block with-errors"></div>
@@ -50,7 +45,6 @@
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in k_Anonymity")
                 var csv_name_value = document.getElementById("csv_name_select").options[document.getElementById("csv_name_select").selectedIndex].value;
-                var SA_value = document.getElementById("SA").value;
                 var k_value = document.getElementById("k").value;
                 var log = "";
                 var sitv = setInterval( function () {
@@ -69,7 +63,6 @@
                 $.getJSON(thisurl,
                     {
                         csv_name : csv_name_value,
-                        SA : SA_value,
                         k : k_value,
                     }, function (num_progress) {
                     clearInterval(sitv);

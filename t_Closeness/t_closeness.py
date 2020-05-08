@@ -45,7 +45,7 @@ def t_closeness(request):
     #print("\nWhich is sensitive attribute?")
     #sa_id = int(input("\nWhich is sensitive attribute?"))
     #sa_id = 1
-    sa_id = int(request.GET.get('sa_id',None))
+    sa_id = attr_num - 1
     qi_list = []
     for attr_id in range(attr_num):
         if attr_id != sa_id:
