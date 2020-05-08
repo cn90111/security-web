@@ -5,6 +5,7 @@ DPSyn
 output/*
 upload/*
 data
+dpsyn_temp
 *.csv
 *.json
 

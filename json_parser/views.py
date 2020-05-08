@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse
+from django.conf import settings
 
 from django.views import View
 from general.views import FileView
@@ -29,7 +30,7 @@ class JsonFileView(FileView):
         file_string_element_dict = {} # file_name - column_title - element
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        file_path = 'upload/'+caller+'/'        
+        file_path = settings.UPLOAD_ROOT+caller+'/'        
         file_name = kwargs.get('csv_name')
         file_name = file_name.split(',')
         request_dict = {}
@@ -47,7 +48,7 @@ class JsonFileView(FileView):
         files = request.FILES.getlist('file')
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        root_path = 'upload/'+caller+'/'
+        root_path = settings.UPLOAD_ROOT+caller+'/'
         finlish = True
         if form.is_valid():
             for f in files:

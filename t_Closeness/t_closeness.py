@@ -10,6 +10,7 @@ import json
 import os
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
+from django.conf import settings
 
 def show_progress(request):
     #print('show_progress------------' + str(num_progress))
@@ -25,7 +26,7 @@ def t_closeness(request):
     global log
     global num_progress
     file_name = str(request.GET.get('csv_name',None))
-    dict_file_name = 'upload/t_Closeness/' + file_name + '/' + file_name + '_dict.json'
+    dict_file_name = settings.UPLOAD_ROOT + 't_Closeness/' + file_name + '/' + file_name + '_dict.json'
     num_progress = 5
     log = 'Building data information...'
 
@@ -36,7 +37,7 @@ def t_closeness(request):
     k = int(request.GET.get('k',None))
     t = float(request.GET.get('t',None))
     
-    df_data = pd.read_csv('upload/t_Closeness/' + file_name + '/' + file_name +'.csv')
+    df_data = pd.read_csv(settings.UPLOAD_ROOT + 't_Closeness/' + file_name + '/' + file_name +'.csv')
     record_num = df_data.shape[0]
     attr_num = df_data.shape[1]
     column_name = list(df_data.columns)
@@ -330,9 +331,9 @@ def t_closeness(request):
                 else:
                     df_output[column_name[attr_id]].append(record[attr_id])
     df_output = pd.DataFrame(df_output)
-    if not os.path.isdir('output/t_Closeness/' + file_name + '/'):
-        os.makedirs('output/t_Closeness/' + file_name + '/')
-    df_output.to_csv('output/t_Closeness/' + file_name + '/' +  file_name + '_output.csv', encoding='cp950', index=False, columns=column_name)
+    if not os.path.isdir(settings.OUTPUT_ROOT + 't_Closeness/' + file_name + '/'):
+        os.makedirs(settings.OUTPUT_ROOT + 't_Closeness/' + file_name + '/')
+    df_output.to_csv(settings.OUTPUT_ROOT + 't_Closeness/' + file_name + '/' +  file_name + '_output.csv', encoding='cp950', index=False, columns=column_name)
     df_output.to_csv(file_name + '_output.csv', encoding='cp950', index=False, columns=column_name)
 
     num_progress = 100
