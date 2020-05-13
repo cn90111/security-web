@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>signup</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+    	<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	</head>
+	<body  style="padding-top:50px;">
+        {% include 'navbar.html' %}
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                    <h2>註冊</h2>
+                    <h5 style="font-weight:bold;color:red"></h5>
+                    <p>
+                        Description : 
+                    </p>
+            </div>
+        </div>
+	   	<div class="container">
+            <form id="form_file" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <p>
+                        {{ field.label_tag }}<br>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small style="color: grey">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p style="color: red">{{ error }}</p>
+                        {% endfor %}
+                    </p>
+                {% endfor %}
+
+                <input type="submit" class="btn btn-primary" value="送出">
+                <input type="button" class="btn btn-primary" value="返回">
+            </form>
+        </div>
+	</body>
+</html>

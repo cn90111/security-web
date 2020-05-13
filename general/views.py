@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from datetime import date, datetime
 from django.core.files.storage import FileSystemStorage
 from django.views import View

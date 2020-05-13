@@ -31,19 +31,20 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'home',
-    't_Closeness',
-    'DPSyn',
-    'l_Diversity',
-    'k_Anonymity',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'home',
+    't_Closeness',
+    'DPSyn',
+    'l_Diversity',
+    'k_Anonymity',
     'json_parser',
     'general',
+    'accounts',    
 ]
 
 MIDDLEWARE = [
@@ -93,16 +94,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'accounts.validator.password_validation.TwUserAttributeSimilarityValidator',
+        #'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'accounts.validator.password_validation.TwMinimumLengthValidator',
+        #'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'accounts.validator.password_validation.TwCommonPasswordValidator',
+        #'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'accounts.validator.password_validation.TwNumericPasswordValidator',
+        #'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
