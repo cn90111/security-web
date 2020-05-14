@@ -8,7 +8,6 @@
     	<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	</head>
 	<body  style="padding-top:50px;">
-        {% include 'navbar.html' %}
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
                     <h2>註冊</h2>
@@ -19,7 +18,7 @@
             </div>
         </div>
 	   	<div class="container">
-            <form id="form_file" method="post">
+            <form action="{% url 'signup' %}" method="post">
                 {% csrf_token %}
                 {% for field in form %}
                     <p>
@@ -39,7 +38,7 @@
                         <button type="submit" class="btn btn-primary" style="width:100%">送出</button>
                     </div>
                     <div class="form-group col-md-2">
-                        <button type="button" class="btn btn-primary" style="width:100%" onclick="history.back()">返回</button>
+                        <button type="button" class="btn btn-primary" style="width:100%" onclick="location.href='{% url 'login' %}'">回到登入</button>
                     </div>
                 </div>
             </form>

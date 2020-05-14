@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from datetime import date, datetime
 from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.conf import settings
 from .models import FileModel
 from .forms import UploadFileForm
+from datetime import date, datetime
 import os
 import logging
 import pandas as pd
@@ -36,8 +37,9 @@ class FileView(View):
         if fs.exists(file_path):
             fs.delete(file_path)
         fs.save(file_path, f)
-        
+
 class ExecuteView(View):
+    @login_required
     def get(self, request, *arg, **kwargs):
         referer = request.META.get('HTTP_REFERER')
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
@@ -49,7 +51,7 @@ class ExecuteView(View):
             if os.path.isdir(filepath):
                 s.append(filename)
         return render(request, caller+'/'+caller+'.html', {'s':s})
-        
+
 class PreviewCsvView(View):
     def get(self, request, *arg, **kwargs):
         referer = request.META.get('HTTP_REFERER')
@@ -83,8 +85,10 @@ class PreviewCsvView(View):
                     return JsonResponse({"status":"錯誤","message":"欄數限制最多為4, 列數限制最多為200\n文件欄數："+ cln +", 列數："+ row + ", 不符合標準"}, status=400)
         form = UploadFileForm()
         return JsonResponse({"status":"錯誤","message":"表單格式錯誤"}, status=400)
-    
+
+
 class FileListView(View):
+    @login_required
     def get(self, request, *arg, **kwargs):
         method = kwargs.get('method')
         referer = request.META.get('HTTP_REFERER')
@@ -95,7 +99,7 @@ class FileListView(View):
         for directory_name in os.listdir(path):
             s.append(directory_name+'.csv')
         return render(request, url, {'s':s,'caller':caller})
-        
+
 class DownloadView(View):
     def get(self, request, *arg, **kwargs):
         name = request.GET.get('File',None)

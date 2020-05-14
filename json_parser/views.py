@@ -23,7 +23,7 @@ class ParserView(View):
                 structure_mode[file], structure_dict[file])
         finlish = True
         return JsonResponse(finlish, safe=False)
-        
+
 class JsonFileView(FileView):
     def get(self, request, *arg, **kwargs):
         parser = JsonParser()
