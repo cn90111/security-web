@@ -19,21 +19,26 @@
             </div>
         </div>
 	   	<div class="container">
-            <form id="form_file" method="post" action="{% url 'login' %}">
+            <form id="form_file" method="post">
                 {% csrf_token %}
-                <table>
-                <tr>
-                    <td>{{ form.username.label_tag }}</td>
-                    <td>{{ form.username }}</td>
-                </tr>
-                <tr>
-                    <td>{{ form.password.label_tag }}</td>
-                    <td>{{ form.password }}</td>
-                </tr>
-                </table>
-
-                <input type="submit" class="btn btn-primary" value="登入">
-                <input type="button" class="btn btn-primary" value="註冊">
+                <p>
+                    {{ form.username.label_tag }}<br>
+                    {{ form.username }}<br>
+                    {{ form.password1.label_tag }}<br>
+                    {{ form.password1 }}<br>
+                    <p style="color: red">{{ error_message }}</p>
+                <p>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <button type="submit" class="btn btn-primary" style="width:100%">登入</button>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <button type="button" class="btn btn-primary" style="width:100%" onclick="location.href='{% url 'signup' %}'">註冊</button>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <button type="button" class="btn btn-primary" style="width:100%" onclick="history.back()">返回</button>
+                    </div>
+                </div>
             </form>
         </div>
 	</body>

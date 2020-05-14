@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, authenticate
+from django.contrib import auth
 from django.views import View
 
 from accounts.forms import TwUserCreationForm
@@ -13,8 +13,8 @@ class SignUpView(View):
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
+            user = auth.authenticate(username=username, password=raw_password)
+            auth.login(request, user)
             return redirect('home')
         else:
             return render(request, 'registration/signup.html', {'form': form})
@@ -27,8 +27,28 @@ class SignUpView(View):
 
 class LogInView(View):
     def post(self, request, *arg, **kwargs):
-        pass
+        if request.user.is_authenticated:
+            return redirect('home')
+        form = TwUserCreationForm(request.POST)
+        username = request.POST.get('username', None)
+        raw_password = request.POST.get('password1', None)
+        user = auth.authenticate(username=username, password=raw_password)
+        if user is None:
+            return render(request, 'registration/login.html',\
+                            {'form': form, 'error_message': '帳密錯誤'})
+        if not user.is_active:
+            return render(request, 'registration/login.html',\
+                            {'form': form, 'error_message': '帳戶已被凍結'})
+        auth.login(request, user)
+        return HttpResponseRedirect('/home/')
+        
+    def get(self, request, *arg, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('home')
+        form = TwUserCreationForm()
+        return render(request, 'registration/login.html', {'form': form})
     
 class LogOutView(View):
-    def post(self, request, *arg, **kwargs):
-        pass
+    def get(self, request, *arg, **kwargs):
+        auth.logout(request)
+        return HttpResponseRedirect('/home/')
