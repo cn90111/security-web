@@ -97,7 +97,6 @@ class FileListView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         method = kwargs.get('method').lower()
-        print(method)
         referer = request.META.get('HTTP_REFERER')
         username = request.user.get_username()
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
