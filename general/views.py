@@ -62,12 +62,12 @@ class PreviewCsvView(View):
         referer = request.META.get('HTTP_REFERER')
         username = request.user.get_username()
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        method = kwargs.get('method')
+        method = kwargs.get('method').lower()
         name = request.GET.get('File', None)
         directory_name = name.split(".")[-2]
-        if method == 'Output':
+        if method == 'output':
             file_path = settings.OUTPUT_ROOT+caller+'/'+username+'/'+directory_name+'/'+directory_name+'_output.csv'
-        elif method == 'Upload':
+        elif method == 'upload':
             file_path = settings.UPLOAD_ROOT+caller+'/'+username+'/'+directory_name+'/'+name
         else:
             print("Exception")
@@ -96,7 +96,7 @@ class PreviewCsvView(View):
 class FileListView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
-        method = kwargs.get('method')
+        method = kwargs.get('method').lower()
         referer = request.META.get('HTTP_REFERER')
         username = request.user.get_username()
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
