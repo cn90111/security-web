@@ -3,8 +3,9 @@ from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import auth
 from django.views import View
-
+from django.conf import settings
 from accounts.forms import TwUserCreationForm
+import os
 
 class SignUpView(View):
     def post(self, request, *arg, **kwargs):
@@ -13,8 +14,10 @@ class SignUpView(View):
             form.save()
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
+            self.accounts_init(username)
             user = auth.authenticate(username=username, password=raw_password)
             auth.login(request, user)
+            
             return redirect('home')
         else:
             return render(request, 'registration/signup.html', {'form': form})
@@ -25,8 +28,13 @@ class SignUpView(View):
         form = TwUserCreationForm()
         return render(request, 'registration/signup.html', {'form': form})
     
-    
-
+    def accounts_init(self, username):
+        function_name = ['DPSyn', 'k_Anonymity', 'l_Diversity', 't_Closeness']
+        for name in function_name:
+            os.makedirs(settings.UPLOAD_ROOT+name+'/'+username+'/')
+            os.makedirs(settings.OUTPUT_ROOT+name+'/'+username+'/')
+        os.makedirs(settings.DPSYN_TEMP_ROOT+username+'/')
+        
 class LogInView(View):
     def post(self, request, *arg, **kwargs):
         form = TwUserCreationForm(request.POST)
