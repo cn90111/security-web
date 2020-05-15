@@ -6,15 +6,12 @@ import pandas as pd
 import numpy as np
 import math
 import os
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.conf import settings
 
 import json
-
-def store(data, save_path):
-    with open(save_path + '.json', 'w') as fw:
-        json.dump(data,fw)
         
 def load(load_path):
     with open(load_path + '.json','r') as f:
@@ -29,7 +26,7 @@ def show_progress(request):
     }
     return JsonResponse(data,safe=False)
 
-
+@login_required
 def l_diversity(request):
     
     global log
@@ -37,7 +34,8 @@ def l_diversity(request):
 
     print('--------------------')
     file_name = str(request.GET.get('csv_name',None))
-    inputFile = settings.UPLOAD_ROOT + 'l_Diversity/' + file_name + '/' + file_name + '.csv'
+    username = request.user.get_username()
+    inputFile = settings.UPLOAD_ROOT + 'l_Diversity/' + username + '/' + file_name + '/' + file_name + '.csv'
     print('--------------------')
     
     # 開啟檔案
@@ -107,7 +105,7 @@ def l_diversity(request):
     while(True):
         try:
             #a = input("請輸入字典檔案 :")
-            a = settings.UPLOAD_ROOT + 'l_Diversity/' + file_name + '/' + file_name + '_dict'
+            a = settings.UPLOAD_ROOT + 'l_Diversity/' + username + '/' + file_name + '/' + file_name + '_dict'
             print('--------------------')
             dic = load(a)
             break
@@ -630,9 +628,9 @@ def l_diversity(request):
 
 # 設定顯示全部資料
     pd.set_option('display.max_rows',None)
-    if not os.path.isdir(settings.OUTPUT_ROOT + 'l_Diversity/' + file_name + '/'):
-        os.makedirs(settings.OUTPUT_ROOT + 'l_Diversity/' + file_name + '/')
-    output_df_with_dic.to_csv(settings.OUTPUT_ROOT + 'l_Diversity/' + file_name + '/' +  file_name + '_output.csv', encoding='cp950', index=False, columns=list(df.columns))
+    if not os.path.isdir(settings.OUTPUT_ROOT + 'l_Diversity/' + username + '/' + file_name + '/'):
+        os.makedirs(settings.OUTPUT_ROOT + 'l_Diversity/' + username + '/' + file_name + '/')
+    output_df_with_dic.to_csv(settings.OUTPUT_ROOT + 'l_Diversity/' + username + '/' + file_name + '/' +  file_name + '_output.csv', encoding='cp950', index=False, columns=list(df.columns))
     
     log = "All Success!!"
     num_progress = 100
