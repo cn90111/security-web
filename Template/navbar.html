@@ -17,8 +17,24 @@
                 <a class="navbar-brand" href="/l_Diversity/" style="color:#ffffff">l-Diversity</a>
             </li>
             <li class="nav-item">
-                <a class="navbar-brand" href="{% url 'logout' %}" style="color:#ffffff">登出</a>               
+                <a class="navbar-brand" href="{% url 'logout' %}" style="color:#ffffff">登出</a>
+            </li>
+            <li class="nav-item">
+                <a type="button" class="navbar-brand" id="delete_account" style="color:#ffffff">刪除帳號</a>
             </li>
         </ul>
     </nav>
 </div>
+
+<script>
+    $(function () {
+        $('#delete_account').on('click', function () {
+            answer = prompt('帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入YES', '');
+            if (answer == 'YES') {
+                window.location = "{% url 'delete_account' %}";
+            }  else {
+                alert('刪除動作已取消')
+            }
+        })
+    })
+</script>
