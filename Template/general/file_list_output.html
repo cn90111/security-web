@@ -1,10 +1,13 @@
 {% extends "general/file_list.html" %}
 {% block title %}已完成檔案列表{% endblock title %}
 {% block no_file %}尚無完成檔案{% endblock no_file %}
-{% block method %}Output{% endblock method %}
+{% block csv_view_method %}Output{% endblock csv_view_method %}
+{% block delete_file_method %}Output{% endblock delete_file_method %}
+
 {% block button %}
     <button id="download" type="button" class="btn btn-primary">下載</button>
     <button id="preview" type="button" class="btn btn-primary">預覽</button>
+    <button id="delete_file" type="button" class="btn btn-primary">刪除</button>
     <input type="button" class="btn btn-primary" onclick="history.back()" value="返回上一頁"></input>
     <a href="/{{caller}}/" type="button" class="btn btn-primary">返回主頁</a>
 {% endblock button %}

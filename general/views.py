@@ -8,9 +8,11 @@ from django.conf import settings
 from .models import FileModel
 from .forms import UploadFileForm
 from datetime import date, datetime
+
 import os
 import logging
 import pandas as pd
+import shutil
 
 today = date.today()
 logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(message)s',datefmt='%Y-%m-%d %H:%M:%S',filename= str(today) +'_log.txt')
@@ -122,3 +124,18 @@ class DownloadView(View):
         response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+name
         df.to_csv(path_or_buf=response,index=False,decimal=",")
         return response
+        
+class DeleteFileView(View):
+    @method_decorator(login_required)
+    def get(self, request, *arg, **kwargs):
+        method = kwargs.get('method').lower()
+        name = request.GET.get('File',None)
+        directory_name = name.split(".")[-2]
+        referer = request.META.get('HTTP_REFERER')
+        username = request.user.get_username()
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        path = method+'/'+caller+'/'+username+'/'+directory_name+'/'
+        finish = False
+        shutil.rmtree(path)
+        finish = True
+        return JsonResponse(finish, safe=False)
