@@ -2,7 +2,8 @@
 {% block title %}l-Diversity{% endblock title %}
 {% block content %}
     <h2>l-Diversity</h2>
-    <h5 style="font-weight:bold;color:red">說明：去識別化後的檔案可用性高，但執行速度較慢，可先執行 t-Closeness 測試是否符合需求</h5>
+    <h5 style="font-weight:bold;color:red">說明1：將滑鼠移至欄位上可查看欄位說明</h5>
+    <h5 style="font-weight:bold;color:red">說明2：去識別化後的檔案可用性高，但執行速度較慢，可先執行 t-Closeness 測試是否符合需求</h5>
     <p>
         Description : 
     </p>
@@ -10,8 +11,8 @@
 {% block form %}
     <div class="form-row" style="height:110px">
         <div class="form-group col-md-4">
-            <label for="csv_name_select">CSV_Name：</label>
-            <select class="form-control" id="csv_name_select" >
+            <label for="csv_name_select" data-toggle="tooltip" title="將要進行去識別化的檔案">選擇檔案：</label>
+            <select class="form-control" id="csv_name_select" data-toggle="tooltip" title="將要進行去識別化的檔案">
                 {% for key in s %}
                     <option value="{{ key }}">{{ key }}</option>
                 {%endfor%}
@@ -20,14 +21,12 @@
     </div>
     <div class="form-row">
         <div class="form-group col-md-4">
-            <label for="k">K：</label>
-            <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" disabled="disabled" value="2">
-            <div class="help-block with-errors"></div>
+            <label for="k" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">K：</label>
+            <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" value="2" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">
         </div>
         <div class="form-group col-md-4">
-            <label for="l">L：</label>
-            <input type="text" class="form-control" id="l" placeholder="" disabled="disabled" value="2">
-            <div class="help-block with-errors"></div>
+            <label for="l"  data-toggle="tooltip" title="去識別化後，K筆資料中將至少有L筆資料將完全相同(包含沒去識別化的最後一欄)">L：</label>
+            <input type="text" class="form-control" id="l" placeholder="" value="2"  data-toggle="tooltip" title="去識別化後，K筆資料中將至少有L筆資料將完全相同(包含沒去識別化的最後一欄)">
         </div>
     </div>
     <div class="form-row">
