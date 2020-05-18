@@ -12,4 +12,5 @@ urlpatterns = [
     path('File_List_<str:method>/', general_views.FileListView.as_view()),
     path('Download_Output/', general_views.DownloadView.as_view()),
     path('CSV_View_<str:method>/', general_views.PreviewCsvView.as_view()),
+    path('delete_file_<str:method>/', general_views.DeleteFileView.as_view()),
 ]
