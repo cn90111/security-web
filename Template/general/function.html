@@ -24,8 +24,29 @@
     	<div class="container" style="width:inherit;">
             <form id="parameter_form" data-toggle="validator">
                 {% csrf_token %}
+                <div class="form-row" style="height:110px">
+                    <div class="form-group col-md-4">
+                        <label for="csv_name_select" data-toggle="tooltip" title="將要進行去識別化的檔案">選擇檔案：</label>
+                        <select class="form-control" id="csv_name_select" data-toggle="tooltip" title="將要進行去識別化的檔案">
+                            {% for key in s %}
+                                <option value="{{ key }}">{{ key }}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                </div>
                 {% block form %}
                 {% endblock form %}
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <button id="execute" type="button" class="btn btn-primary" style="width:100%">執行</button>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <div onclick="location.href='/{% block output_path %}title{% endblock output_path %}/File_List_Output/'" type="button" class="btn btn-primary" style="width:100%">已完成檔案列表</div>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <div onclick="location.href='/{% block home_path %}title{% endblock home_path %}/'" type="button" class="btn btn-primary" style="width:100%">返回主頁</div>
+                    </div>
+                </div>
             </form>
     	</div>
         <div class="progress-div" style="position:absolute; width:90%;  left:5%;">
@@ -59,20 +80,24 @@
                 $('#prog_in').width(0 + '%');
             }
             
-            $('#register_form').validator().on('submit', function(e) {
-                if (e.isDefaultPrevented()) { // 未驗證通過 則不處理
-                    return;
-                } else { // 通过后，送出表单
-                    alert("已送出表單");
+            function check_required_is_empty() {
+                var csv_name_value = document.getElementById("csv_name_select").value;
+                if (!csv_name_value) {
+                    return true
                 }
-                e.preventDefault(); // 防止原始 form 提交表单
-            });
+                return false
+            }
+            
 		</script>
             
         {% block execute %} 
             <script>
                 $(function () {
                     $('#execute').on('click', function () {
+                        if (check_required_is_empty()) {
+                            alert('請選擇檔案，若無檔案請先上傳檔案')
+                            return
+                        }
                         reset()
                         var mm = window.setInterval("Check_Time()", 1000);
                         $('#execute').attr('disabled', 'disabled');
@@ -83,8 +108,5 @@
                 })
             </script>
         {% endblock execute %}
-        
-        {% block script %}
-        {% endblock script %}
 	</body>
 </html>

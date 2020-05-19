@@ -1,5 +1,7 @@
 {% extends "general/function.html" %}
 {% block title %}t-Closeness{% endblock title %}
+{% block output_path %}t-Closeness{% endblock output_path %}
+{% block home_path %}t-Closeness{% endblock home_path %}
 {% block content %}
     <h2>t-Closeness</h2>
     <h5 style="font-weight:bold;color:red">說明1：將滑鼠移至欄位上可查看欄位說明</h5>
@@ -9,16 +11,6 @@
     </p>
 {% endblock content %}
 {% block form %}
-    <div class="form-row" style="height:110px">
-        <div class="form-group col-md-4">
-            <label for="csv_name_select" data-toggle="tooltip" title="將要進行去識別化的檔案">選擇檔案：</label>
-            <select class="form-control" id="csv_name_select"  data-toggle="tooltip" title="將要進行去識別化的檔案">
-                {% for key in s %}
-                    <option value="{{ key }}">{{ key }}</option>
-                {%endfor%}
-            </select>
-        </div>
-    </div>
     <div class="form-row">
         <div class="form-group col-md-4">
             <label for="k" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">K：</label>
@@ -29,28 +21,21 @@
             <input type="text" class="form-control" id="t" placeholder="" value="0.01" data-toggle="tooltip" title="去識別化後，K筆資料中的主要內容(最後一欄)的分布，將與整個資料集的分布相差在T以內">
         </div>
     </div>
-    <div class="form-row">
-        <div class="form-group col-md-2">
-            <button id="execute" type="button" class="btn btn-primary" style="width:100%">執行</button>
-        </div>
-        <div class="form-group col-md-2">
-            <div onclick="location.href='/t_Closeness/File_List_Output/'"  type="button" class="btn btn-primary" style="width:100%">已完成檔案列表</div>
-        </div>
-        <div class="form-group col-md-2">
-            <div onclick="location.href='/t_Closeness/'" type="button" class="btn btn-primary" style="width:100%">返回主頁</div>
-        </div>
-    </div>
 {% endblock form %}
 {% block execute %}
     <script>
         $(function () {
             $('#execute').on('click', function () {
+                if (check_required_is_empty()) {
+                    alert('請選擇檔案，若無檔案請先上傳檔案')
+                    return
+                }
                 reset()
                 window.scrollTo(0, document.body.scrollHeight)
                 var mm = window.setInterval("Check_Time()", 1000);
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in t_Closeness.")
-                var csv_name_value = document.getElementById("csv_name_select").options[document.getElementById("csv_name_select").selectedIndex].value;
+                var csv_name_value = document.getElementById("csv_name_select").value;
                 var k_value = document.getElementById("k").value;
                 var t_value = document.getElementById("t").value;
                 var log = "";
