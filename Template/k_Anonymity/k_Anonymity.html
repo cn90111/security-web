@@ -1,5 +1,7 @@
 {% extends "general/function.html" %}
 {% block title %}k-Anonymity{% endblock title %}
+{% block output_path %}k-Anonymity{% endblock output_path %}
+{% block home_path %}k-Anonymity{% endblock home_path %}
 {% block content %}
     <h2>k-Anonymity</h2>
     <h5 style="font-weight:bold;color:red">說明1：將滑鼠移至欄位上可查看欄位說明</h5>
@@ -9,31 +11,10 @@
     </p>
 {% endblock content %}
 {% block form %}
-    <div class="form-row" style="height:110px">
-        <div class="form-group col-md-4">
-            <label for="csv_name_select" data-toggle="tooltip" title="將要進行去識別化的檔案">選擇檔案：</label>
-            <select class="form-control" id="csv_name_select" data-toggle="tooltip" title="將要進行去識別化的檔案">
-                {% for key in s %}
-                    <option value="{{ key }}">{{ key }}</option>
-                {%endfor%}
-            </select>
-        </div>
-    </div>
     <div class="form-row">
         <div class="form-group col-md-4">
             <label for="k" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">K：</label>
             <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" value="2" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">
-        </div>
-    </div>
-    <div class="form-row">
-        <div class="form-group col-md-2">
-            <button id="execute" type="button" class="btn btn-primary" style="width:100%">執行</button>
-        </div>
-        <div class="form-group col-md-2">
-            <div onclick="location.href='/k_Anonymity/File_List_Output/'" type="button" class="btn btn-primary" style="width:100%">已完成檔案列表</div>
-        </div>
-        <div class="form-group col-md-2">
-            <div onclick="location.href='/k_Anonymity/'" type="button" class="btn btn-primary" style="width:100%">返回主頁</div>
         </div>
     </div>
 {% endblock form %}
@@ -41,12 +22,16 @@
     <script>
         $(function () {
             $('#execute').on('click', function () {
+                if (check_required_is_empty()) {
+                    alert('請選擇檔案，若無檔案請先上傳檔案')
+                    return
+                }
                 reset()
                 window.scrollTo(0, document.body.scrollHeight)
                 var mm = window.setInterval("Check_Time()", 1000);
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in k_Anonymity")
-                var csv_name_value = document.getElementById("csv_name_select").options[document.getElementById("csv_name_select").selectedIndex].value;
+                var csv_name_value = document.getElementById("csv_name_select").value;
                 var k_value = document.getElementById("k").value;
                 var log = "";
                 var sitv = setInterval( function () {
