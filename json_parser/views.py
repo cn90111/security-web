@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from django.views import View
-from general.views import FileView
 
 from .forms import UploadFileForm
 from json_parser.json_parser import JsonParser
@@ -29,7 +28,7 @@ class ParserView(View):
         finlish = True
         return JsonResponse(finlish, safe=False)
 
-class JsonFileView(FileView):
+class CustomView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         parser = JsonParser()
@@ -39,36 +38,12 @@ class JsonFileView(FileView):
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
         file_path = settings.UPLOAD_ROOT+caller+'/'+username+'/'
         file_name = kwargs.get('csv_name')
-        file_name = file_name.split(',')
         request_dict = {}
         
-        for name in file_name:
-            file_string_element_dict[name] = parser.get_file_string_element\
-                    (file_path+name.split(".")[-2]+'/'+name)
+        file_string_element_dict[file_name] = parser.get_file_string_element\
+                (file_path+file_name.split(".")[-2]+'/'+file_name)
         request_dict['file_string_element_dict'] = file_string_element_dict
         request_dict['caller'] = caller
-        return render(request, 'json_parser/json_parser.html', request_dict)
-    
-    @method_decorator(login_required)
-    def post(self, request):
-        parser = JsonParser()
-        form = UploadFileForm(request.POST, request.FILES)
-        files = request.FILES.getlist('file')
-        referer = request.META.get('HTTP_REFERER')
-        username = request.user.get_username()
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        root_path = settings.UPLOAD_ROOT+caller+'/'+username+'/'
-        finlish = True
-        if form.is_valid():
-            for f in files:
-                self.handle_upload_file(f, root_path)
-                element_dict = parser.get_file_string_element\
-                    (root_path+f.name.split(".")[-2]+'/'+f.name)
-                if element_dict:
-                    finlish = False
-            if finlish:
-                for f in files:
-                    parser.create_json_file(root_path, f.name, {}, {})
-            return JsonResponse(finlish, safe=False)
-        else:
-            form = UploadFileForm()
+        request_dict['file_name'] = file_name
+        request_dict['custom_mode'] = 'json_parser'
+        return render(request, 'general/parameter_custom.html', request_dict)

@@ -28,13 +28,30 @@ class FileView(View):
         root_path = settings.UPLOAD_ROOT+caller+'/'+username+'/'
         finlish = False
         if form.is_valid():
-            for f in files:
-                self.handle_upload_file(f, root_path) 
+            for file in files:
+                check_result = self.check_file_limit(file)
+                if check_result:
+                    return check_result
+                self.handle_upload_file(file, root_path) 
             finlish = True
             return JsonResponse(finlish, safe=False)
         else:
             form = UploadFileForm()
-                
+            return JsonResponse({"status":"錯誤","message":"表單格式錯誤"}, status=400)
+
+    def check_file_limit(self, file):
+        upload_form = FileModel()
+        upload_form.file = file
+        df = pd.read_csv(upload_form.file)
+        print(upload_form.file)
+        print(file)
+        if(df.shape[1] <= 4 and df.shape[0] <= 200):
+            return None
+        else:
+            cln = str(df.shape[1])
+            row = str(df.shape[0])
+            return JsonResponse({"status":"錯誤","message":"欄數限制最多為4, 列數限制最多為200\n文件欄數："+ cln +", 列數："+ row + ", 不符合標準"}, status=400)
+
     def handle_upload_file(self, f, root_path):
         fs = FileSystemStorage()
         directory_path = root_path+f.name.split(".")[-2]+'/'
@@ -42,6 +59,7 @@ class FileView(View):
         if fs.exists(file_path):
             fs.delete(file_path)
         fs.save(file_path, f)
+        
 
 class ExecuteView(View):
     @method_decorator(login_required)
@@ -58,7 +76,7 @@ class ExecuteView(View):
                 s.append(filename)
         return render(request, caller+'/'+caller+'.html', {'s':s})
 
-class PreviewCsvView(View):
+class DisplayCsvView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         referer = request.META.get('HTTP_REFERER')
@@ -72,28 +90,10 @@ class PreviewCsvView(View):
         elif method == 'upload':
             file_path = settings.UPLOAD_ROOT+caller+'/'+username+'/'+directory_name+'/'+name
         else:
-            print("Exception")
+            raise AttributeError("無此method：" + method)
         df = pd.read_csv(file_path)
-        tables = df.head(2000).to_html()
+        tables = df.head(200).to_html()
         return JsonResponse(tables, safe=False)
-        
-    def post(self, request, *arg, **kwargs):
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            upload_form = FileModel()
-            for file in request.FILES.getlist('file'):
-                upload_form.file = file
-                df = pd.read_csv(upload_form.file)
-                if(df.shape[1] <= 4 and df.shape[0] <= 200):
-                    tables = df.head(200).to_html()
-                    return JsonResponse(tables, safe=False)
-                else:
-                    cln = str(df.shape[1])
-                    row = str(df.shape[0])
-                    return JsonResponse({"status":"錯誤","message":"欄數限制最多為4, 列數限制最多為200\n文件欄數："+ cln +", 列數："+ row + ", 不符合標準"}, status=400)
-        form = UploadFileForm()
-        return JsonResponse({"status":"錯誤","message":"表單格式錯誤"}, status=400)
-
 
 class FileListView(View):
     @method_decorator(login_required)
