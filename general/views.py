@@ -68,13 +68,11 @@ class ExecuteView(View):
         username = request.user.get_username()
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
         path = settings.UPLOAD_ROOT+caller+'/'+username+'/'
-        files = os.listdir(path)
-        s = []
-        for filename in os.listdir(path):
-            filepath = os.path.join(path,filename)
-            if os.path.isdir(filepath):
-                s.append(filename)
-        return render(request, caller+'/'+caller+'.html', {'s':s})
+        file_name = kwargs.get('csv_name')
+        
+        request_dict = {}
+        request_dict['file_name'] = file_name
+        return render(request, caller+'/'+caller+'.html', request_dict)
 
 class DisplayCsvView(View):
     @method_decorator(login_required)

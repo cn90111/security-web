@@ -66,6 +66,7 @@
                                 window.location = '/{% block custom_url %}json_parser{% endblock custom_url %}/custom/csv_name='+csv_name+'/';
                             } else{
                                 alert('檔案上傳失敗，請稍後再試');
+                                window.location = "{% url 'home' %}";
                             }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {

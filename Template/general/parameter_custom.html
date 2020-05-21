@@ -96,10 +96,10 @@
                                 'structure_dict' : JSON.stringify(structure_dict),
                             }, function (finlish) {
                                 if(finlish == true){
-                                    alert('您的檔案已成功上傳');
-                                    window.location = '/{{ caller }}/';
+                                    window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
                                 } else {
-                                    alert('系統異常');
+                                    alert('檔案上傳失敗，請稍後再試');
+                                    window.location = "{% url 'home' %}";
                                 }
                             }
                         );

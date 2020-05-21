@@ -26,16 +26,11 @@
     <script>
         $(function () {
             $('#execute').on('click', function () {
-                if (check_required_is_empty()) {
-                    alert('請選擇檔案，若無檔案請先上傳檔案')
-                    return
-                }
                 reset()
                 window.scrollTo(0, document.body.scrollHeight)
                 var mm = window.setInterval("Check_Time()", 1000);
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in l_Diversity.")
-                var csv_name_value = document.getElementById("csv_name_select").value;
                 var k_value = document.getElementById("k").value;
                 var l_value = document.getElementById("l").value;
                 var log = "";
@@ -54,7 +49,7 @@
                 var thisurl = '/l_Diversity/Execute_l_diversity/'
                 $.getJSON(thisurl,
                     {
-                        csv_name : csv_name_value,
+                        csv_name : '{{file_name}}',
                         k : k_value,
                         l : l_value,
                     }, function (num_progress) {
