@@ -25,25 +25,21 @@
             <form id="parameter_form" data-toggle="validator">
                 {% csrf_token %}
                 <div class="form-row">
-                    <div class="form-group col-md-8">
-                        {% block left_container %}
-                        {% endblock left_container %}
-                    </div>
-                    <div class="form-group col-md-4">
-                        {% block right_container %}
-                        {% endblock right_container %}
-                    </div>
+                    {% block left_container %}
+                        <div class="form-group col-md-6">
+                        </div>
+                    {% endblock left_container %}
+                    {% block right_container %}
+                        <div class="form-group col-md-6">
+                        </div>
+                    {% endblock right_container %}
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-2">
-                        <button id="execute" type="button" class="btn btn-primary" style="width:100%">繼續執行</button>
-                    </div>
-                    <div class="form-group col-md-2">
-                        <div onclick="location.href='/{{caller}}/'" type="button" class="btn btn-primary" style="width:100%">重新選擇檔案</div>
-                    </div>
-                    <div class="form-group col-md-2">
-                        <div onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">返回主選單</div>
-                    </div>
+                    {% block button %}
+                        <div class="form-group col-md-2">
+                            <button id="execute" type="button" class="btn btn-primary" style="width:100%">繼續執行</button>
+                        </div>
+                    {% endblock button %}
                 </div>
             </form>
     	</div>

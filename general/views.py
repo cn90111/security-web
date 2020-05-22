@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -105,21 +105,25 @@ class FileListView(View):
         s = []
         for directory_name in os.listdir(path):
             s.append(directory_name+'.csv')
-        return render(request, url, {'s':s,'caller':caller})
+        
+        request_dict = {}
+        request_dict['s'] = s
+        request_dict['caller'] = caller
+        return render(request, url, request_dict)
 
 class DownloadView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
-        name = request.GET.get('File',None)
-        directory_name = name.split(".")[-2]
-        name = directory_name + '_output.csv'
+        file_name = kwargs.get('csv_name')
+        directory_name = file_name.split(".")[-2]
+        file_name = directory_name + '_output.csv'
         referer = request.META.get('HTTP_REFERER')
         username = request.user.get_username()
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        file_path = settings.OUTPUT_ROOT+caller+'/'+username+'/'+directory_name+'/'+name
+        file_path = settings.OUTPUT_ROOT+caller+'/'+username+'/'+directory_name+'/'+file_name
         df = pd.read_csv(file_path)
         response = HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+name
+        response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+file_name
         df.to_csv(path_or_buf=response,index=False,decimal=",")
         return response
         
@@ -137,3 +141,15 @@ class DeleteFileView(View):
         shutil.rmtree(path)
         finish = True
         return JsonResponse(finish, safe=False)
+        
+class FinishView(View):
+    @method_decorator(login_required)
+    def get(self, request, *arg, **kwargs):
+        file_name = kwargs.get('csv_name')
+        referer = request.META.get('HTTP_REFERER')
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        
+        request_dict = {}
+        request_dict['file_name'] = file_name
+        request_dict['caller'] = caller
+        return render(request, 'general/execute_finish.html', request_dict)

@@ -60,6 +60,8 @@
                     $('#bar').removeClass('active');
                     $('.progress-text').text('執行完成');
                     $('#execute').removeAttr('disabled');
+                    alert("檔案執行完畢");
+                    window.location = '/t_Closeness/finish/csv_name={{file_name}}';
                 });
             })
         })
