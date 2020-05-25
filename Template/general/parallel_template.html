@@ -24,6 +24,8 @@
     	<div class="container" style="width:100%;">
             <form id="parameter_form" data-toggle="validator">
                 {% csrf_token %}
+                {% block up_container %}
+                {% endblock up_container %}
                 <div class="form-row">
                     {% block left_container %}
                         <div class="form-group col-md-6">

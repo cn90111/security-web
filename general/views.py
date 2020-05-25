@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.conf import settings
+from general.machine_learning import MachineLearning
 from .models import FileModel
 from .forms import UploadFileForm
 from datetime import date, datetime
@@ -153,3 +154,41 @@ class FinishView(View):
         request_dict['file_name'] = file_name
         request_dict['caller'] = caller
         return render(request, 'general/execute_finish.html', request_dict)
+        
+class UtilityPageView(View):        
+    @method_decorator(login_required)
+    def get(self, request, *arg, **kwargs):
+        file_name = kwargs.get('csv_name')
+        referer = request.META.get('HTTP_REFERER')
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        request_dict = {}
+        request_dict['file_name'] = file_name
+        request_dict['caller'] = caller
+        request_dict['machine_learning_list'] = MachineLearning.SUPPORT_LIST
+        return render(request, 'general/utility.html', request_dict)
+        
+class CheckUtilityView(View):        
+    @method_decorator(login_required)
+    def get(self, request, *arg, **kwargs):
+        referer = request.META.get('HTTP_REFERER')
+        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        username = request.user.get_username()
+        
+        file_name = request.GET.get('csv_name',None)
+        directory_name = file_name.split(".")[-2]
+        machine_learning_method = request.GET.get('machine_learning_method',None)
+        file_path = request.GET.get('file_path',None)
+        
+        if file_path == 'output':
+            file_path = file_path+"/"+caller+"/"+username+"/"+directory_name+"/"+directory_name+"_output.csv"
+        elif file_path == 'upload':
+            file_path = file_path+"/"+caller+"/"+username+"/"+directory_name+"/"+file_name
+        else:
+            raise AttributeError("無此method：" + method)
+        
+        ml = MachineLearning(machine_learning_method);
+        ml.fit(file_path)
+        
+        mse = 0
+        
+        return JsonResponse(mse, safe=False)
