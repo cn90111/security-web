@@ -319,10 +319,7 @@ def t_closeness(request):
         for attr_id in range(attr_num):
             if attr_id in qi_list:
                 if data_dict[column_name[attr_id]]['type'] == 'numerical':
-                    if data_dict[column_name[attr_id]]['num_type'] == 'int':
-                        record.append(int((data[attr_id][0] + data[attr_id][1]) / 2))
-                    elif data_dict[column_name[attr_id]]['num_type'] == 'float':
-                        record.append((data[attr_id][0] + data[attr_id][1]) / 2)
+                    record.append(str(data[attr_id][0]) + '-' + str(data[attr_id][1]))
                 else:
                     record.append(data[attr_id])
             else:

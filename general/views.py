@@ -184,11 +184,10 @@ class CheckUtilityView(View):
         elif file_path == 'upload':
             file_path = file_path+"/"+caller+"/"+username+"/"+directory_name+"/"+file_name
         else:
-            raise AttributeError("無此method：" + method)
+            raise AttributeError("無此file_path：" + file_path)
         
-        ml = MachineLearning(machine_learning_method);
-        ml.fit(file_path)
+        ml = MachineLearning(machine_learning_method, file_path);
+        ml.fit()
+        accuracy = ml.score() * 100
         
-        mse = 0
-        
-        return JsonResponse(mse, safe=False)
+        return JsonResponse(accuracy, safe=False)

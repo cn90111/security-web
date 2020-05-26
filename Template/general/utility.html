@@ -25,13 +25,13 @@
                 
 {% block left_container %}
     <div class="form-group col-md-6">
-        <h2 id="left_accuracy">原始檔案準確度：</h2>
+        <h2 id="left_accuracy">原始檔案準確度(accuracy)：</h2>
     </div>
 {% endblock left_container %}
 
 {% block right_container %}
     <div class="form-group col-md-6">
-        <h2 id="right_accuracy">去識別化檔案準確度：</h2>
+        <h2 id="right_accuracy">去識別化檔案準確度(accuracy)：</h2>
     </div>
 {% endblock right_container %}
 
@@ -46,7 +46,7 @@
 
 {% block script %}
     <script>
-        finish_text = "已完成"
+        finish_text = '已完成'
         unlock_count = 0
         function finish(text_element, finish_message)
         {
@@ -54,14 +54,20 @@
             finish_text = finish_message+' '+finish_text;
             text_element.text(finish_text);
         }
-        $("#machine_learning_select").on("change", function() {
+        $('#machine_learning_select').on('change', function() {
                 var loading_text = $('#loading');
                 var left_accuracy = $('#left_accuracy');
                 var right_accuracy = $('#right_accuracy');
-                var selecter = $("#machine_learning_select")
+                var selecter = $('#machine_learning_select')
                 
-                finish_text = "已完成";
+                finish_text = '已完成';
                 unlock_count = 0;
+                left_accuracy.text('原始檔案準確度(accuracy)：')
+                right_accuracy.text('去識別化檔案準確度(accuracy)：')
+                
+                if (!selecter.val()) {
+                    return
+                }
                 
                 selecter.attr('disabled', 'disabled');
                 loading_text.show();
@@ -72,9 +78,9 @@
                         csv_name : '{{file_name}}',
                         machine_learning_method : selecter.val(),
                         file_path : 'output',
-                    }, function (mse) {
-                    left_accuracy.text(left_accuracy.text() + mse + '%')
-                    finish(loading_text, "原始檔案")
+                    }, function (accuracy) {
+                    left_accuracy.text(left_accuracy.text() + accuracy + '%')
+                    finish(loading_text, '原始檔案')
                     if (unlock_count>=2) {
                         selecter.removeAttr('disabled');
                     }
@@ -84,9 +90,9 @@
                         csv_name : '{{file_name}}',
                         machine_learning_method : selecter.val(),
                         file_path : 'upload',
-                    }, function (mse) {
-                    right_accuracy.text(right_accuracy.text() + mse + '%')
-                    finish(loading_text, "去識別化檔案")
+                    }, function (accuracy) {
+                    right_accuracy.text(right_accuracy.text() + accuracy + '%')
+                    finish(loading_text, '去識別化檔案')
                     if (unlock_count>=2) {
                         selecter.removeAttr('disabled');
                     }
