@@ -24,9 +24,19 @@ def show_progress(request):
 # In[ ]:
 @login_required
 def t_closeness(request):
-
+    finish = False
+    try:
+        method(request)
+    except Exception as e:
+        print(e)
+    else:
+        finish = True
+    return JsonResponse(finish, safe=False)
+        
+def method(request):
     global log
     global num_progress
+    
     file_name = str(request.GET.get('csv_name',None))
     directory_name = file_name.split(".")[-2]
     username = request.user.get_username()
@@ -338,5 +348,3 @@ def t_closeness(request):
 
     num_progress = 100
     log = 'OVER'
-
-    return JsonResponse(num_progress, safe=False)

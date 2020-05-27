@@ -14,7 +14,7 @@ import json
 class ParserView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
-        finlish = False
+        finish = False
         parser = JsonParser()
         file_path = str(request.GET.get('path', None))
         csv_file_name = json.loads(request.GET.get('csv_name', None))
@@ -22,12 +22,16 @@ class ParserView(View):
         structure_dict = json.loads(request.GET.get('structure_dict', None))
         username = request.user.get_username()
         file_path = file_path+username+'/'
-        for file in csv_file_name:
-            parser.create_json_file(file_path, file,
-                structure_mode[file], structure_dict[file])
-        finlish = True
-        return JsonResponse(finlish, safe=False)
-
+        try:
+            for file in csv_file_name:
+                parser.create_json_file(file_path, file,
+                    structure_mode[file], structure_dict[file])
+        except Exception as e:
+            print(e)
+        else:
+            finish = True
+        return JsonResponse(finish, safe=False)
+    
 class CustomView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
