@@ -103,6 +103,7 @@
                         alert('尚有對應關係還沒填寫');                        
                     }
                     else {
+                        $(window).off();
                         var url = '/json_parser/create_json/';
                         $.getJSON(url,
                             {

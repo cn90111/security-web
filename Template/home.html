@@ -57,5 +57,11 @@
       </div>
     </div>
     {% include 'footer.html' %}
+    <script>
+        $(function () {
+            var url = '/home/initialize/'
+            $.get(url);
+        })
+    </script>
 	</body>
 </html>
