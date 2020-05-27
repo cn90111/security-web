@@ -12,7 +12,7 @@
 	<body style="padding-top: 50px;">
     {% include 'navbar.html' %}
 
-		<div class="container-fluid" style="padding-top: 50px;">
+    <div class="container-fluid" style="padding-top: 50px;">
       <div class="card text-white mb-3" style="background-color:#3399ff">
   			<div class="card-header" style="background-color:#0066ff">
     			<h2>GDPR-Compliant Differentially Private Synthetic Dataset Generation</h2>
@@ -57,5 +57,11 @@
       </div>
     </div>
     {% include 'footer.html' %}
+    <script>
+        $(function () {
+            var url = '/home/initialize/'
+            $.get(url);
+        })
+    </script>
 	</body>
 </html>

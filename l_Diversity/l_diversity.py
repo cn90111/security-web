@@ -34,8 +34,9 @@ def l_diversity(request):
 
     print('--------------------')
     file_name = str(request.GET.get('csv_name',None))
+    directory_name = file_name.split(".")[-2]
     username = request.user.get_username()
-    inputFile = settings.UPLOAD_ROOT + 'l_Diversity/' + username + '/' + file_name + '/' + file_name + '.csv'
+    inputFile = settings.UPLOAD_ROOT + 'l_Diversity/' + username + '/' + directory_name + '/' + file_name
     print('--------------------')
     
     # 開啟檔案
@@ -105,7 +106,7 @@ def l_diversity(request):
     while(True):
         try:
             #a = input("請輸入字典檔案 :")
-            a = settings.UPLOAD_ROOT + 'l_Diversity/' + username + '/' + file_name + '/' + file_name + '_dict'
+            a = settings.UPLOAD_ROOT + 'l_Diversity/' + username + '/' + directory_name + '/' + directory_name + '_dict'
             print('--------------------')
             dic = load(a)
             break
@@ -628,9 +629,9 @@ def l_diversity(request):
 
 # 設定顯示全部資料
     pd.set_option('display.max_rows',None)
-    if not os.path.isdir(settings.OUTPUT_ROOT + 'l_Diversity/' + username + '/' + file_name + '/'):
-        os.makedirs(settings.OUTPUT_ROOT + 'l_Diversity/' + username + '/' + file_name + '/')
-    output_df_with_dic.to_csv(settings.OUTPUT_ROOT + 'l_Diversity/' + username + '/' + file_name + '/' +  file_name + '_output.csv', encoding='cp950', index=False, columns=list(df.columns))
+    if not os.path.isdir(settings.OUTPUT_ROOT + 'l_Diversity/' + username + '/' + directory_name + '/'):
+        os.makedirs(settings.OUTPUT_ROOT + 'l_Diversity/' + username + '/' + directory_name + '/')
+    output_df_with_dic.to_csv(settings.OUTPUT_ROOT + 'l_Diversity/' + username + '/' + directory_name + '/' +  directory_name + '_output.csv', encoding='cp950', index=False, columns=list(df.columns))
     
     log = "All Success!!"
     num_progress = 100

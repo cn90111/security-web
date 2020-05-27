@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<meta charset="UTF-8">
-		<title>{% block title %}title{% endblock title %}</title>
+        <meta charset="UTF-8">
+        <title>{% block title %}title{% endblock title %}</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
     	<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	</head>
-	<body  style="padding-top:50px;">
+	<body style="padding-top:50px;">
         {% include 'navbar.html' %}
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
@@ -25,45 +25,9 @@
                 {% csrf_token %}
                 <div class="custom-file center" style="height:80px">
                     <input type="file" class="custom-file-input" name="file" id="customFile_csv" accept=".csv" >
-                    <label class="custom-file-label" for="customFile_csv">請選擇CSV檔案 (.csv)</label>
-                </div>
-                <div aligh="center" style = "height:80px;">
-                    <button type="button" id="btn_preview" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#myModal">1.  預 覽 檔 案</button>
-                </div>
-                <div aligh="center" style = "height:80px;">
-                    <button id="btn_upload_file" type="button" class="btn btn-primary btn-lg btn-block">2.  上 傳 檔 案</button>
-                </div>
-                <div aligh="center" style = "height:80px;">
-                    <button onclick="location.href='/{% block title_execute %}title{% endblock title_execute %}/Execute_Page/'" id="btn_exec" type="button" class="btn btn-primary btn-lg btn-block">3.  執 行 檔 案</button>
-                </div>
-                <div aligh="center" style = "height:80px;">
-                    <button onclick="location.href='/{% block title_upload %}title{% endblock title_upload %}/File_List_Upload/'" id="btn_upload" type="button" class="btn btn-primary btn-lg btn-block">4.  已 上 傳 檔 案</button>
-                </div>
-                <div aligh="center" style = "height:80px;">
-                    <button onclick="location.href='/{% block title_output %}title{% endblock title_output %}/File_List_Output/'" id="btn_output" type="button" class="btn btn-primary btn-lg btn-block">5.  已 完 成 檔 案</button>
+                    <label class="custom-file-label" for="customFile_csv">請選擇將要去識別化的CSV檔案 (.csv)</label>
                 </div>
             </form>
-        </div>
-        <div class="modal" id="myModal">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <div class="modal-title">
-                            <h2>預覽資料(前200筆)</h2>
-                            <h4>Data Preview (The first two hundred)</h4>
-                        </div>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div aligh="center" id="showText" style = "height:500px; overflow:scroll; border:2px black solid; " >
-                            {{ tables|safe }}
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
         </div>
         <script>
             function isValidFile(file) {
@@ -77,68 +41,39 @@
             $("#customFile_csv").on("change", function() {
                 var fileName = $(this).val().split("\\").pop();
                 $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-            });
-            const selectElement = document.querySelector('#customFile_csv');
-                selectElement.addEventListener('change', (event) => {
-                    let formData = new FormData($('#form_file').get(0));
-                    $('#btn_preview').attr('disabled', 'disabled');
-                    $('#btn_upload_file').attr('disabled', 'disabled');
-                    if (isValidFile(document.getElementById('customFile_csv'))) {
-                        $.ajax({
-                            url: '/{% block title_preview %}title{% endblock title_preview %}/Web_View_CSV/',
-                            type: 'POST',
-                            data: formData,
-                            dataType: 'json',
-                            contentType: false,
-                            processData: false,
-                            success: function (tables) {
-                                $('#showText').html(tables);
-                                alert("您的檔案已可預覽及上傳");
-                                $('#btn_preview').removeAttr('disabled');
-                                $('#btn_upload_file').removeAttr('disabled');
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                var jsonObj = JSON.parse(xhr.responseText);
-                                alert(jsonObj.status +"：\n" + jsonObj.message );
-                            }
-                        });
-                    }
-                    else {
-                        alert("檔案類型錯誤");
-                    }
-                });
                 
-            $('#btn_upload_file').click( function () {
-                var csv_name = document.getElementById('customFile_csv').value;
+                var csv_name = $("#customFile_csv").val();
                 csv_name = csv_name.split("\\").pop()
                 
                 if (!csv_name) {
                     alert('請先選擇檔案');
+                    return;
                 }
-                else {
-                    let formData = new FormData($('#form_file').get(0));
-                    $.ajax({
-                        url: '/{% block upload_url %}json_parser{% endblock upload_url %}/File_Upload/',
-                        type: 'POST',
-                        data: formData,
-                        dataType: 'json',
-                        contentType: false,
-                        processData: false,
-                        success: function (finlish) {
-                            {% block upload_success %}
-                                if(finlish == true){
-                                    alert('您的檔案已成功上傳');
-                                } else{
-                                    console.log("配對字串關係");
-                                    window.location = '/json_parser/string_pair/csv_name='+csv_name+'/';
-                                }
-                            {% endblock upload_success %}
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(thrownError);
+                if (!isValidFile(document.getElementById('customFile_csv'))) {
+                    alert("檔案類型錯誤");
+                    return;
+                }
+                let formData = new FormData($('#form_file').get(0));
+                $.ajax({
+                    url: '/{% block upload_url %}json_parser{% endblock upload_url %}/File_Upload/',
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function (finlish) {
+                        if(finlish == true){
+                            window.location = '/{% block custom_url %}json_parser{% endblock custom_url %}/custom/csv_name='+csv_name+'/';
+                        } else{
+                            alert('檔案上傳失敗，請稍後再試');
+                            window.location = "{% url 'home' %}";
                         }
-                    });
-                }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        var jsonObj = JSON.parse(xhr.responseText);
+                        alert(jsonObj.status +"：\n" + jsonObj.message );
+                    }
+                });
             });
         </script>
 	</body>

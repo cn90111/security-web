@@ -26,16 +26,11 @@
     <script>
         $(function () {
             $('#execute').on('click', function () {
-                if (check_required_is_empty()) {
-                    alert('請選擇檔案，若無檔案請先上傳檔案')
-                    return
-                }
                 reset()
                 window.scrollTo(0, document.body.scrollHeight)
                 var mm = window.setInterval("Check_Time()", 1000);
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in t_Closeness.")
-                var csv_name_value = document.getElementById("csv_name_select").value;
                 var k_value = document.getElementById("k").value;
                 var t_value = document.getElementById("t").value;
                 var log = "";
@@ -54,7 +49,7 @@
                 var thisurl = '/t_Closeness/Execute_t_closeness/'
                 $.getJSON(thisurl,
                     {
-                        csv_name : csv_name_value,
+                        csv_name : '{{file_name}}',
                         k : k_value,
                         t : t_value,
                     }, function (num_progress) {
@@ -65,6 +60,8 @@
                     $('#bar').removeClass('active');
                     $('.progress-text').text('執行完成');
                     $('#execute').removeAttr('disabled');
+                    alert("檔案執行完畢");
+                    window.location = '/t_Closeness/finish/csv_name={{file_name}}';
                 });
             })
         })

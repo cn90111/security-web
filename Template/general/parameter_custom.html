@@ -1,0 +1,130 @@
+{% extends "general/parallel_template.html" %}
+
+{% block title %}parameter custom{% endblock title %}
+
+{% block content %}
+    <h2>檔案確認</h2>
+    <h5 style="font-weight:bold;color:red">說明1：請確認左邊的參數設定，是否希望做進一步的調整</h5>
+    <h5 style="font-weight:bold;color:red">說明2：請確認右邊的檔案預覽，是否為您想要去識別化的檔案</h5>
+    <h5 style="font-weight:bold;color:red">說明3：設定完成後，將頁面滾動至最下方，並按下繼續執行</h5>
+    <p>
+        Description : 
+    </p>
+{% endblock content %}
+
+{% block left_container %}
+    <div class="form-group col-md-8">
+        {% if custom_mode == 'DPSyn' %}
+            <h2>尚未開發</h2>
+        {% elif custom_mode == 'json_parser' %}
+            {% include 'json_parser/json_parser.html' %}
+        {% else %}
+            <h2>custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員</h2>
+        {% endif %}
+    </div>
+{% endblock left_container %}
+
+{% block right_container %}
+    <div class="form-group col-md-4">
+        {% include 'general/display_file.html' with title="檔案預覽" method="upload" id="preview" %}
+    </div>
+{% endblock right_container %}
+
+{% block button %}
+    <div class="form-group col-md-2">
+        <button id="execute" type="button" class="btn btn-primary" style="width:100%">繼續執行</button>
+    </div>
+    <div class="form-group col-md-2">
+        <button onclick="location.href='/{{caller}}/'" type="button" class="btn btn-primary" style="width:100%">重新選擇檔案</button>
+    </div>
+    <div class="form-group col-md-2">
+        <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">返回主選單</button>
+    </div>
+{% endblock button %}
+
+{% block script %}
+    {% if custom_mode == 'DPSyn' %}
+        <h2>尚未開發</h2>
+    {% elif custom_mode == 'json_parser' %}
+        <script>
+            $(function () {
+                $('#execute').on('click', function () {
+                    var path = 'upload/{{ caller }}/';
+                    var file_string_element_dict = {{ file_string_element_dict|safe }};
+                    var csv_name = Object.keys(file_string_element_dict);
+                    var lose_required = false;
+                    
+                    var structure_mode = {};
+                    for (var name of csv_name) {
+                        var file_mode = {};
+                        for (var column_title in file_string_element_dict[name]) {
+                            if (document.getElementById
+                                (name+'_'+column_title+'_is_address').checked) {
+                                file_mode[column_title] = 'tw_address';
+                            }
+                            else if (document.getElementById
+                                (name+'_'+column_title+'_is_unrelated').checked) {
+                                file_mode[column_title] = 'unrelated';
+                            }
+                            else {
+                                file_mode[column_title] = 'custom';
+                            }
+                        }
+                        structure_mode[name] = file_mode
+                    }
+                    
+                    var structure_dict = {};
+                    for (var name of csv_name) {
+                        var file_element = {};
+                        for (var column_title in file_string_element_dict[name]) {
+                            var table = document.
+                                getElementById(name+'_'+column_title+'_table');
+                            var temp = {};
+                            for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+                                var element = document.
+                                    getElementById(name+'_'+column_title+'_element_'+count);
+                                var pair_to_element = document.
+                                    getElementById(name+'_'+column_title+'_pair_label_'+count);
+                                if (!pair_to_element.value && pair_to_element.required) {
+                                    lose_required = true;
+                                    datalist_td = document.
+                                    getElementById(name+'_'+column_title+'_datalist_td_'+count);
+                                    datalist_td.classList.add('table-danger');
+                                    datalist_td.addEventListener('change', removeRed.bind(this, datalist_td.classList), false)
+                                }
+                                temp[element.value] = pair_to_element.value;
+                            }
+                            file_element[column_title] = temp;
+                        }
+                        structure_dict[name] = file_element;
+                    }
+                    
+                    if (lose_required) {
+                        alert('尚有對應關係還沒填寫');                        
+                    }
+                    else {
+                        $(window).off();
+                        var url = '/json_parser/create_json/';
+                        $.getJSON(url,
+                            {
+                                'path' : path,
+                                'csv_name' : JSON.stringify(csv_name),
+                                'structure_mode' : JSON.stringify(structure_mode),
+                                'structure_dict' : JSON.stringify(structure_dict),
+                            }, function (finlish) {
+                                if(finlish == true){
+                                    window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
+                                } else {
+                                    alert('檔案上傳失敗，請稍後再試');
+                                    window.location = "{% url 'home' %}";
+                                }
+                            }
+                        );
+                    }
+                })
+            })
+        </script>
+    {% else %}
+        <h2>custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員</h2>
+    {% endif %}
+{% endblock script %}
