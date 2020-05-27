@@ -28,10 +28,19 @@ def show_progress(request):
 
 @login_required
 def l_diversity(request):
+    finish = False
+    try:
+        method(request)
+    except Exception as e:
+        print(e)
+    else:
+        finish = True
+    return JsonResponse(finish, safe=False)
     
+def method(request):
     global log
     global num_progress
-
+    
     print('--------------------')
     file_name = str(request.GET.get('csv_name',None))
     directory_name = file_name.split(".")[-2]
@@ -638,8 +647,3 @@ def l_diversity(request):
     
     
     dic['Age']['interval']
-
-    return JsonResponse(num_progress, safe=False)
-
-
-

@@ -41,21 +41,29 @@
                         $('#prog_in').width(data.num_progress + '%');
                     });
                 }, 10000);
-                var thisurl = '/k_Anonymity/Execute_k_Anonymity/'
-                $.getJSON(thisurl,
-                    {
-                        csv_name : '{{file_name}}',
-                        k : k_value,
-                    }, function (num_progress) {
-                    clearInterval(sitv);
-                    clearInterval(mm);
-                    $('.progress-bar').css('width', '100%');
-                    $('.progress-bar').text('100%');
-                    $('#bar').removeClass('active');
-                    $('.progress-text').text('執行完成');
-                    $('#execute').removeAttr('disabled');
-                    alert("檔案執行完畢");
-                    window.location = '/k_Anonymity/finish/csv_name={{file_name}}';
+                var url = '/k_Anonymity/Execute_k_Anonymity/'
+                var data = {
+                            csv_name : '{{file_name}}',
+                            k : k_value,
+                        }
+                $.getJSON(url, data, function (finish) {
+                    if (finish == true) {
+                        clearInterval(sitv);
+                        clearInterval(mm);
+                        $('.progress-bar').css('width', '100%');
+                        $('.progress-bar').text('100%');
+                        $('#bar').removeClass('active');
+                        $('.progress-text').text('執行完成');
+                        $('#execute').removeAttr('disabled');
+                        alert("檔案執行完畢");
+                        window.location = '/k_Anonymity/finish/csv_name={{file_name}}';
+                    } else {
+                        clearInterval(sitv);
+                        clearInterval(mm);
+                        $('.progress-text').text('執行失敗');
+                        $('#execute').removeAttr('disabled');
+                        alert('程式執行失敗，請確認上傳檔案符合規格，若多次失敗請聯絡技術人員為您服務，謝謝')
+                    }
                 });
             })
         })

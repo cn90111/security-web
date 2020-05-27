@@ -78,11 +78,16 @@
                         csv_name : '{{file_name}}',
                         machine_learning_method : selecter.val(),
                         file_path : 'output',
-                    }, function (accuracy) {
-                    left_accuracy.text(left_accuracy.text() + accuracy + '%')
-                    finish(loading_text, '原始檔案')
-                    if (unlock_count>=2) {
-                        selecter.removeAttr('disabled');
+                    }, function (result) {
+                    if (result.finish == true) {
+                        left_accuracy.text(left_accuracy.text() + result.accuracy + '%')
+                        finish(loading_text, '原始檔案')
+                        if (unlock_count>=2) {
+                            selecter.removeAttr('disabled');
+                        }
+                    } else {
+                        left_accuracy.text(left_accuracy.text() + result.accuracy + '%')
+                        alert('原始檔案執行失敗，請嘗試選擇其他機器學習方法，若多次失敗請聯絡技術人員為您服務，謝謝');
                     }
                 });
                 $.getJSON(url,
@@ -90,11 +95,16 @@
                         csv_name : '{{file_name}}',
                         machine_learning_method : selecter.val(),
                         file_path : 'upload',
-                    }, function (accuracy) {
-                    right_accuracy.text(right_accuracy.text() + accuracy + '%')
-                    finish(loading_text, '去識別化檔案')
-                    if (unlock_count>=2) {
-                        selecter.removeAttr('disabled');
+                    }, function (result) {
+                    if (result.finish == true) {
+                        right_accuracy.text(right_accuracy.text() + result.accuracy + '%')
+                        finish(loading_text, '去識別化檔案')
+                        if (unlock_count>=2) {
+                            selecter.removeAttr('disabled');
+                        }
+                    } else {
+                        right_accuracy.text(right_accuracy.text() + result.accuracy + '%')
+                        alert('去識別化檔案執行失敗，請嘗試選擇其他機器學習方法，若多次失敗請聯絡技術人員為您服務，謝謝');
                     }
                 });
             });

@@ -61,8 +61,8 @@
                     dataType: 'json',
                     contentType: false,
                     processData: false,
-                    success: function (finlish) {
-                        if(finlish == true){
+                    success: function (finish) {
+                        if(finish == true){
                             window.location = '/{% block custom_url %}json_parser{% endblock custom_url %}/custom/csv_name='+csv_name+'/';
                         } else{
                             alert('檔案上傳失敗，請稍後再試');

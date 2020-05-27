@@ -26,15 +26,19 @@ class FileView(View):
         username = request.user.get_username()
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
         root_path = settings.UPLOAD_ROOT+caller+'/'+username+'/'
-        finlish = False
+        finish = False
         if form.is_valid():
-            for file in files:
-                check_result = self.check_file_limit(file)
-                if check_result:
-                    return check_result
-                self.handle_upload_file(file, root_path) 
-            finlish = True
-            return JsonResponse(finlish, safe=False)
+            try:
+                for file in files:
+                    check_result = self.check_file_limit(file)
+                    if check_result:
+                        return check_result
+                    self.handle_upload_file(file, root_path)
+            except Exception as e:
+                print(e)
+            else:
+                finish = True
+            return JsonResponse(finish, safe=False)
         else:
             form = UploadFileForm()
             return JsonResponse({"status":"錯誤","message":"表單格式錯誤"}, status=400)
@@ -168,8 +172,14 @@ class CheckUtilityView(View):
         else:
             raise AttributeError("無此file_path：" + file_path)
         
-        ml = MachineLearning(machine_learning_method, file_path);
-        ml.fit()
-        accuracy = ml.score() * 100
-        
-        return JsonResponse(accuracy, safe=False)
+        finish = False
+        accuracy = 0
+        try:
+            ml = MachineLearning(machine_learning_method, file_path);
+            ml.fit()
+            accuracy = ml.score() * 100
+        except Exception as e:
+            print(e)
+        else:
+            finish = True
+        return JsonResponse({'finish':finish,'accuracy':accuracy})
