@@ -18,25 +18,13 @@ def load(load_path):
         return data
 
 def show_progress(request):
-    #print('show_progress------------' + str(num_progress))
     data = {
         'log':log,
         'num_progress':num_progress,
     }
     return JsonResponse(data,safe=False)
-
-@login_required
-def k_anonymity(request):
-    finish = False
-    try:
-        method(request)
-    except Exception as e:
-        print(e)
-    else:
-        finish = True
-    return JsonResponse(finish, safe=False)
     
-def method(request):    
+def run(request):    
     global log
     global num_progress
     

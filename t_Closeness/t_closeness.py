@@ -20,20 +20,8 @@ def show_progress(request):
         'num_progress':num_progress,
     }
     return JsonResponse(data,safe=False)
-
-# In[ ]:
-@login_required
-def t_closeness(request):
-    finish = False
-    try:
-        method(request)
-    except Exception as e:
-        print(e)
-    else:
-        finish = True
-    return JsonResponse(finish, safe=False)
         
-def method(request):
+def run(request):
     global log
     global num_progress
     

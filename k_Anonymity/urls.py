@@ -6,9 +6,9 @@ from . import k_anonymity
 
 urlpatterns = [
     path('',views.index),
-    path('Execute_k_Anonymity/', k_anonymity.k_anonymity),
+    path('Execute_k_Anonymity/', views.KAnonymityView.as_view()),
     path('show_k_progress/', k_anonymity.show_progress),
-    path('Execute_Page/csv_name=<str:csv_name>/', general_views.ExecuteView.as_view()),
+    path('Execute_Page/csv_name=<str:csv_name>/', views.ExecuteView.as_view()),
     path('File_List_<str:method>/', general_views.FileListView.as_view()),
     path('Download_Output/csv_name=<str:csv_name>/', general_views.DownloadView.as_view()),
     path('CSV_View_<str:method>/', general_views.DisplayCsvView.as_view()),
