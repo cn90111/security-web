@@ -18,7 +18,6 @@ class SignUpView(View):
             self.accounts_init(username)
             user = auth.authenticate(username=username, password=raw_password)
             auth.login(request, user)
-            
             return redirect('home')
         else:
             return render(request, 'registration/signup.html', {'form': form})

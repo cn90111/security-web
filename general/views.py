@@ -63,7 +63,7 @@ class FileView(View):
         fs.save(file_path, f)
         
 
-class ExecuteView(View):
+class AbstractExecuteView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         referer = request.META.get('HTTP_REFERER')
@@ -71,10 +71,45 @@ class ExecuteView(View):
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
         path = settings.UPLOAD_ROOT+caller+'/'+username+'/'
         file_name = kwargs.get('csv_name')
+        form = self.get_empty_form()
         
         request_dict = {}
         request_dict['file_name'] = file_name
+        request_dict['form'] = form
         return render(request, caller+'/'+caller+'.html', request_dict)
+        
+    def get_empty_form(self):
+        raise AttributeError("應藉由子類別實作此方法，return form()")
+
+class AbstractMethodView(View):
+    @method_decorator(login_required)
+    def get(self, request, *arg, **kwargs):
+        username = request.user.get_username()
+        file_name = str(request.GET.get('csv_name',None))
+        form = self.get_form(request.GET)
+        if form.is_valid():
+            finish = False
+            try:
+                self.method_run(request)
+            except Exception as e:
+                print(e)
+            else:
+                finish = True
+            return JsonResponse(finish, safe=False)
+        else:
+            request_dict = {}
+            request_dict['file_name'] = file_name
+            request_dict['form'] = form
+            return render(request, self.get_method_template(), request_dict)
+    
+    def get_form(self, requestContent):
+        raise AttributeError("應藉由子類別實作此方法，return form(requestContent)")
+        
+    def method_run(self, request):
+        raise AttributeError("應藉由子類別實作此方法，method.run(request)")
+        
+    def get_method_template(self):
+        raise AttributeError("應藉由子類別實作此方法，return template_url")
 
 class DisplayCsvView(View):
     @method_decorator(login_required)
