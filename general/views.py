@@ -40,7 +40,6 @@ class FileView(View):
                 finish = True
             return JsonResponse(finish, safe=False)
         else:
-            form = UploadFileForm()
             return JsonResponse({"status":"錯誤","message":"表單格式錯誤"}, status=400)
 
     def check_file_limit(self, file):

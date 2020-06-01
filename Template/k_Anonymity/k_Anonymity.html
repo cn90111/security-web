@@ -10,14 +10,6 @@
         Description : 
     </p>
 {% endblock content %}
-{% block form %}
-    <div class="form-row">
-        <div class="form-group col-md-4">
-            <label for="k" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">K：</label>
-            <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" value="2" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">
-        </div>
-    </div>
-{% endblock form %}
 {% block execute %}
     <script>
         $(function () {
@@ -27,7 +19,7 @@
                 var mm = window.setInterval("Check_Time()", 1000);
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in k_Anonymity")
-                var k_value = document.getElementById("k").value;
+                var k_value = document.getElementById("id_k").value;
                 var log = "";
                 var sitv = setInterval( function () {
                     var prog_url = '/k_Anonymity/show_k_progress/'

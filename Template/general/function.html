@@ -24,8 +24,24 @@
     	<div class="container" style="width:inherit;">
             <form id="parameter_form" data-toggle="validator">
                 {% csrf_token %}
-                {% block form %}
-                {% endblock form %}
+                {% for field in form %}
+                    {% if forloop.counter0|divisibleby:3 %}
+                        <div class="form-row">
+                    {% endif %}
+                    <div class="form-group col-md-4">
+                        {{ field.label_tag }}<br>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small style="color: grey">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <p style="color: red">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% if forloop.last or forloop.counter|divisibleby:3 %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
                 <div class="form-row">
                     <div class="form-group col-md-2">
                         <button id="execute" type="button" class="btn btn-primary" style="width:100%">執行</button>
@@ -73,6 +89,7 @@
                 $(function () {
                     $('#execute').on('click', function () {
                         reset()
+                        window.scrollTo(0, document.body.scrollHeight)
                         var mm = window.setInterval("Check_Time()", 1000);
                         $('#execute').attr('disabled', 'disabled');
                         console.log("come in ")

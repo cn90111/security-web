@@ -10,18 +10,6 @@
         Description : 
     </p>
 {% endblock content %}
-{% block form %}
-    <div class="form-row">
-        <div class="form-group col-md-4">
-            <label for="k" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">K：</label>
-            <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" value="2" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">
-        </div>
-        <div class="form-group col-md-4">
-            <label for="t" data-toggle="tooltip" title="去識別化後，K筆資料中的主要內容(最後一欄)的分布，將與整個資料集的分布相差在T以內">T：</label>
-            <input type="text" class="form-control" id="t" placeholder="" value="0.01" data-toggle="tooltip" title="去識別化後，K筆資料中的主要內容(最後一欄)的分布，將與整個資料集的分布相差在T以內">
-        </div>
-    </div>
-{% endblock form %}
 {% block execute %}
     <script>
         $(function () {
@@ -31,8 +19,8 @@
                 var mm = window.setInterval("Check_Time()", 1000);
                 $('#execute').attr('disabled', 'disabled');
                 console.log("come in t_Closeness.")
-                var k_value = document.getElementById("k").value;
-                var t_value = document.getElementById("t").value;
+                var k_value = document.getElementById("id_k").value;
+                var t_value = document.getElementById("id_t").value;
                 var log = "";
                 var sitv = setInterval( function () {
                     var prog_url = '/t_Closeness/show_t_closeness/'
