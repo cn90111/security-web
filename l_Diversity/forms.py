@@ -14,3 +14,4 @@ class ParameterForm(AbstractForm):
         
     def _set_help_text(self, k):
         k.help_text = '去識別化後，在任意查詢條件下，至少會同時查到K筆資料'
+        l.help_text = '去識別化後，K筆資料中，將至少有L筆資料將完全相同(包含沒去識別化的最後一欄)'

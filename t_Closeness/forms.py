@@ -14,4 +14,4 @@ class ParameterForm(AbstractForm):
         
     def _set_help_text(self, k, t):
         k.help_text = '去識別化後，在任意查詢條件下，至少會同時查到K筆資料'
-        t.help_text = '去識別化後，K筆資料中的主要內容(最後一欄)的分布，將與整個資料集的分布相差在T以內'
+        t.help_text = ''
