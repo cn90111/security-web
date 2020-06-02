@@ -1,71 +1,10 @@
 {% extends "general/function.html" %}
 {% block title %}k-Anonymity{% endblock title %}
-{% block output_path %}k_Anonymity{% endblock output_path %}
-{% block home_path %}k_Anonymity{% endblock home_path %}
 {% block content %}
     <h2>k-Anonymity</h2>
-    <h5 style="font-weight:bold;color:red">說明1：將滑鼠移至欄位上可查看欄位說明</h5>
-    <h5 style="font-weight:bold;color:red">說明2：去識別化後的檔案可用性高，但執行速度較慢，可先執行 t-Closeness 測試是否符合需求</h5>
+    <h5 style="font-weight:bold;color:red">說明1：去識別化後的檔案可用性高，但執行速度較慢，可先執行 t-Closeness 測試是否符合需求</h5>
+    <h5 style="font-weight:bold;color:red">說明2：「K」 ── 去識別化後，在任意查詢條件下，至少會同時查到K筆資料</h5>
     <p>
         Description : 
     </p>
 {% endblock content %}
-{% block form %}
-    <div class="form-row">
-        <div class="form-group col-md-4">
-            <label for="k" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">K：</label>
-            <input type="text" class="form-control" id="k" placeholder="" required="required" pattern="^[0-9]+$" value="2" data-toggle="tooltip" title="去識別化後，在任意查詢條件下，至少會同時查到K筆資料">
-        </div>
-    </div>
-{% endblock form %}
-{% block execute %}
-    <script>
-        $(function () {
-            $('#execute').on('click', function () {
-                reset()
-                window.scrollTo(0, document.body.scrollHeight)
-                var mm = window.setInterval("Check_Time()", 1000);
-                $('#execute').attr('disabled', 'disabled');
-                console.log("come in k_Anonymity")
-                var k_value = document.getElementById("k").value;
-                var log = "";
-                var sitv = setInterval( function () {
-                    var prog_url = '/k_Anonymity/show_k_progress/'
-                    $.getJSON(prog_url, function (data) {
-                        {# console.log("come in num_progress="+num_progress)#}
-                        $('.progress-div').css('visibility', 'visible');
-                        $('.progress-bar').css('width', data.num_progress + '%');
-                        $('.progress-bar').text(data.num_progress + '%');
-                        $('.progress-text').text( '目前進度：'+ data.log );
-                        $('.progress-text').css('width', '100%');
-                        $('#prog_in').width(data.num_progress + '%');
-                    });
-                }, 10000);
-                var url = '/k_Anonymity/Execute_k_Anonymity/'
-                var data = {
-                            csv_name : '{{file_name}}',
-                            k : k_value,
-                        }
-                $.getJSON(url, data, function (finish) {
-                    if (finish == true) {
-                        clearInterval(sitv);
-                        clearInterval(mm);
-                        $('.progress-bar').css('width', '100%');
-                        $('.progress-bar').text('100%');
-                        $('#bar').removeClass('active');
-                        $('.progress-text').text('執行完成');
-                        $('#execute').removeAttr('disabled');
-                        alert("檔案執行完畢");
-                        window.location = '/k_Anonymity/finish/csv_name={{file_name}}';
-                    } else {
-                        clearInterval(sitv);
-                        clearInterval(mm);
-                        $('.progress-text').text('執行失敗');
-                        $('#execute').removeAttr('disabled');
-                        alert('程式執行失敗，請確認上傳檔案符合規格，若多次失敗請聯絡技術人員為您服務，謝謝')
-                    }
-                });
-            })
-        })
-    </script>
-{% endblock execute %}

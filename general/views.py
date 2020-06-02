@@ -40,7 +40,6 @@ class FileView(View):
                 finish = True
             return JsonResponse(finish, safe=False)
         else:
-            form = UploadFileForm()
             return JsonResponse({"status":"錯誤","message":"表單格式錯誤"}, status=400)
 
     def check_file_limit(self, file):
@@ -69,11 +68,11 @@ class AbstractExecuteView(View):
         referer = request.META.get('HTTP_REFERER')
         username = request.user.get_username()
         caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        path = settings.UPLOAD_ROOT+caller+'/'+username+'/'
         file_name = kwargs.get('csv_name')
         form = self.get_empty_form()
         
         request_dict = {}
+        request_dict['caller'] = caller
         request_dict['file_name'] = file_name
         request_dict['form'] = form
         return render(request, caller+'/'+caller+'.html', request_dict)
@@ -87,8 +86,9 @@ class AbstractMethodView(View):
         username = request.user.get_username()
         file_name = str(request.GET.get('csv_name',None))
         form = self.get_form(request.GET)
+        print(request.GET)
+        finish = False
         if form.is_valid():
-            finish = False
             try:
                 self.method_run(request)
             except Exception as e:
@@ -97,10 +97,7 @@ class AbstractMethodView(View):
                 finish = True
             return JsonResponse(finish, safe=False)
         else:
-            request_dict = {}
-            request_dict['file_name'] = file_name
-            request_dict['form'] = form
-            return render(request, self.get_method_template(), request_dict)
+            return JsonResponse(finish, safe=False)
     
     def get_form(self, requestContent):
         raise AttributeError("應藉由子類別實作此方法，return form(requestContent)")

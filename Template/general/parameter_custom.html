@@ -15,7 +15,7 @@
 {% block left_container %}
     <div class="form-group col-md-8">
         {% if custom_mode == 'DPSyn' %}
-            <h2>尚未開發</h2>
+            <h2>無需預先設定的參數</h2>
         {% elif custom_mode == 'json_parser' %}
             {% include 'json_parser/json_parser.html' %}
         {% else %}
@@ -44,7 +44,14 @@
 
 {% block script %}
     {% if custom_mode == 'DPSyn' %}
-        <h2>尚未開發</h2>
+        <script>
+            $(function () {
+                $('#execute').on('click', function () {
+                    $(window).off();
+                    window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
+                })
+            })
+        </script>
     {% elif custom_mode == 'json_parser' %}
         <script>
             $(function () {

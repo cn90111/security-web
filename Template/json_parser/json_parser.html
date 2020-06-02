@@ -13,7 +13,7 @@
         <form id="parameter_form" data-toggle="validator">
             {% csrf_token %}
             {% if not element_dict.items %}
-                <h2>無需調整的內容</h2>
+                <h2>無需預先設定的參數</h2>
             {% endif %}
             {% for column_title, element_list in element_dict.items %}
                 <h2>欄位：{{column_title}}</h2>
