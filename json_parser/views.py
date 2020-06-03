@@ -17,13 +17,13 @@ class ParserView(View):
         finish = False
         parser = JsonParser()
         file_path = str(request.GET.get('path', None))
-        csv_file_name = json.loads(request.GET.get('csv_name', None))
+        file_name = json.loads(request.GET.get('csv_name', None))
         structure_mode = json.loads(request.GET.get('structure_mode', None))
         structure_dict = json.loads(request.GET.get('structure_dict', None))
         username = request.user.get_username()
         file_path = file_path+username+'/'
         try:
-            for file in csv_file_name:
+            for file in file_name:
                 parser.create_json_file(file_path, file,
                     structure_mode[file], structure_dict[file])
         except Exception as e:

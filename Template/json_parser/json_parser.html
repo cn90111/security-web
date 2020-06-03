@@ -9,37 +9,37 @@
 </div>
 {% for file_name, element_dict in file_string_element_dict.items %}
     <div class="container" style="width:inherit;">
-        <h2>檔名：{{file_name}}</h2>
+        <h2>檔名：{{ file_name }}</h2>
         <form id="parameter_form" data-toggle="validator">
             {% csrf_token %}
             {% if not element_dict.items %}
                 <h2>無需預先設定的參數</h2>
             {% endif %}
             {% for column_title, element_list in element_dict.items %}
-                <h2>欄位：{{column_title}}</h2>
+                <h2>欄位：{{ column_title }}</h2>
                 <div class="form-row justify-content-center">
                     <div class="form-check col-md-4">
-                        <input type="checkbox" class="form-check-input" id="{{file_name}}_{{column_title}}_is_address" onclick="click_checkbox('{{file_name}}', '{{column_title}}', 'address')">
-                        <label class="form-check-label" for="{{file_name}}_{{column_title}}_is_address">資料為地址</label>
+                        <input type="checkbox" class="form-check-input" id="{{ file_name }}_{{ column_title }}_is_address" onclick="click_checkbox('{{ file_name }}', '{{ column_title }}', 'address')">
+                        <label class="form-check-label" for="{{ file_name }}_{{ column_title }}_is_address">資料為地址</label>
                     </div>
                     <div class="form-check col-md-4">
-                        <input type="checkbox" class="form-check-input" id="{{file_name}}_{{column_title}}_is_unrelated" onclick="click_checkbox('{{file_name}}','{{column_title}}', 'unrelated')">
-                        <label class="form-check-label" for="{{file_name}}_{{column_title}}_is_unrelated">資料間無關聯</label>
+                        <input type="checkbox" class="form-check-input" id="{{ file_name }}_{{ column_title }}_is_unrelated" onclick="click_checkbox('{{ file_name }}','{{ column_title }}', 'unrelated')">
+                        <label class="form-check-label" for="{{ file_name }}_{{ column_title }}_is_unrelated">資料間無關聯</label>
                     </div>
                 </div>
-                <table class="table table-striped" id="{{file_name}}_{{column_title}}_table">
-                    <tbody id="{{file_name}}_{{column_title}}_tbody">
+                <table class="table table-striped" id="{{ file_name }}_{{ column_title }}_table">
+                    <tbody id="{{ file_name }}_{{ column_title }}_tbody">
                         {% for element in element_list %}
                             <tr>
                                 <td>
-                                    <input type="text" class="form-control" id="{{file_name}}_{{column_title}}_element_{{forloop.counter0}}" value="{{element}}" disabled="disabled"> 
+                                    <input type="text" class="form-control" id="{{ file_name }}_{{ column_title }}_element_{{ forloop.counter0 }}" value="{{ element }}" disabled="disabled"> 
                                 </td>
                                 <td>
                                     對應
                                 </td>
-                                <td id="{{file_name}}_{{column_title}}_datalist_td_{{forloop.counter0}}">
-                                    <input list="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}" id="{{file_name}}_{{column_title}}_pair_label_{{forloop.counter0}}" required="required" class="col-sm-6 custom-select custom-select-sm">
-                                    <datalist id="{{file_name}}_{{column_title}}_select_pair_{{forloop.counter0}}">
+                                <td id="{{ file_name }}_{{ column_title }}_datalist_td_{{ forloop.counter0 }}">
+                                    <input list="{{ file_name }}_{{ column_title }}_select_pair_{{ forloop.counter0 }}" id="{{ file_name }}_{{ column_title }}_pair_label_{{ forloop.counter0 }}" required="required" class="col-sm-6 custom-select custom-select-sm">
+                                    <datalist id="{{ file_name }}_{{ column_title }}_select_pair_{{ forloop.counter0 }}">
                                         {% for element in element_list %}
                                             <option value="{{ element }}">{{ element }}</option>                                                    
                                         {%endfor%}
@@ -52,7 +52,7 @@
 
                 <div class="form-row justify-content-between">
                     <div class="btn-group col-md-2">
-                        <button id="{{file_name}}_{{column_title}}_custom" type="button" class="btn btn-primary" onclick="add_field('{{file_name}}', '{{column_title}}', {{element_list}})">新增欄位</button>
+                        <button id="{{ file_name }}_{{ column_title }}_custom" type="button" class="btn btn-primary" onclick="add_field('{{ file_name }}', '{{ column_title }}', {{ element_list }})">新增欄位</button>
                     </div>
                 </div>
             {% endfor %}
@@ -74,7 +74,7 @@
         } else if (box_name == 'unrelated') {
             checkbox_address.disabled = !checkbox_address.disabled
         } else {
-            console.log("exception")
+            console.log("box_name exception" + box_name)
         }
         
         for (var count = 0; count<table.tBodies[0].rows.length; count++) {
@@ -84,6 +84,7 @@
             pair_to_element.required = !pair_to_element.required
         }
     }
+    
     function add_field(file_name, column_title, element_list) {
         var table = document.getElementById
             (file_name+'_'+column_title+'_table');

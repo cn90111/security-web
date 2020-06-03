@@ -15,7 +15,7 @@
 {% block left_container %}
     <div class="form-group col-md-8">
         {% if custom_mode == 'DPSyn' %}
-            <h2>無需預先設定的參數</h2>
+            {% include 'DPSyn/number_preprocessing.html' %}
         {% elif custom_mode == 'json_parser' %}
             {% include 'json_parser/json_parser.html' %}
         {% else %}
@@ -35,7 +35,7 @@
         <button id="execute" type="button" class="btn btn-primary" style="width:100%">繼續執行</button>
     </div>
     <div class="form-group col-md-2">
-        <button onclick="location.href='/{{caller}}/'" type="button" class="btn btn-primary" style="width:100%">重新選擇檔案</button>
+        <button onclick="location.href='/{{ caller }}/'" type="button" class="btn btn-primary" style="width:100%">重新選擇檔案</button>
     </div>
     <div class="form-group col-md-2">
         <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">返回主選單</button>
@@ -47,8 +47,39 @@
         <script>
             $(function () {
                 $('#execute').on('click', function () {
+                    var path = 'upload/{{ caller }}/';
+                    var number_title_list = {{ number_title_list|safe }};
+                    var number_title_pair_dict = {}
+                    
+                    for (var number_title of number_title_list) {
+                        if (document.getElementById
+                            (number_title+'_is_discrete').checked) {
+                            number_title_pair_dict[number_title] = 'discrete';
+                        }
+                        else if (document.getElementById
+                            (number_title+'_is_continuous').checked) {
+                            number_title_pair_dict[number_title] = 'continuous';
+                        }
+                        else {
+                            alert(number_title+'尚未選擇資料類型')
+                            return
+                        }
+                    }
                     $(window).off();
-                    window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
+                    var url = '/DPSyn/number_preprocessing/';
+                    $.getJSON(url,
+                        {
+                            'path' : path,
+                            'csv_name' : '{{ file_name }}',
+                            'number_title_pair_dict' : JSON.stringify(number_title_pair_dict),
+                        }, function (finlish) {
+                            if(finlish == true){
+                                window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
+                            } else {
+                                alert('程式執行失敗，請確認上傳檔案符合規格，若多次失敗請聯絡技術人員為您服務，謝謝');
+                            }
+                        }
+                    );
                 })
             })
         </script>
@@ -123,7 +154,6 @@
                                     window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
                                 } else {
                                     alert('程式執行失敗，請確認上傳檔案符合規格，若多次失敗請聯絡技術人員為您服務，謝謝');
-                                    window.location = "{% url 'home' %}";
                                 }
                             }
                         );
