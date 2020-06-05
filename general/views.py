@@ -5,7 +5,10 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.conf import settings
+
 from general.machine_learning import MachineLearning
+from general.function import Path
+
 from .models import FileModel
 from .forms import UploadFileForm
 from datetime import date, datetime
@@ -19,13 +22,10 @@ logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(m
 
 class FileView(View):
     @method_decorator(login_required)
-    def post(self, request):
+    def post(self, request, *arg, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
         files = request.FILES.getlist('file')
-        referer = request.META.get('HTTP_REFERER')
-        username = request.user.get_username()
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        root_path = settings.UPLOAD_ROOT+caller+'/'+username+'/'
+        
         finish = False
         if form.is_valid():
             try:
@@ -33,7 +33,7 @@ class FileView(View):
                     check_result = self.check_file_limit(file)
                     if check_result:
                         return check_result
-                    self.handle_upload_file(file, root_path)
+                    self.handle_upload_file(request, file)
             except Exception as e:
                 print(e)
             else:
@@ -53,10 +53,11 @@ class FileView(View):
             row = str(df.shape[0])
             return JsonResponse({"status":"錯誤","message":"欄數限制最多為4, 列數限制最多為200\n文件欄數："+ cln +", 列數："+ row + ", 不符合標準"}, status=400)
 
-    def handle_upload_file(self, f, root_path):
+    def handle_upload_file(self, request, f):
+        path = Path()
         fs = FileSystemStorage()
-        directory_path = root_path+f.name.split(".")[-2]+'/'
-        file_path = directory_path+f.name
+        
+        file_path = path.get_upload_path(request, f.name)
         if fs.exists(file_path):
             fs.delete(file_path)
         fs.save(file_path, f)
@@ -65,9 +66,10 @@ class FileView(View):
 class AbstractExecuteView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
-        referer = request.META.get('HTTP_REFERER')
+        path = Path()
+        
         username = request.user.get_username()
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        caller = path.get_caller(request)
         file_name = kwargs.get('csv_name')
         form = self.get_empty_form()
         
@@ -86,7 +88,7 @@ class AbstractMethodView(View):
         username = request.user.get_username()
         file_name = str(request.GET.get('csv_name',None))
         form = self.get_form(request.GET)
-        print(request.GET)
+        
         finish = False
         if form.is_valid():
             try:
@@ -111,16 +113,17 @@ class AbstractMethodView(View):
 class DisplayCsvView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
-        referer = request.META.get('HTTP_REFERER')
+        path = Path()
+        
         username = request.user.get_username()
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        caller = path.get_caller(request)
         method = kwargs.get('method').lower()
-        name = request.GET.get('File', None)
-        directory_name = name.split(".")[-2]
+        file_name = request.GET.get('File', None)
+        
         if method == 'output':
-            file_path = settings.OUTPUT_ROOT+caller+'/'+username+'/'+directory_name+'/'+directory_name+'_output.csv'
+            file_path = path.get_output_path(request, file_name)
         elif method == 'upload':
-            file_path = settings.UPLOAD_ROOT+caller+'/'+username+'/'+directory_name+'/'+name
+            file_path = path.get_upload_path(request, file_name)
         else:
             raise AttributeError("無此method：" + method)
         df = pd.read_csv(file_path)
@@ -130,14 +133,16 @@ class DisplayCsvView(View):
 class FileListView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
+        path = Path()
+        
         method = kwargs.get('method').lower()
-        referer = request.META.get('HTTP_REFERER')
         username = request.user.get_username()
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        path = method+'/'+caller+'/'+username+'/'
-        url = 'general/file_list_'+method+'.html'
+        caller = path.get_caller(request)
         s = []
-        for directory_name in os.listdir(path):
+        
+        url = 'general/file_list_'+method+'.html'
+        root = method+'/'+caller+'/'+username+'/'
+        for directory_name in os.listdir(root):
             s.append(directory_name+'.csv')
         
         request_dict = {}
@@ -148,25 +153,27 @@ class FileListView(View):
 class DownloadView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
+        path = Path()
+        
         file_name = kwargs.get('csv_name')
         directory_name = file_name.split(".")[-2]
-        file_name = directory_name + '_output.csv'
-        referer = request.META.get('HTTP_REFERER')
         username = request.user.get_username()
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        file_path = settings.OUTPUT_ROOT+caller+'/'+username+'/'+directory_name+'/'+file_name
+        caller = path.get_caller(request)
+        file_path = path.get_output_path(request, file_name)
         df = pd.read_csv(file_path)
+        
         response = HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+file_name
+        response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+directory_name+'_output.csv'
         df.to_csv(path_or_buf=response,index=False,decimal=",")
         return response
         
 class FinishView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
+        path = Path()
+        
         file_name = kwargs.get('csv_name')
-        referer = request.META.get('HTTP_REFERER')
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        caller = path.get_caller(request)
         
         request_dict = {}
         request_dict['file_name'] = file_name
@@ -176,9 +183,11 @@ class FinishView(View):
 class UtilityPageView(View):        
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
+        path = Path()
+        
         file_name = kwargs.get('csv_name')
-        referer = request.META.get('HTTP_REFERER')
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
+        caller = path.get_caller(request)
+        
         request_dict = {}
         request_dict['file_name'] = file_name
         request_dict['caller'] = caller
@@ -188,19 +197,17 @@ class UtilityPageView(View):
 class CheckUtilityView(View):        
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
-        referer = request.META.get('HTTP_REFERER')
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        username = request.user.get_username()
+        path = Path()
         
-        file_name = request.GET.get('csv_name',None)
-        directory_name = file_name.split(".")[-2]
+        caller = path.get_caller(request)
         machine_learning_method = request.GET.get('machine_learning_method',None)
         file_path = request.GET.get('file_path',None)
+        file_name = request.GET.get('csv_name',None)
         
         if file_path == 'output':
-            file_path = file_path+"/"+caller+"/"+username+"/"+directory_name+"/"+directory_name+"_output.csv"
+            file_path = path.get_output_path(request, file_name)
         elif file_path == 'upload':
-            file_path = file_path+"/"+caller+"/"+username+"/"+directory_name+"/"+file_name
+            file_path = path.get_upload_path(request, file_name)
         else:
             raise AttributeError("無此file_path：" + file_path)
         

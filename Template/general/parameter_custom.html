@@ -15,9 +15,12 @@
 {% block left_container %}
     <div class="form-group col-md-8">
         {% if custom_mode == 'DPSyn' %}
-            {% include 'DPSyn/number_preprocessing.html' %}
+            {% include 'DPSyn/DPSyn_number_preprocessing.html' %}
         {% elif custom_mode == 'json_parser' %}
             {% include 'json_parser/json_parser.html' %}
+            {% if advanced_settings %}
+                {% include 'general/number_preprocessing.html' %}
+            {% endif %}
         {% else %}
             <h2>custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員</h2>
         {% endif %}
@@ -34,6 +37,15 @@
     <div class="form-group col-md-2">
         <button id="execute" type="button" class="btn btn-primary" style="width:100%">繼續執行</button>
     </div>
+    {% if not advanced_settings %}
+        <div class="form-group col-md-2">
+            <button onclick="location.href='/{{ caller }}/advanced_settings/csv_name={{file_name}}/'" type="button" class="btn btn-primary" style="width:100%">進階設定</button>
+        </div>
+    {% else %}
+        <div class="form-group col-md-2">
+            <button onclick="location.href='/{{ caller }}/custom/csv_name={{file_name}}/'" type="button" class="btn btn-primary" style="width:100%">基礎設定</button>
+        </div>
+    {% endif %}
     <div class="form-group col-md-2">
         <button onclick="location.href='/{{ caller }}/'" type="button" class="btn btn-primary" style="width:100%">重新選擇檔案</button>
     </div>
@@ -65,21 +77,31 @@
                             return
                         }
                     }
-                    $(window).off();
                     var url = '/DPSyn/number_preprocessing/';
-                    $.getJSON(url,
-                        {
-                            'path' : path,
-                            'csv_name' : '{{ file_name }}',
-                            'number_title_pair_dict' : JSON.stringify(number_title_pair_dict),
-                        }, function (finlish) {
-                            if(finlish == true){
-                                window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
-                            } else {
-                                alert('程式執行失敗，請確認上傳檔案符合規格，若多次失敗請聯絡技術人員為您服務，謝謝');
+                    var data = {
+                                'path' : path,
+                                'csv_name' : '{{ file_name }}',
+                                'number_title_pair_dict' : JSON.stringify(number_title_pair_dict),
                             }
+                    {% if advanced_settings %}
+                        var number_dict = {};
+                        for (var number_title of number_title_list) {
+                            var type = get_check_result(number_title);
+                            var i = 0;
+                            interval_value_list = [];
+                            while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
+                                interval_value_list.push(temp_interval.value);
+                                i++;
+                            }
+                            if(interval_value_list.length == 0) {
+                                alert(number_title+'尚未確認間隔數量');
+                                return;
+                            }
+                            number_dict[number_title] = {'type':type, 'value_list':interval_value_list};
                         }
-                    );
+                        data['number_dict'] = JSON.stringify(number_dict);
+                    {% endif %}
+                    $(window).off();
                 })
             })
         </script>
@@ -108,7 +130,7 @@
                                 file_mode[column_title] = 'custom';
                             }
                         }
-                        structure_mode[name] = file_mode
+                        structure_mode[name] = file_mode;
                     }
                     
                     var structure_dict = {};
@@ -125,7 +147,7 @@
                                     getElementById(name+'_'+column_title+'_pair_label_'+count);
                                 if (!pair_to_element.value && pair_to_element.required) {
                                     lose_required = true;
-                                    datalist_td = document.
+                                    var datalist_td = document.
                                     getElementById(name+'_'+column_title+'_datalist_td_'+count);
                                     datalist_td.classList.add('table-danger');
                                     datalist_td.addEventListener('change', removeRed.bind(this, datalist_td.classList), false)
@@ -141,15 +163,38 @@
                         alert('尚有對應關係還沒填寫');                        
                     }
                     else {
-                        $(window).off();
                         var url = '/json_parser/create_json/';
-                        $.getJSON(url,
-                            {
-                                'path' : path,
-                                'csv_name' : JSON.stringify(csv_name),
-                                'structure_mode' : JSON.stringify(structure_mode),
-                                'structure_dict' : JSON.stringify(structure_dict),
-                            }, function (finlish) {
+                        data = {
+                                    'path' : path,
+                                    'csv_name' : JSON.stringify(csv_name),
+                                    'structure_mode' : JSON.stringify(structure_mode),
+                                    'structure_dict' : JSON.stringify(structure_dict),
+                                }
+                        {% if advanced_settings %}
+                            var number_title_list = {{ number_title_list|safe }};
+                            var number_dict = {};
+                            for (var number_title of number_title_list) {
+                                var type = get_check_result(number_title);
+                                var i = 0;
+                                interval_value_list = []
+                                while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
+                                    interval_value_list.push(temp_interval.value);
+                                    i++;
+                                }
+                                if(!type) {
+                                    alert(number_title+'尚未選擇資料類型');
+                                    return;
+                                }
+                                if(interval_value_list.length == 0) {
+                                    alert(number_title+'尚未確認間隔數量');
+                                    return;
+                                }
+                                number_dict[number_title] = {'type':type, 'value_list':interval_value_list};
+                            }
+                            data['number_dict'] = JSON.stringify(number_dict);
+                        {% endif %}
+                        $(window).off();
+                        $.getJSON(url, data, function (finlish) {
                                 if(finlish == true){
                                     window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
                                 } else {
