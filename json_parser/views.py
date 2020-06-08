@@ -23,6 +23,7 @@ class ParserView(View):
         structure_mode = json.loads(request.GET.get('structure_mode', None))
         structure_dict = json.loads(request.GET.get('structure_dict', None))
         number_dict = request.GET.get('number_dict', None)
+        print(number_dict)
         username = request.user.get_username()
         file_path = file_path+username+'/'
         try:

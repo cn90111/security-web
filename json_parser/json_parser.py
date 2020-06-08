@@ -115,6 +115,8 @@ class JsonParser():
     def parser_to_json(self, file_path, structure, **kwargs):
         json_dict = {}
         dataframe = pd.read_csv(file_path)
+        number_dict = None
+        
         if 'number_dict' in kwargs:
             number_dict = kwargs.get('number_dict')
         for column_title in dataframe:
