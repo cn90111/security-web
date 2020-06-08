@@ -112,9 +112,11 @@ class JsonParser():
                 column_element[column_title] = element
         return column_element
                 
-    def parser_to_json(self, file_path, structure):
+    def parser_to_json(self, file_path, structure, **kwargs):
         json_dict = {}
         dataframe = pd.read_csv(file_path)
+        if 'number_dict' in kwargs:
+            number_dict = kwargs.get('number_dict')
         for column_title in dataframe:
             temp = {}
             column = dataframe.loc[:, column_title].values.tolist()
@@ -125,15 +127,33 @@ class JsonParser():
                 temp['type'] = 'numerical'
                 temp['min'] = min(column)
                 temp['max'] = max(column)
-                if self.is_float(column):
-                    temp['num_type'] = 'float'
+                
+                if number_dict:
+                    if number_dict[column_title]['type'] == 'continuous':
+                        temp['num_type'] = 'float'
+                    elif number_dict[column_title]['type'] == 'discrete':
+                        temp['num_type'] = 'int'
+                    else:
+                        message = column_title+'的type輸入錯誤:'+type+'\n'
+                        message = message+'目前type僅支援continuous及discrete'+'\n'
+                        raise AttributeError(message)
                 else:
-                    temp['num_type'] = 'int'
-                temp['interval'] = self.get_interval(column)
+                    if self.is_float(column):
+                        temp['num_type'] = 'float'
+                    else:
+                        temp['num_type'] = 'int'
+                if number_dict:
+                    interval = []
+                    value_list = number_dict[column_title]['value_list']
+                    for i in range(len(value_list)-1):
+                        interval.append([value_list[i], value_list[i+1]])
+                    temp['interval'] = interval
+                else:
+                    temp['interval'] = self.get_interval(column)
             json_dict[column_title] = temp
         return json_dict
         
-    def create_json_file(self, file_path, csv_file_name, structure_mode, structure_dict):
+    def create_json_file(self, file_path, csv_file_name, structure_mode, structure_dict, **kwargs):
         for key in structure_mode:
             mode = structure_mode[key]
             if mode == 'tw_address':
@@ -148,7 +168,11 @@ class JsonParser():
         directory_name = csv_file_name.split(".")[-2]
         file_path = file_path + directory_name + '/'
         json_path = file_path + directory_name + '_dict.json'
-        json_object = json.dumps(self.parser_to_json\
-                            (file_path+csv_file_name, structure_dict))
+        if 'number_dict' in kwargs:
+            json_object = json.dumps(self.parser_to_json\
+                                (file_path+csv_file_name, structure_dict, number_dict=kwargs.get('number_dict')))
+        else:
+            json_object = json.dumps(self.parser_to_json\
+                                (file_path+csv_file_name, structure_dict))
         with open(json_path, 'w') as file:
             file.write(json_object)

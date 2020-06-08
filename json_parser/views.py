@@ -24,12 +24,16 @@ class ParserView(View):
         structure_dict = json.loads(request.GET.get('structure_dict', None))
         number_dict = request.GET.get('number_dict', None)
         username = request.user.get_username()
-        print(number_dict)
         file_path = file_path+username+'/'
         try:
             for file in file_name:
-                parser.create_json_file(file_path, file,
-                    structure_mode[file], structure_dict[file])
+                if number_dict:
+                    number_dict = json.loads(number_dict)
+                    parser.create_json_file(file_path, file,
+                        structure_mode[file], structure_dict[file], number_dict=number_dict)
+                else:
+                    parser.create_json_file(file_path, file,
+                        structure_mode[file], structure_dict[file])
         except Exception as e:
             print(e)
         else:
