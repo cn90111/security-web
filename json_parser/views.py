@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.files.storage import FileSystemStorage
@@ -6,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from django.views import View
+from general.function import NumberDataframe
+from general.function import Path
 
 from .forms import UploadFileForm
 from json_parser.json_parser import JsonParser
@@ -16,16 +17,24 @@ class ParserView(View):
     def get(self, request, *arg, **kwargs):
         finish = False
         parser = JsonParser()
+        
         file_path = str(request.GET.get('path', None))
         file_name = json.loads(request.GET.get('csv_name', None))
         structure_mode = json.loads(request.GET.get('structure_mode', None))
         structure_dict = json.loads(request.GET.get('structure_dict', None))
+        number_dict = request.GET.get('number_dict', None)
+        print(number_dict)
         username = request.user.get_username()
         file_path = file_path+username+'/'
         try:
             for file in file_name:
-                parser.create_json_file(file_path, file,
-                    structure_mode[file], structure_dict[file])
+                if number_dict:
+                    number_dict = json.loads(number_dict)
+                    parser.create_json_file(file_path, file,
+                        structure_mode[file], structure_dict[file], number_dict=number_dict)
+                else:
+                    parser.create_json_file(file_path, file,
+                        structure_mode[file], structure_dict[file])
         except Exception as e:
             print(e)
         else:
@@ -36,18 +45,50 @@ class CustomView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         parser = JsonParser()
+        path = Path()
+        
         file_string_element_dict = {} # file_name - column_title - element
-        referer = request.META.get('HTTP_REFERER')
-        username = request.user.get_username()
-        caller = referer.split('/')[3] # url like http://127.0.0.1:8000/[caller]/
-        file_path = settings.UPLOAD_ROOT+caller+'/'+username+'/'
+        caller = path.get_caller(request)
         file_name = kwargs.get('csv_name')
         request_dict = {}
         
-        file_string_element_dict[file_name] = parser.get_file_string_element\
-                (file_path+file_name.split(".")[-2]+'/'+file_name)
+        file_path = path.get_upload_path(request, file_name)
+        file_string_element_dict[file_name] \
+            = parser.get_file_string_element(file_path)
+                
         request_dict['file_string_element_dict'] = file_string_element_dict
         request_dict['caller'] = caller
         request_dict['file_name'] = file_name
         request_dict['custom_mode'] = 'json_parser'
+        return render(request, 'general/parameter_custom.html', request_dict)
+        
+class AdvancedSettingsView(CustomView):
+    @method_decorator(login_required)
+    def get(self, request, *arg, **kwargs):
+        parser = JsonParser()
+        path = Path()
+        number_data_frame = NumberDataframe()
+        
+        file_string_element_dict = {} # file_name - column_title - element
+        username = request.user.get_username()
+        caller = path.get_caller(request)
+        file_name = kwargs.get('csv_name')
+        request_dict = {}
+        
+        file_path = path.get_upload_path(request, file_name)
+        file_string_element_dict[file_name] \
+            = parser.get_file_string_element(file_path)
+        number_title_list = number_data_frame.get_number_title(file_path)
+        max_value_dict, min_value_dict = number_data_frame.get_number_limit(file_path, number_title_list)
+        max_interval_quantity_dict = number_data_frame.get_max_interval_quantity(max_value_dict, min_value_dict)
+            
+        request_dict['file_string_element_dict'] = file_string_element_dict
+        request_dict['caller'] = caller
+        request_dict['file_name'] = file_name
+        request_dict['custom_mode'] = 'json_parser'
+        request_dict['advanced_settings'] = True
+        request_dict['number_title_list'] = number_title_list
+        request_dict['max_value_dict'] = max_value_dict
+        request_dict['min_value_dict'] = min_value_dict
+        request_dict['max_interval_quantity_dict'] = max_interval_quantity_dict
         return render(request, 'general/parameter_custom.html', request_dict)
