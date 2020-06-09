@@ -2,7 +2,7 @@ from django import forms
 
 class UploadFileForm(forms.Form):
     file = forms.FileField()
-    
+
 class AbstractForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

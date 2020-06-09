@@ -83,16 +83,24 @@ class AbstractExecuteView(View):
         raise AttributeError("應藉由子類別實作此方法，return form()")
 
 class AbstractMethodView(View):
+    execute_pair = {}
+    
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         username = request.user.get_username()
         file_name = str(request.GET.get('csv_name',None))
         form = self.get_form(request.GET)
-        
         finish = False
+        if username in self.execute_pair:            
+            return JsonResponse(finish, safe=False)
+        else:
+            self.execute_pair[username] = file_name
+            
         if form.is_valid():
             try:
+                print(self.execute_pair)
                 self.method_run(request)
+                self.execute_pair.pop(username, None)
             except Exception as e:
                 print(e)
             else:
