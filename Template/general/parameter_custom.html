@@ -102,6 +102,14 @@
                         data['number_dict'] = JSON.stringify(number_dict);
                     {% endif %}
                     $(window).off();
+                    $.getJSON(url, data, function (finlish) {
+                            if(finlish == true){
+                                window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
+                            } else {
+                                alert('程式執行失敗，請確認上傳檔案符合規格，若多次失敗請聯絡技術人員為您服務，謝謝');
+                            }
+                        }
+                    );
                 })
             })
         </script>
