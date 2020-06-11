@@ -27,7 +27,6 @@ class FileView(View):
         form = UploadFileForm(request.POST, request.FILES)
         files = request.FILES.getlist('file')
         
-        finish = False
         if form.is_valid():
             try:
                 for file in files:
@@ -37,11 +36,12 @@ class FileView(View):
                     self.handle_upload_file(request, file)
             except Exception as e:
                 print(e)
+                return JsonResponse({"message":"程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"}, status=404)
             else:
-                finish = True
-            return JsonResponse(finish, safe=False)
+                return HttpResponse(status=204)
+            return JsonResponse({"message":"有尚未捕捉到的例外，請回報服務人員，謝謝"}, status=404)
         else:
-            return JsonResponse({"status":"錯誤","message":"表單格式錯誤"}, status=400)
+            return JsonResponse({"message":"檔案格式錯誤"}, status=400)
 
     def check_file_limit(self, file):
         upload_form = FileModel()
@@ -52,7 +52,7 @@ class FileView(View):
         else:
             cln = str(df.shape[1])
             row = str(df.shape[0])
-            return JsonResponse({"status":"錯誤","message":"欄數限制最多為4, 列數限制最多為200\n文件欄數："+ cln +", 列數："+ row + ", 不符合標準"}, status=400)
+            return JsonResponse({"message":"欄數限制最多為4, 列數限制最多為200\n文件欄數："+ cln +", 列數："+ row + ", 不符合標準"}, status=400)
 
     def handle_upload_file(self, request, f):
         path = Path()
@@ -91,9 +91,8 @@ class AbstractMethodView(View):
         username = request.user.get_username()
         file_name = str(request.GET.get('csv_name',None))
         form = self.get_form(request.GET)
-        finish = False
-        if username in self.execute_pair:            
-            return JsonResponse(finish, safe=False)
+        if username in self.execute_pair:
+            return JsonResponse({"message":"您正在執行另一個檔案，檔名為:"+self.execute_pair[username]+"，若想執行目前的檔案，請先把另一個檔案關閉"}, status=403)
         else:
             self.execute_pair[username] = file_name
             
@@ -102,15 +101,18 @@ class AbstractMethodView(View):
                 self.method_run(request)
             except BreakProgramException as e:
                 print(e)
-                finish = True
+                self.execute_pair.pop(username, None)
+                return JsonResponse({"message":"程式已終止"}, status=404)
             except Exception as e:
                 print(e)
+                self.execute_pair.pop(username, None)
+                return JsonResponse({"message":"程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"}, status=404)
             else:
-                finish = True
-            self.execute_pair.pop(username, None)
-            return JsonResponse(finish, safe=False)
+                self.execute_pair.pop(username, None)
+                return HttpResponse(status=204)
+            return JsonResponse({"message":"有尚未捕捉到的例外，請回報服務人員，謝謝"}, status=404)
         else:
-            return JsonResponse(finish, safe=False)
+            return JsonResponse({"message":"表單格式錯誤"}, status=400)
     
     def get_form(self, requestContent):
         raise AttributeError("應藉由子類別實作此方法，return form(requestContent)")
@@ -233,7 +235,6 @@ class CheckUtilityView(View):
         else:
             raise AttributeError("無此file_path：" + file_path)
         
-        finish = False
         accuracy = 0
         try:
             ml = MachineLearning(machine_learning_method, file_path);
@@ -241,6 +242,7 @@ class CheckUtilityView(View):
             accuracy = ml.score() * 100
         except Exception as e:
             print(e)
+            return JsonResponse({'accuracy':accuracy, 'message':'程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務'}, status=404)
         else:
-            finish = True
-        return JsonResponse({'finish':finish,'accuracy':accuracy})
+            return JsonResponse({'accuracy':accuracy}, status=200)
+        return JsonResponse({"message":"有尚未捕捉到的例外，請回報服務人員，謝謝"}, status=404)
