@@ -8,10 +8,13 @@ import numpy as np
 import math
 import json
 import os
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.conf import settings
+
+from general.exception import BreakProgramException
 
 def show_progress(request):
     #print('show_progress------------' + str(num_progress))
@@ -19,11 +22,17 @@ def show_progress(request):
         'log':log,
         'num_progress':num_progress,
     }
-    return JsonResponse(data,safe=False)
+    return JsonResponse(data, safe=False)
+    
+def break_program():
+    global skip
+    skip = True
         
 def run(request):
     global log
     global num_progress
+    global skip
+    skip = False
     
     file_name = str(request.GET.get('csv_name',None))
     directory_name = file_name.split(".")[-2]
@@ -31,6 +40,8 @@ def run(request):
     dict_file_name = settings.UPLOAD_ROOT + 't_Closeness/' + username + '/' + directory_name + '/' + directory_name + '_dict.json'
     num_progress = 5
     log = 'Building data information...'
+    if skip:
+        raise BreakProgramException('程式成功終止')
 
     #file_name = 'dataset1.csv'
     #dict_file_name = file_name[:-4] + '_dict.json'
@@ -101,11 +112,15 @@ def run(request):
     
     
     def KLD(P, Q):
+        if skip:
+            raise BreakProgramException('程式成功終止')
         buffer = np.log(P / Q)
         buffer[buffer==np.inf] = 1000000
         return np.sum(P * buffer)
     
     def person_distance(p1, p2):
+        if skip:
+            raise BreakProgramException('程式成功終止')
         diff = 0
         for attr_id in qi_list:
             if data_dict[column_name[attr_id]]['type'] == 'numerical':
@@ -114,7 +129,10 @@ def run(request):
                 diff += data_dict[column_name[attr_id]]['category_distance'][(p1[attr_id], p2[attr_id])]
         diff /= qi_num
         return diff
+        
     def merge_k_anony(cluster_1, cluster_2):
+        if skip:
+            raise BreakProgramException('程式成功終止')
         new_cluster = []
         for attr_id in range(attr_num):
             if attr_id in qi_list:
@@ -125,7 +143,10 @@ def run(request):
             else:
                 new_cluster.append(cluster_1[attr_id] + cluster_2[attr_id])
         return new_cluster
+        
     def force_data_eligible(distribution_dict, distribution, cluster_distribution_dict, cluster_member_num):
+        if skip:
+            raise BreakProgramException('程式成功終止')
         sa_subjects = [ele for ele in cluster_distribution_dict.keys()]
         cluster_distribution = np.array([i for i in cluster_distribution_dict.values()]) / cluster_member_num
         while True:
@@ -147,6 +168,8 @@ def run(request):
     
     num_progress = 20
     log = 'Building data information...'
+    if skip:
+        raise BreakProgramException('程式成功終止')
     
     # First K anonymize
     k_anony_data = [] # [(qi_1_min, qi_1_max), qi_2_category, ..., (qi_n_min, qi_n_max), [SA_data]]
@@ -211,6 +234,8 @@ def run(request):
     # In[ ]:
     num_progress = 50
     log = 'Building data information...'
+    if skip:
+        raise BreakProgramException('程式成功終止')
     
     
     # Calculate whole SA's distribution
@@ -223,6 +248,8 @@ def run(request):
     distribution = np.array([i for i in distribution_dict.values()]) / record_num
     
     while True:
+        if skip:
+            raise BreakProgramException('程式成功終止')
         # Find ineligible clusters
         above_t_cluster_id = []
         for cluster_id in range(len(k_anony_data)):
@@ -306,8 +333,10 @@ def run(request):
     
     num_progress = 80
     log = 'Building data information...'
+    if skip:
+        raise BreakProgramException('程式成功終止')
+        
     # In[ ]:
-    
     
     df_output = {}
     for column in column_name:

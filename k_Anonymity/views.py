@@ -6,6 +6,7 @@ from k_Anonymity.forms import ParameterForm
 
 from general.views import AbstractMethodView
 from general.views import AbstractExecuteView
+from general.views import AbstractBreakProgramView
 
 @login_required
 def index(request):
@@ -20,6 +21,10 @@ class KAnonymityView(AbstractMethodView):
         
     def get_method_template(self):
         return 'k_Anonymity/k_Anonymity.html'
+        
+class BreakProgramView(AbstractBreakProgramView):
+    def break_program(self):
+        k_anonymity.break_program()
         
 class ExecuteView(AbstractExecuteView):
     def get_empty_form(self):

@@ -8,6 +8,7 @@ from django.conf import settings
 
 from general.machine_learning import MachineLearning
 from general.function import Path
+from general.exception import BreakProgramException
 
 from .models import FileModel
 from .forms import UploadFileForm
@@ -98,13 +99,15 @@ class AbstractMethodView(View):
             
         if form.is_valid():
             try:
-                print(self.execute_pair)
                 self.method_run(request)
-                self.execute_pair.pop(username, None)
+            except BreakProgramException as e:
+                print(e)
+                finish = True
             except Exception as e:
                 print(e)
             else:
                 finish = True
+            self.execute_pair.pop(username, None)
             return JsonResponse(finish, safe=False)
         else:
             return JsonResponse(finish, safe=False)
@@ -117,6 +120,17 @@ class AbstractMethodView(View):
         
     def get_method_template(self):
         raise AttributeError("應藉由子類別實作此方法，return template_url")
+
+class AbstractBreakProgramView(View):
+    @method_decorator(login_required)
+    def get(self, request, *arg, **kwargs):
+        finish = False
+        self.break_program()
+        finish = True
+        return JsonResponse(finish, safe=False)
+        
+    def break_program(self):
+        raise AttributeError("應藉由子類別實作此方法，method.break_program()")
 
 class DisplayCsvView(View):
     @method_decorator(login_required)

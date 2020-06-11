@@ -101,7 +101,6 @@
                         }
                         data['number_dict'] = JSON.stringify(number_dict);
                     {% endif %}
-                    $(window).off();
                     $.getJSON(url, data, function (finlish) {
                             if(finlish == true){
                                 window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
@@ -201,7 +200,6 @@
                             }
                             data['number_dict'] = JSON.stringify(number_dict);
                         {% endif %}
-                        $(window).off();
                         $.getJSON(url, data, function (finlish) {
                                 if(finlish == true){
                                     window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';

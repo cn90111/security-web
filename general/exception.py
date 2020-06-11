@@ -1,0 +1,2 @@
+class BreakProgramException(Exception):
+    pass

@@ -84,6 +84,12 @@
             }   
             
             $(function () {
+                $(window).on('beforeunload', function(){
+                    $.ajax({
+                        type: 'GET',
+                        url: '/{{ caller }}/break_program/',
+                    });
+                });
                 $('#execute').on('click', function () {
                     reset()
                     window.scrollTo(0, document.body.scrollHeight)
@@ -118,6 +124,7 @@
                             $('.progress-text').text('執行完成');
                             $('#execute').removeAttr('disabled');
                             alert("檔案執行完畢");
+                            $(window).off()
                             window.location = '/{{ caller }}/finish/csv_name={{file_name}}';
                         } else {
                             clearInterval(sitv);

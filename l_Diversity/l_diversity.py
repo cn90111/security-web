@@ -6,14 +6,18 @@ import pandas as pd
 import numpy as np
 import math
 import os
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.conf import settings
 
 import json
+from general.exception import BreakProgramException
         
 def load(load_path):
+    if skip:
+        raise BreakProgramException('程式成功終止')
     with open(load_path + '.json','r') as f:
         data = json.load(f)
         return data
@@ -24,11 +28,17 @@ def show_progress(request):
         'log':log,
         'num_progress':num_progress,
     }
-    return JsonResponse(data,safe=False)
+    return JsonResponse(data, safe=False)
+
+def break_program():
+    global skip
+    skip = True
 
 def run(request):
     global log
     global num_progress
+    global skip
+    skip = False
     
     print('--------------------')
     file_name = str(request.GET.get('csv_name',None))
@@ -54,7 +64,8 @@ def run(request):
     
     log = "Get file success!!"
     num_progress = 20
-    
+    if skip:
+        raise BreakProgramException('程式成功終止')
     
     df
     
@@ -75,27 +86,19 @@ def run(request):
     
     log = "Get SA success!!"
     num_progress = 40
-    
+    if skip:
+        raise BreakProgramException('程式成功終止')
     
     num_data = list(df.columns[df.dtypes != object])
     
-    
-    
     num_data = [x for x in num_data if x not in [sensitiveAttribute]]
     
-    
     num_data
-    
-    
-    
+        
     cate_data = list(df.columns[df.dtypes == object])
     
-    
-    
     cate_data = [x for x in cate_data if x not in [sensitiveAttribute]]
-    
-    
-    
+        
     cate_data
     
     
@@ -116,6 +119,8 @@ def run(request):
     # In[12]:
     log = "Get Dict File success!!"
     num_progress = 50
+    if skip:
+        raise BreakProgramException('程式成功終止')
     
     dic
     
@@ -160,6 +165,8 @@ def run(request):
     
     
     def find_interval(x,att):
+        if skip:
+            raise BreakProgramException('程式成功終止')
         for i in dic[att]['interval']:
             if x >= i[0] and x <= i[1]:
                 # print(i)
@@ -199,7 +206,8 @@ def run(request):
     
     log = "Get K success!!"
     num_progress = 60
-    
+    if skip:
+        raise BreakProgramException('程式成功終止')
     
     # 計算全部資料的 diversity
     diversity = {}
@@ -241,7 +249,6 @@ def run(request):
     # 建立一個  tmp_df (DataFrame) 儲存
     tmp_df = pd.DataFrame(columns=list(num_data))
     
-    
     tmp_df
     
     
@@ -268,12 +275,12 @@ def run(request):
 # 建立 Distance Matrix (numpy)
     DistanceMatrix = np.zeros((len(df),len(df)))
 
-
     DistanceMatrix
-
 
     for i in df.iterrows():
         for j in df.iterrows():
+            if skip:
+                raise BreakProgramException('程式成功終止')
             if j[0] > i[0]:
                 distance = 0
                 for attribute in num_data:
@@ -335,6 +342,8 @@ def run(request):
     final_group = []
     upgroup_num = 1
     for x in range(len(df)):
+        if skip:
+            raise BreakProgramException('程式成功終止')
         log = str(upgroup_num)  + "/" + str(len(df)) 
         # 檢查剩餘 ungroup 的 diversity，如果不足 l，離開此迴圈
         # 檢查剩餘 ungroup 的數量，如果不足 k，離開此迴圈
@@ -377,7 +386,8 @@ def run(request):
             r2 = np.where(distance_list==np.min(distance_list))[0][0]
             
             while distance_list[r2]!=np.inf :
-                
+                if skip:
+                    raise BreakProgramException('程式成功終止')
                 # 如果尚未 group
                 if glist[r2] == 1:
                     
@@ -427,6 +437,8 @@ def run(request):
                     r3 = np.where(d_in_list==np.min(d_in_list))[0][0]
                 
                     while d_in_list[r3]!=np.inf:
+                        if skip:
+                            raise BreakProgramException('程式成功終止')
                     
                         # 檢查是否能加入
                     
@@ -467,7 +479,6 @@ def run(request):
             print('--------------------')
         
             if len(group) < k:
-                
                 # 取得所有點至此 group 的最小距離的 list
                 min_distance_list = []
                 
@@ -488,7 +499,8 @@ def run(request):
                 
                 # 再加入 k-len(group) 個點即可
                 for i in range(k-len(group)):
-                    
+                    if skip:
+                        raise BreakProgramException('程式成功終止')
                     # 取得與此 group 距離最近的點
                     r5 = np.where(min_distance_list==np.min(min_distance_list))[0][0]
                     
@@ -519,7 +531,8 @@ def run(request):
     print('最後階段，將剩下 ungroup 的資料加入鄰近的 grouping')
     print('--------------------')
     for i in range(len(df)):
-        
+        if skip:
+            raise BreakProgramException('程式成功終止')
         # 如果此點為 ungroup
         if glist[i] == 1:
             
@@ -585,8 +598,9 @@ def run(request):
 
 
     def process_df(df):
-        
-        
+        if skip:
+            raise BreakProgramException('程式成功終止')
+            
         tmp_df = df.copy()
         
         for c in num_data+cate_data:

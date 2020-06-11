@@ -6,6 +6,7 @@ from l_Diversity.forms import ParameterForm
 
 from general.views import AbstractMethodView
 from general.views import AbstractExecuteView
+from general.views import AbstractBreakProgramView
 
 @login_required
 def index(request):
@@ -20,7 +21,11 @@ class LDiversityView(AbstractMethodView):
         
     def get_method_template(self):
         return 'l_Diversity/l_Diversity.html'
-        
+
+class BreakProgramView(AbstractBreakProgramView):
+    def break_program(self):
+        l_diversity.break_program()
+
 class ExecuteView(AbstractExecuteView):
     def get_empty_form(self):
         return ParameterForm()
