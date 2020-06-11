@@ -8,6 +8,7 @@ from django.conf import settings
 
 from general.machine_learning import MachineLearning
 from general.function import Path
+from general.exception import BreakProgramException
 
 from .models import FileModel
 from .forms import UploadFileForm
@@ -99,6 +100,9 @@ class AbstractMethodView(View):
         if form.is_valid():
             try:
                 self.method_run(request)
+            except BreakProgramException as e:
+                print(e)
+                finish = True
             except Exception as e:
                 print(e)
             else:
@@ -120,7 +124,10 @@ class AbstractMethodView(View):
 class AbstractBreakProgramView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
+        finish = False
         self.break_program()
+        finish = True
+        return JsonResponse(finish, safe=False)
         
     def break_program(self):
         raise AttributeError("應藉由子類別實作此方法，method.break_program()")

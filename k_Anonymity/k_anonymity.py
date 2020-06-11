@@ -12,10 +12,11 @@ from django.http import JsonResponse
 from django.conf import settings
 
 import json
+from general.exception import BreakProgramException
 
 def load(load_path):
     if skip:
-        raise Exception('程式成功終止')
+        raise BreakProgramException('程式成功終止')
     with open(load_path + '.json','r') as f:
         data = json.load(f)
         return data
@@ -62,7 +63,7 @@ def run(request):
     log = "Get file success!!"
     num_progress = 20
     if skip:
-        raise Exception('程式成功終止')
+        raise BreakProgramException('程式成功終止')
     
     attributes = list(df.columns)
     print('--------------------')
@@ -82,7 +83,7 @@ def run(request):
     log = "Get SA success!!"
     num_progress = 40
     if skip:
-        raise Exception('程式成功終止')
+        raise BreakProgramException('程式成功終止')
     
     num_data = list(df.columns[df.dtypes != object])
         
@@ -113,7 +114,7 @@ def run(request):
     log = "Get Dict File success!!"
     num_progress = 50
     if skip:
-        raise Exception('程式成功終止')
+        raise BreakProgramException('程式成功終止')
     
     cate_distance = {}
     
@@ -158,7 +159,7 @@ def run(request):
     
     def find_interval(x,att):
         if skip:
-            raise Exception('程式成功終止')
+            raise BreakProgramException('程式成功終止')
         for i in dic[att]['interval']:
             if x >= i[0] and x <= i[1]:
                 # print(i)
@@ -199,7 +200,7 @@ def run(request):
     log = "Get K success!!"
     num_progress = 60
     if skip:
-        raise Exception('程式成功終止')
+        raise BreakProgramException('程式成功終止')
     # 計算全部資料的 diversity
     diversity = {}
     for i in range(len(df)):
@@ -272,7 +273,7 @@ def run(request):
     for i in df.iterrows():
         for j in df.iterrows():
             if skip:
-                raise Exception('程式成功終止')
+                raise BreakProgramException('程式成功終止')
             if j[0] > i[0]:
                 distance = 0
                 for attribute in num_data:
@@ -333,7 +334,7 @@ def run(request):
     upgroup_num = 1
     for x in range(len(df)):
         if skip:
-            raise Exception('程式成功終止')
+            raise BreakProgramException('程式成功終止')
         log = str(upgroup_num)  + "/" + str(len(df)) 
         # 檢查剩餘 ungroup 的 diversity，如果不足 l，離開此迴圈
         # 檢查剩餘 ungroup 的數量，如果不足 k，離開此迴圈
@@ -377,7 +378,7 @@ def run(request):
             
             while distance_list[r2]!=np.inf :
                 if skip:
-                    raise Exception('程式成功終止')
+                    raise BreakProgramException('程式成功終止')
                 # 如果尚未 group
                 if glist[r2] == 1:
                     
@@ -428,7 +429,7 @@ def run(request):
                 
                     while d_in_list[r3]!=np.inf:
                         if skip:
-                            raise Exception('程式成功終止')
+                            raise BreakProgramException('程式成功終止')
                        # 檢查是否能加入
                     
                         # 計算此點r3至其他ungroup點的最小距離
@@ -490,7 +491,7 @@ def run(request):
                 # 再加入 k-len(group) 個點即可
                 for i in range(k-len(group)):
                     if skip:
-                        raise Exception('程式成功終止')
+                        raise BreakProgramException('程式成功終止')
                     # 取得與此 group 距離最近的點
                     r5 = np.where(min_distance_list==np.min(min_distance_list))[0][0]
                     
@@ -522,7 +523,7 @@ def run(request):
     log = '最後階段，將剩下 ungroup 的資料加入鄰近的 grouping'
     for i in range(len(df)):
         if skip:
-            raise Exception('程式成功終止')
+            raise BreakProgramException('程式成功終止')
         # 如果此點為 ungroup
         if glist[i] == 1:
             
@@ -592,7 +593,7 @@ def run(request):
 
     def process_df(df):
         if skip:
-            raise Exception('程式成功終止')
+            raise BreakProgramException('程式成功終止')
         tmp_df = df.copy()
         
         for c in num_data+cate_data:
