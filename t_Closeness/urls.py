@@ -7,6 +7,7 @@ from . import t_closeness
 urlpatterns = [
     path('',views.index),
     path('Execute/', views.TClosenessView.as_view()),
+    path('break_program/', views.BreakProgramView.as_view()),
     path('show_progress/', t_closeness.show_progress),
     path('Execute_Page/csv_name=<str:csv_name>/', views.ExecuteView.as_view()),
     path('File_List_<str:method>/', general_views.FileListView.as_view()),

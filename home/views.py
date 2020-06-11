@@ -24,7 +24,7 @@ class InitializeView(View):
                 temp_path = path+'/'+method+'/'+username+'/'
                 for directory_path in os.listdir(temp_path):
                     shutil.rmtree(temp_path+directory_path)
-        path = settings.DPSYN_TEMP_ROOT+username
+        path = settings.DPSYN_TEMP_ROOT+username+'/'
         for directory_path in os.listdir(path):
             shutil.rmtree(path+directory_path)
         finish = True
