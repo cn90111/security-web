@@ -50,7 +50,6 @@
         unlock_count = 0
         function finish(text_element, finish_message)
         {
-            unlock_count++;
             finish_text = finish_message+' '+finish_text;
             text_element.text(finish_text);
         }
@@ -73,38 +72,58 @@
                 loading_text.show();
                 
                 var url = '/{{caller}}/check_utility/'
-                $.getJSON(url,
-                    {
-                        csv_name : '{{file_name}}',
-                        machine_learning_method : selecter.val(),
-                        file_path : 'output',
-                    }, function (result) {
-                    if (result.finish == true) {
+                var data_output = {
+                    csv_name : '{{file_name}}',
+                    machine_learning_method : selecter.val(),
+                    file_path : 'output',
+                };
+                var data_upload = {
+                    csv_name : '{{file_name}}',
+                    machine_learning_method : selecter.val(),
+                    file_path : 'upload',
+                };
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: data_output,
+                    success: function (result) {
                         left_accuracy.text(left_accuracy.text() + result.accuracy + '%')
                         finish(loading_text, '原始檔案')
+                        unlock_count++;
                         if (unlock_count>=2) {
                             selecter.removeAttr('disabled');
                         }
-                    } else {
-                        left_accuracy.text(left_accuracy.text() + result.accuracy + '%')
-                        alert('原始檔案執行失敗，請嘗試選擇其他機器學習方法，若多次失敗請聯絡技術人員為您服務，謝謝');
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        var jsonObj = JSON.parse(xhr.responseText);
+                        left_accuracy.text(left_accuracy.text() + jsonObj.accuracy + '%')
+                        alert('原始檔案'+jsonObj.message);
+                        unlock_count++;
+                        if (unlock_count>=2) {
+                            selecter.removeAttr('disabled');
+                        }
                     }
                 });
-                $.getJSON(url,
-                    {
-                        csv_name : '{{file_name}}',
-                        machine_learning_method : selecter.val(),
-                        file_path : 'upload',
-                    }, function (result) {
-                    if (result.finish == true) {
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: data_upload,
+                    success: function (result) {
                         right_accuracy.text(right_accuracy.text() + result.accuracy + '%')
                         finish(loading_text, '去識別化檔案')
+                        unlock_count++;
                         if (unlock_count>=2) {
                             selecter.removeAttr('disabled');
                         }
-                    } else {
-                        right_accuracy.text(right_accuracy.text() + result.accuracy + '%')
-                        alert('去識別化檔案執行失敗，請嘗試選擇其他機器學習方法，若多次失敗請聯絡技術人員為您服務，謝謝');
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        var jsonObj = JSON.parse(xhr.responseText);
+                        right_accuracy.text(right_accuracy.text() + jsonObj.accuracy + '%')
+                        alert('去識別化檔案'+jsonObj.message);
+                        unlock_count++;
+                        if (unlock_count>=2) {
+                            selecter.removeAttr('disabled');
+                        }
                     }
                 });
             });

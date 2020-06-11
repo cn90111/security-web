@@ -90,6 +90,7 @@
                         url: '/{{ caller }}/break_program/',
                     });
                 });
+                
                 $('#execute').on('click', function () {
                     reset()
                     window.scrollTo(0, document.body.scrollHeight)
@@ -114,8 +115,11 @@
                     {% for field in form %}
                         data['{{field.html_name}}'] = $('#{{field.auto_id }}').val()
                     {% endfor %}
-                    $.getJSON(url, data, function (finish) {
-                        if (finish == true) {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        data: data,
+                        success: function () {
                             clearInterval(sitv);
                             clearInterval(mm);
                             $('.progress-bar').css('width', '100%');
@@ -126,12 +130,15 @@
                             alert("檔案執行完畢");
                             $(window).off()
                             window.location = '/{{ caller }}/finish/csv_name={{file_name}}';
-                        } else {
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            var jsonObj = JSON.parse(xhr.responseText);
+                            
                             clearInterval(sitv);
                             clearInterval(mm);
                             $('.progress-text').text('執行失敗');
                             $('#execute').removeAttr('disabled');
-                            alert('程式執行失敗，請確認上傳檔案符合規格，若多次失敗請聯絡技術人員為您服務，謝謝')
+                            alert(jsonObj.message);
                         }
                     });
                 })

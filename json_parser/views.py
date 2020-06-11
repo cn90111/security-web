@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -15,7 +15,6 @@ import json
 class ParserView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
-        finish = False
         parser = JsonParser()
         
         file_path = str(request.GET.get('path', None))
@@ -36,9 +35,10 @@ class ParserView(View):
                         structure_mode[file], structure_dict[file])
         except Exception as e:
             print(e)
+            return JsonResponse({"message":"程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"}, status=404)
         else:
-            finish = True
-        return JsonResponse(finish, safe=False)
+            return HttpResponse(status=204)
+        return JsonResponse({"message":"有尚未捕捉到的例外，請回報服務人員，謝謝"}, status=404)
     
 class CustomView(View):
     @method_decorator(login_required)
