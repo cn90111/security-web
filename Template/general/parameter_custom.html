@@ -148,10 +148,13 @@
                                 getElementById(column_title+'_element_'+count);
                             var pair_to_element = document.
                                 getElementById(column_title+'_pair_label_'+count);
+                            if (!element.value && element.required) {
+                                lose_required = true;
+                            }
                             if (!pair_to_element.value && pair_to_element.required) {
                                 lose_required = true;
                                 var datalist_td = document.
-                                getElementById(column_title+'_datalist_td_'+count);
+                                    getElementById(column_title+'_datalist_td_'+count);
                                 datalist_td.classList.add('table-danger');
                                 datalist_td.addEventListener('change', removeRed.bind(this, datalist_td.classList), false)
                             }
