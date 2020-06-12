@@ -32,7 +32,7 @@
                     {% for element in element_list %}
                         <tr>
                             <td>
-                                <input type="text" class="form-control" id="{{ column_title }}_element_{{ forloop.counter0 }}" value="{{ element }}" disabled="disabled"> 
+                                <input type="text" class="form-control" id="{{ column_title }}_element_{{ forloop.counter0 }}" value="{{ element }}" disabled="disabled" required="required"> 
                             </td>
                             <td>
                                 對應
@@ -41,7 +41,7 @@
                                 <input list="{{ column_title }}_select_pair_{{ forloop.counter0 }}" id="{{ column_title }}_pair_label_{{ forloop.counter0 }}" required="required" class="col-sm-6 custom-select custom-select-sm">
                                 <datalist id="{{ column_title }}_select_pair_{{ forloop.counter0 }}">
                                     {% for element in element_list %}
-                                        <option value="{{ element }}">{{ element }}</option>                                                    
+                                        <option value="{{ element }}">{{ element }}</option>
                                     {%endfor%}
                                 </datalist>
                             </td>
@@ -78,7 +78,7 @@
         }
         
         td.innerHTML = 
-            '<input type="text" class="form-control" id="'+column_title+'_element_'+count_id+'">';
+            '<input type="text" class="form-control" id="'+column_title+'_element_'+count_id+'" required="required">';
         var td = tr.insertCell(-1);
         td.innerHTML = 
             "對應";
@@ -100,14 +100,44 @@
         for (var element of element_list) {
             datalist.innerHTML += '<option value="'+ element +'">'+ element +'</option>'
         }
+        
+        var element = document.getElementById(column_title+'_element_'+count_id);
+        element.addEventListener('change', add_element_list.bind(this, column_title, count_id), false)
+    }
+    
+    function add_element_list(column_title, id) {
+        var check_exist = document.getElementById('option_'+column_title+'_'+id);
+        console.log(check_exist)
+        if(check_exist) {
+            delete_element_list(column_title, id)
+        }
+        var table = document.getElementById(column_title+'_table');
+        var element = document.getElementById(column_title+'_element_'+id);
+        for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+            var datalist = document.
+                getElementById(column_title+'_select_pair_'+count);
+            datalist.innerHTML += '<option id="option_'+column_title+'_'+id+'" value="'+element.value+'">'+element.value+'</option>'
+        }
     }
     
     function delete_field(column_title, element_list) {
         var table = document.getElementById(column_title+'_table');
-        table.deleteRow(-1)
+        var last_id = table.tBodies[0].rows.length - 1
+        delete_element_list(column_title, last_id)
+        table.deleteRow(last_id)
         custom_count = custom_count - 1
         if(custom_count <= 0) {
             $('#'+column_title+'_custom_delete').hide()
+        }
+    }
+    
+    function delete_element_list(column_title, id) {
+        var table = document.getElementById(column_title+'_table');
+        for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+            var datalist = document.
+                getElementById(column_title+'_select_pair_'+count);
+            datalist.removeChild(document.
+                getElementById('option_'+column_title+'_'+id))
         }
     }
     
