@@ -121,53 +121,43 @@
             $(function () {
                 $('#execute').on('click', function () {
                     var path = 'upload/{{ caller }}/';
-                    var file_string_element_dict = {{ file_string_element_dict|safe }};
-                    var csv_name = Object.keys(file_string_element_dict);
+                    var string_element_dict = {{ string_element_dict|safe }};
                     var lose_required = false;
                     
                     var structure_mode = {};
-                    for (var name of csv_name) {
-                        var file_mode = {};
-                        for (var column_title in file_string_element_dict[name]) {
-                            if (document.getElementById
-                                (name+'_'+column_title+'_is_address').checked) {
-                                file_mode[column_title] = 'tw_address';
-                            }
-                            else if (document.getElementById
-                                (name+'_'+column_title+'_is_unrelated').checked) {
-                                file_mode[column_title] = 'unrelated';
-                            }
-                            else {
-                                file_mode[column_title] = 'custom';
-                            }
+                    for (var column_title in string_element_dict) {
+                        if (document.getElementById
+                            (column_title+'_is_address').checked) {
+                            structure_mode[column_title] = 'tw_address';
                         }
-                        structure_mode[name] = file_mode;
+                        else if (document.getElementById
+                            (column_title+'_is_unrelated').checked) {
+                            structure_mode[column_title] = 'unrelated';
+                        }
+                        else {
+                            structure_mode[column_title] = 'custom';
+                        }
                     }
                     
                     var structure_dict = {};
-                    for (var name of csv_name) {
-                        var file_element = {};
-                        for (var column_title in file_string_element_dict[name]) {
-                            var table = document.
-                                getElementById(name+'_'+column_title+'_table');
-                            var temp = {};
-                            for (var count = 0; count<table.tBodies[0].rows.length; count++) {
-                                var element = document.
-                                    getElementById(name+'_'+column_title+'_element_'+count);
-                                var pair_to_element = document.
-                                    getElementById(name+'_'+column_title+'_pair_label_'+count);
-                                if (!pair_to_element.value && pair_to_element.required) {
-                                    lose_required = true;
-                                    var datalist_td = document.
-                                    getElementById(name+'_'+column_title+'_datalist_td_'+count);
-                                    datalist_td.classList.add('table-danger');
-                                    datalist_td.addEventListener('change', removeRed.bind(this, datalist_td.classList), false)
-                                }
-                                temp[element.value] = pair_to_element.value;
+                    for (var column_title in string_element_dict) {
+                        var table = document.getElementById(column_title+'_table');
+                        var string_pair = {};
+                        for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+                            var element = document.
+                                getElementById(column_title+'_element_'+count);
+                            var pair_to_element = document.
+                                getElementById(column_title+'_pair_label_'+count);
+                            if (!pair_to_element.value && pair_to_element.required) {
+                                lose_required = true;
+                                var datalist_td = document.
+                                getElementById(column_title+'_datalist_td_'+count);
+                                datalist_td.classList.add('table-danger');
+                                datalist_td.addEventListener('change', removeRed.bind(this, datalist_td.classList), false)
                             }
-                            file_element[column_title] = temp;
+                            string_pair[element.value] = pair_to_element.value;
                         }
-                        structure_dict[name] = file_element;
+                        structure_dict[column_title] = string_pair;
                     }
                     
                     if (lose_required) {
@@ -177,7 +167,7 @@
                         var url = '/json_parser/create_json/';
                         data = {
                                     'path' : path,
-                                    'csv_name' : JSON.stringify(csv_name),
+                                    'csv_name' : '{{ file_name }}',
                                     'structure_mode' : JSON.stringify(structure_mode),
                                     'structure_dict' : JSON.stringify(structure_dict),
                                 }
@@ -209,7 +199,7 @@
                             type: 'GET',
                             data: data,
                             success: function () {
-                                window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
+                                window.location = '/{{ caller }}/Execute_Page/csv_name={{ file_name }}/';
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
                                 var jsonObj = JSON.parse(xhr.responseText);
