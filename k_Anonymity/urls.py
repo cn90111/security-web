@@ -18,4 +18,5 @@ urlpatterns = [
     path('utility_page/csv_name=<str:csv_name>/', general_views.UtilityPageView.as_view()),
     path('check_utility/', general_views.CheckUtilityView.as_view()),
     path('advanced_settings/csv_name=<str:csv_name>/', json_parser_views.AdvancedSettingsView.as_view()),
+    path('title_check/', general_views.TitleCheckView.as_view()),
 ]

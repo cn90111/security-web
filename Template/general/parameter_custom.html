@@ -55,6 +55,28 @@
 {% endblock button %}
 
 {% block script %}
+    <script>
+        $(function () {
+            var url = '/{{ caller }}/title_check/';
+            var data = {
+                        'csv_name' : '{{ file_name }}',
+                    }
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: data,
+                success: function (result) {
+                    if (result) {
+                        alert(result.message)
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    var jsonObj = JSON.parse(xhr.responseText);
+                    alert(jsonObj.message);
+                }
+            });
+        })
+    </script>
     {% if custom_mode == 'DPSyn' %}
         <script>
             $(function () {
@@ -110,7 +132,7 @@
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             var jsonObj = JSON.parse(xhr.responseText);
-                            alert(jsonObj.message );
+                            alert(jsonObj.message);
                         }
                     });
                 })
