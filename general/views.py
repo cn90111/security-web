@@ -28,9 +28,13 @@ class FileView(View):
         files = request.FILES.getlist('file')
         
         if form.is_valid():
+            mode = kwargs.get('mode')
             try:
                 for file in files:
-                    check_result = self.check_file_limit(file)
+                    if mode == 'DPSyn':
+                        check_result = self.dpsyn_check_file_limit(file)
+                    if mode == 'json':
+                        check_result = self.json_check_file_limit(file)
                     if check_result:
                         return check_result
                     self.handle_upload_file(request, file)
@@ -43,7 +47,7 @@ class FileView(View):
         else:
             return JsonResponse({'message':'檔案格式錯誤'}, status=415)
 
-    def check_file_limit(self, file):
+    def json_check_file_limit(self, file):
         upload_form = FileModel()
         upload_form.file = file
         df = pd.read_csv(upload_form.file)
@@ -53,7 +57,17 @@ class FileView(View):
             cln = str(df.shape[1])
             row = str(df.shape[0])
             return JsonResponse({'message':'欄數限制最多為4, 列數限制最多為200\n文件欄數：'+ cln +', 列數：'+ row + ', 不符合標準'}, status=400)
-
+    
+    def dpsyn_check_file_limit(self, file):
+        upload_form = FileModel()
+        upload_form.file = file
+        df = pd.read_csv(upload_form.file)
+        if(df.shape[1] >= 3):
+            return None
+        else:
+            cln = str(df.shape[1])
+            return JsonResponse({"status":"錯誤","message":"欄數限制最少為3\n文件欄數："+ cln +", 不符合標準"}, status=400)
+            
     def handle_upload_file(self, request, f):
         path = Path()
         fs = FileSystemStorage()

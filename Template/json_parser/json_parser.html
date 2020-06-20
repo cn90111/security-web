@@ -1,30 +1,28 @@
+{% load i18n %}
 <div class="container">
     <h2>Pair</h2>
-    <h5 style="font-weight:bold;color:red">說明1：配對檔案裡文字的上下關係，例如：gmail 屬於 google，可自行輸入或使用下拉式選單</h5>
+    <h5 style="font-weight:bold;color:red">{% trans '說明1：配對檔案裡文字的上下關係，例如：gmail 屬於 google，可自行輸入或使用下拉式選單' %}</h5>
         {% if advanced_settings %}
-            <h5 style="font-weight:bold;color:red">說明2：請設定數字欄位去識別化時，所使用的分區間隔</h5>
+            <h5 style="font-weight:bold;color:red">{% trans '說明2：請設定數字欄位去識別化時，所使用的分區間隔' %}</h5>
         {% endif %}
-    <p>
-        Description : 
-    </p>
 </div>
 <div class="container" style="width:inherit;">
-    <h2>檔名：{{ file_name }}</h2>
+    <h2>{% trans '檔名：' %}{{ file_name }}</h2>
     <form id="parameter_form" data-toggle="validator">
         {% csrf_token %}
         {% if not string_element_dict.items and not number_title_list %}
-            <h2>無需預先設定的參數</h2>
+            <h2>{% trans '無需預先設定的參數' %}</h2>
         {% endif %}
         {% for column_title, element_list in string_element_dict.items %}
             <h2>欄位：{{ column_title }}</h2>
             <div class="form-row justify-content-center">
                 <div class="form-check col-md-4">
                     <input type="checkbox" class="form-check-input" id="{{ column_title }}_is_address" onclick="click_checkbox('{{ column_title }}', 'address')">
-                    <label class="form-check-label" for="{{ column_title }}_is_address">資料為地址</label>
+                    <label class="form-check-label" for="{{ column_title }}_is_address">{% trans '資料為地址' %}</label>
                 </div>
                 <div class="form-check col-md-4">
                     <input type="checkbox" class="form-check-input" id="{{ column_title }}_is_unrelated" onclick="click_checkbox('{{ column_title }}', 'unrelated')">
-                    <label class="form-check-label" for="{{ column_title }}_is_unrelated">資料間無關聯</label>
+                    <label class="form-check-label" for="{{ column_title }}_is_unrelated">{% trans '資料間無關聯' %}</label>
                 </div>
             </div>
             <table class="table table-striped" id="{{ column_title }}_table">
@@ -35,7 +33,7 @@
                                 <input type="text" class="form-control" id="{{ column_title }}_element_{{ forloop.counter0 }}" value="{{ element }}" disabled="disabled" required="required"> 
                             </td>
                             <td>
-                                對應
+                                {% trans '對應' %}
                             </td>
                             <td id="{{ column_title }}_datalist_td_{{ forloop.counter0 }}">
                                 <input list="{{ column_title }}_select_pair_{{ forloop.counter0 }}" id="{{ column_title }}_pair_label_{{ forloop.counter0 }}" required="required" class="col-sm-6 custom-select custom-select-sm">
@@ -51,10 +49,10 @@
             </table>
             <div class="form-row">
                 <div class="btn-group col-md-2">
-                    <button id="{{ column_title }}_custom_add" type="button" class="btn btn-primary" onclick="add_field('{{ column_title }}', {{ element_list }})">新增欄位</button>
+                    <button id="{{ column_title }}_custom_add" type="button" class="btn btn-primary" onclick="add_field('{{ column_title }}', {{ element_list }})">{% trans '新增欄位' %}</button>
                 </div>
                 <div class="btn-group col-md-2">
-                    <button id="{{ column_title }}_custom_delete" type="button" class="btn btn-primary" onclick="delete_field('{{ column_title }}', {{ element_list }})" style="display:none">刪除欄位</button>
+                    <button id="{{ column_title }}_custom_delete" type="button" class="btn btn-primary" onclick="delete_field('{{ column_title }}', {{ element_list }})" style="display:none">{% trans '刪除欄位' %}</button>
                 </div>
             </div>
         {% endfor %}

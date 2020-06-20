@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.i18n import i18n_patterns
 
 urlpatterns = [
+    path('general/', include('general.urls')),
+]
+
+urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
     path('home/', include('home.urls')),
     path('t_Closeness/', include('t_Closeness.urls')),
@@ -25,4 +30,4 @@ urlpatterns = [
     path('k_Anonymity/', include('k_Anonymity.urls')),
     path('json_parser/', include('json_parser.urls')),
     path('accounts/', include('accounts.urls')),
-]
+)

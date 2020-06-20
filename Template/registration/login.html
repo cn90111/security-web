@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
@@ -10,11 +11,8 @@
 	<body style="padding-top:50px;">
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
-                    <h2>歡迎使用本系統，請先登入帳號以繼續操作</h2>
-                    <h5 style="font-weight:bold;color:red">若無帳號請先註冊</h5>
-                    <p>
-                        Description : 
-                    </p>
+                <h2>{% trans '歡迎使用本系統，請先登入帳號以繼續操作' %}</h2>
+                <h5 style="font-weight:bold;color:red">{% trans '說明：若無帳號請先註冊' %}</h5>
             </div>
         </div>
 	   	<div class="container">
@@ -29,10 +27,10 @@
                 <p>
                 <div class="form-row">
                     <div class="form-group col-md-2">
-                        <button type="submit" class="btn btn-primary" style="width:100%">登入</button>
+                        <button type="submit" class="btn btn-primary" style="width:100%">{% trans '登入' %}</button>
                     </div>
                     <div class="form-group col-md-2">
-                        <button type="button" class="btn btn-primary" style="width:100%" onclick="location.href='{% url 'signup' %}'">註冊</button>
+                        <button type="button" class="btn btn-primary" style="width:100%" onclick="location.href='{% url 'signup' %}'">{% trans '註冊' %}</button>
                     </div>
                 </div>
             </form>

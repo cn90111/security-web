@@ -50,23 +50,23 @@ ul, ol {
 }
 </style>
 
+{% load i18n %}
 <footer class="section footer-classic context-dark bg-image" style="background: #2d3246;">
-	<div class="container">
+    <div class="container">
 		<div class="row row-30">
 			<div class="col-md-4 col-xl-5">
 				<div class="pr-xl-4">
-                    <p>貢獻人員：</p>
-					<p>林志訓、林晏丞、陳鐿文、王力慶
+                    <p>{% trans '貢獻人員：' %}</p>
+					<p>{% trans '林志訓' %}、{% trans '林晏丞' %}、{% trans '陳鐿文' %}、{% trans '王力慶' %}
 					<!-- Rights-->
 					<p class="rights"><span>©  </span><span class="copyright-year">2020</span><span> </span><span>Waves</span><span>. </span><span>All Rights Reserved.</span></p>
 				</div>
 			</div>
 			<div class="col-md-4">
-				<h5>Contacts</h5>
+				<h5>{% trans '聯絡方式：' %}</h5>
 				<dl class="contact-list">
-					<dt>聯絡方式:</dt>
-					<dd>交通大學資訊管理與財務金融學系</dd>
-					<dd>游家牧助理教授</dd>
+					<dd>{% trans '交通大學資訊管理與財務金融學系' %}</dd>
+					<dd>{% trans '游家牧助理教授' %}</dd>
 				</dl>
 				<dl class="contact-list">
 					<dt>email:</dt>

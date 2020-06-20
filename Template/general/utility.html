@@ -1,52 +1,52 @@
 {% extends "general/parallel_template.html" %}
-
+{% load i18n %}
+{% trans '已完成' as finish %}
+{% trans '原始檔案' as origin_file %}
+{% trans '去識別化檔案' as de_identification_file %}
 {% block title %}utility{% endblock title %}
 
 {% block content %}
-    <h2>可用性評估</h2>
-    <h5 style="font-weight:bold;color:red">說明1：請選擇用以量測的機器學習方法，選擇後將立即開始量測</h5>
-    <h5 style="font-weight:bold;color:red">說明2：左邊為原始檔案的準確度，右邊為去識別化檔案的準確度</h5>
-    <p>
-        Description : 
-    </p>
+    <h2>{% trans '可用性評估' %}</h2>
+    <h5 style="font-weight:bold;color:red">{% trans '說明1：請選擇用以量測的機器學習方法，選擇後將立即開始量測' %}</h5>
+    <h5 style="font-weight:bold;color:red">{% trans '說明2：左邊為原始檔案的準確度，右邊為去識別化檔案的準確度' %}</h5>
 {% endblock content %}
 
 {% block up_container %}
-    <label for="machine_learning_select">用以量測的機器學習：</label>
+    <label for="machine_learning_select">{% trans '用以量測的機器學習：' %}</label>
     <select class="form-control" id="machine_learning_select">
         <option selected="selected"></option>
         {% for item in machine_learning_list %}
             <option value="{{ item }}">{{ item }}</option>
         {%endfor%}
     </select>
-    <h2 id="loading" style="display:none">量測中請稍後</h2>
+    <h2 id="loading" style="display:none">{% trans '量測中請稍後' %}</h2>
     <br>
 {% endblock up_container %}
                 
 {% block left_container %}
     <div class="form-group col-md-6">
-        <h2 id="left_accuracy">原始檔案準確度(accuracy)：</h2>
+        <h2 id="left_accuracy">{% trans '原始檔案準確度(accuracy)：' %}</h2>
     </div>
 {% endblock left_container %}
 
 {% block right_container %}
     <div class="form-group col-md-6">
-        <h2 id="right_accuracy">去識別化檔案準確度(accuracy)：</h2>
+        <h2 id="right_accuracy">{% trans '去識別化檔案準確度(accuracy)：' %}</h2>
     </div>
 {% endblock right_container %}
 
 {% block button %}
     <div class="form-group col-md-2">
-        <button onclick="location.href='/{{caller}}/Download_Output/csv_name={{file_name}}'" type="button" class="btn btn-primary" style="width:100%">下載去識別化檔案</button>
+        <button onclick="location.href='/{{caller}}/Download_Output/csv_name={{file_name}}'" type="button" class="btn btn-primary" style="width:100%">{% trans '下載去識別化檔案' %}</button>
     </div>
     <div class="form-group col-md-2">
-        <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">返回主選單</button>
+        <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
     </div>
 {% endblock button %}
 
 {% block script %}
     <script>
-        finish_text = '已完成'
+        finish_text = '{{ finish }}'
         unlock_count = 0
         function finish(text_element, finish_message)
         {
@@ -59,10 +59,10 @@
                 var right_accuracy = $('#right_accuracy');
                 var selecter = $('#machine_learning_select')
                 
-                finish_text = '已完成';
+                finish_text = '{{ finish }}';
                 unlock_count = 0;
-                left_accuracy.text('原始檔案準確度(accuracy)：')
-                right_accuracy.text('去識別化檔案準確度(accuracy)：')
+                left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}")
+                right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}")
                 
                 if (!selecter.val()) {
                     return
@@ -88,7 +88,7 @@
                     data: data_output,
                     success: function (result) {
                         left_accuracy.text(left_accuracy.text() + result.accuracy + '%')
-                        finish(loading_text, '原始檔案')
+                        finish(loading_text, '{{ origin_file }}')
                         unlock_count++;
                         if (unlock_count>=2) {
                             selecter.removeAttr('disabled');
@@ -97,7 +97,7 @@
                     error: function (xhr, ajaxOptions, thrownError) {
                         var jsonObj = JSON.parse(xhr.responseText);
                         left_accuracy.text(left_accuracy.text() + jsonObj.accuracy + '%')
-                        alert('原始檔案'+jsonObj.message);
+                        alert('{{ origin_file }}'+jsonObj.message);
                         unlock_count++;
                         if (unlock_count>=2) {
                             selecter.removeAttr('disabled');
@@ -110,7 +110,7 @@
                     data: data_upload,
                     success: function (result) {
                         right_accuracy.text(right_accuracy.text() + result.accuracy + '%')
-                        finish(loading_text, '去識別化檔案')
+                        finish(loading_text, '{{ de_identification_file }}')
                         unlock_count++;
                         if (unlock_count>=2) {
                             selecter.removeAttr('disabled');
@@ -119,7 +119,7 @@
                     error: function (xhr, ajaxOptions, thrownError) {
                         var jsonObj = JSON.parse(xhr.responseText);
                         right_accuracy.text(right_accuracy.text() + jsonObj.accuracy + '%')
-                        alert('去識別化檔案'+jsonObj.message);
+                        alert('{{ de_identification_file }}'+jsonObj.message);
                         unlock_count++;
                         if (unlock_count>=2) {
                             selecter.removeAttr('disabled');
