@@ -133,7 +133,7 @@ LOCALE_PATHS = [
 
 LANGUAGES = {
     ('zh-hant', '中文(台灣)'),
-    ('en-US', 'English(American)'),
+    ('en-us', 'English(American)'),
 }
 
 # Static files (CSS, JavaScript, Images)

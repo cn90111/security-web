@@ -23,12 +23,26 @@
             <li class="nav-item">
                 <a class="navbar-brand" href="javascript:void(0)" id="delete_account" style="color:#ffffff">{% trans '刪除帳號' %}</a>
             </li>
+            <li class="nav-item">
+                <form id="i18n" action="{% url 'set_language' %}" method="post">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.get_full_path|remove_language_code }}" />
+                    <select name="language" class="form-control language-switch">
+                        {% for code, name in LANGUAGES %}
+                            <option value="{{ code }}" {% if code == LANGUAGE_CODE %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </li>
         </ul>
     </nav>
 </div>
 
 <script>
     $(function () {
+        $('#i18n').change(function () {
+            $(this).submit();
+        });
         $('#delete_account').on('click', function () {
             answer = prompt("{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入YES' %}", '');
             if (answer == 'YES') {
