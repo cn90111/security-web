@@ -56,7 +56,7 @@
     	</div>
         <div class="progress-div" style="position:absolute; width:90%;  left:5%;">
             <label> {% trans '進度條' %} </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <span id="Check_Txt" style="color:red">{% trans '執行時間：' %}<span id="Check_i">0{{ hour }}0{{ minute }}0{{ second }}</span>
+            <span id="Check_Txt" style="color:red">{% trans '執行時間：' %}<span id="Check_i">0 {{ hour }} 0 {{ minute }} 0 {{ second }}</span>
             <div id="bar" class="progress progress-striped active">
                 <div class="progress-bar progress-bar-warning" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" style="width:0%">
                 </div>
@@ -73,7 +73,7 @@
                 var Cal_Hour = Math.floor(SetMinute / 3600);
                 var Cal_Minute = Math.floor(Math.floor(SetMinute % 3600) / 60);
                 var Cal_Second = SetMinute % 60;
-                Check_i.innerHTML = Cal_Hour + '{{ hour }}' + Cal_Minute + '{{ minute }}' + Cal_Second + '{{ second }}';
+                Check_i.innerHTML = Cal_Hour + ' {{ hour }} ' + Cal_Minute + ' {{ minute }} ' + Cal_Second + ' {{ second }}';
             }
             
             function reset() {

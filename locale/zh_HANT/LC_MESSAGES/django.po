@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-23 05:29+0000\n"
+"POT-Creation-Date: 2020-06-29 07:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,6 +187,7 @@ msgid "無需預先設定的參數"
 msgstr ""
 
 #: Template/general/number_preprocessing.html:10
+#: Template/json_parser/json_parser.html:17
 msgid "欄位："
 msgstr ""
 
