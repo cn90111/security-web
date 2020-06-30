@@ -1,34 +1,35 @@
+{% load i18n %}
 <div class="container" style="width:inherit;">
-    <h2>檔名：{{file_name}}</h2>
+    <h2>{% trans '檔名：' %}{{file_name}}</h2>
     <form id="parameter_form" data-toggle="validator">
         {% csrf_token %}
         {% if not number_title_list %}
-            <h2>無需預先設定的參數</h2>
+            <h2>{% trans '無需預先設定的參數' %}</h2>
         {% endif %}
         {% for number_title in number_title_list %}
-            <h5>欄位：{{ number_title }}</h5>
+            <h5>{% trans '欄位：' %}{{ number_title }}</h5>
             <div class="form-row justify-content-center">
                 <div class="form-check col-md-4">
                     <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_discrete" onclick="click_number_checkbox('{{ number_title }}', 'discrete')">
-                    <label class="form-check-label" for="{{ number_title }}_is_discrete">資料為離散型資料</label>
+                    <label class="form-check-label" for="{{ number_title }}_is_discrete">{% trans '資料為離散型資料' %}</label>
                 </div>
                 <div class="form-check col-md-4">
                     <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_continuous" onclick="click_number_checkbox('{{ number_title }}', 'continuous')">
-                    <label class="form-check-label" for="{{ number_title }}_is_continuous">資料為連續型資料</label>
+                    <label class="form-check-label" for="{{ number_title }}_is_continuous">{% trans '資料為連續型資料' %}</label>
                 </div>
             </div>
             {% if advanced_settings %}
                 <div id="{{ number_title }}_display" class="form-row" style="display:none">
-                    <label for="{{ number_title }}_n">間隔數量：</label><br>
+                    <label for="{{ number_title }}_n">{% trans '間隔數量：' %}</label><br>
                     <div class="form-check col-md-3">
                         <input type="number" name="n" value="1" min="1" max="{{ max_interval_quantity_dict | get_item:number_title}}" class="form-control" required id="{{ number_title }}_n">
                     </div>
                     <div class="form-check col-md-6">
-                        <button id="{{ number_title }}_interval_determine" type="button" class="btn btn-primary" onclick="set_interval('{{ number_title }}')">確定</button>
+                        <button id="{{ number_title }}_interval_determine" type="button" class="btn btn-primary" onclick="set_interval('{{ number_title }}')">{% trans '確定' %}</button>
                     </div>
                 </div>
                 <br>
-                <label id="{{ number_title }}_interval_text" style="display:none">間隔區間(每個區間皆包含最小值不包含最大值)：</label><br>
+                <label id="{{ number_title }}_interval_text" style="display:none">{% trans '間隔區間(每個區間皆包含最小值不包含最大值)：' %}</label><br>
                 <div id="{{ number_title }}_interval" class="form-row justify-content-center">
                 </div>
             {% endif %}
@@ -84,7 +85,7 @@
             } else if (checked_result == 'continuous') {
                 bias = bias[number_title]/interval_quantity;
             } else {
-                alert('checked_result錯誤呼叫：'+checked_result);
+                alert("{% trans 'checked_result錯誤呼叫：' %}"+checked_result);
                 return;
             }
             
@@ -133,11 +134,11 @@
             
             if (next_value && value > next_value) {
                 interval_temp.value = next_value;
-                alert("已達最大值")
+                alert("{% trans '已達最大值' %}")
             }
             if (previous_value && value < previous_value) {
                 interval_temp.value = previous_value;
-                alert("已達最小值")
+                alert("{% trans '已達最小值' %}")
             }
         }
     {% endif %}

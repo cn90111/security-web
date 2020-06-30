@@ -1,15 +1,12 @@
 {% extends "general/parallel_template.html" %}
-
+{% load i18n %}
 {% block title %}parameter custom{% endblock title %}
 
 {% block content %}
-    <h2>檔案確認</h2>
-    <h5 style="font-weight:bold;color:red">說明1：請確認左邊的參數設定，是否希望做進一步的調整</h5>
-    <h5 style="font-weight:bold;color:red">說明2：請確認右邊的檔案預覽，是否為您想要去識別化的檔案</h5>
-    <h5 style="font-weight:bold;color:red">說明3：設定完成後，將頁面滾動至最下方，並按下繼續執行</h5>
-    <p>
-        Description : 
-    </p>
+    <h2>{% trans '檔案確認' %}</h2>
+    <h5 style="font-weight:bold;color:red">{% trans '說明1：請確認左邊的參數設定，是否希望做進一步的調整' %}</h5>
+    <h5 style="font-weight:bold;color:red">{% trans '說明2：請確認右邊的檔案預覽，是否為您想要去識別化的檔案' %}</h5>
+    <h5 style="font-weight:bold;color:red">{% trans '說明3：設定完成後，將頁面滾動至最下方，並按下繼續執行' %}</h5>
 {% endblock content %}
 
 {% block left_container %}
@@ -22,35 +19,36 @@
                 {% include 'general/number_preprocessing.html' %}
             {% endif %}
         {% else %}
-            <h2>custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員</h2>
+            <h2>{% trans 'custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員' %}</h2>
         {% endif %}
     </div>
 {% endblock left_container %}
 
 {% block right_container %}
     <div class="form-group col-md-4">
-        {% include 'general/display_file.html' with title="檔案預覽" method="upload" id="preview" %}
+        {% trans '檔案預覽' as preview_file %}
+        {% include 'general/display_file.html' with title=preview_file method="upload" id="preview" %}
     </div>
 {% endblock right_container %}
 
 {% block button %}
     <div class="form-group col-md-2">
-        <button id="execute" type="button" class="btn btn-primary" style="width:100%">繼續執行</button>
+        <button id="execute" type="button" class="btn btn-primary" style="width:100%">{% trans '繼續執行' %}</button>
     </div>
     {% if not advanced_settings %}
         <div class="form-group col-md-2">
-            <button onclick="location.href='/{{ caller }}/advanced_settings/csv_name={{file_name}}/'" type="button" class="btn btn-primary" style="width:100%">進階設定</button>
+            <button onclick="location.href='/{{ caller }}/advanced_settings/csv_name={{file_name}}/'" type="button" class="btn btn-primary" style="width:100%">{% trans '進階設定' %}</button>
         </div>
     {% else %}
         <div class="form-group col-md-2">
-            <button onclick="location.href='/{{ caller }}/custom/csv_name={{file_name}}/'" type="button" class="btn btn-primary" style="width:100%">基礎設定</button>
+            <button onclick="location.href='/{{ caller }}/custom/csv_name={{file_name}}/'" type="button" class="btn btn-primary" style="width:100%">{% trans '基礎設定' %}</button>
         </div>
     {% endif %}
     <div class="form-group col-md-2">
-        <button onclick="location.href='/{{ caller }}/'" type="button" class="btn btn-primary" style="width:100%">重新選擇檔案</button>
+        <button onclick="location.href='/{{ caller }}/'" type="button" class="btn btn-primary" style="width:100%">{% trans '重新選擇檔案' %}</button>
     </div>
     <div class="form-group col-md-2">
-        <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">返回主選單</button>
+        <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
     </div>
 {% endblock button %}
 
@@ -95,7 +93,7 @@
                             number_title_pair_dict[number_title] = 'continuous';
                         }
                         else {
-                            alert(number_title+'尚未選擇資料類型')
+                            alert(number_title+"{% trans '尚未選擇資料類型' %}")
                             return
                         }
                     }
@@ -116,7 +114,7 @@
                                 i++;
                             }
                             if(interval_value_list.length == 0) {
-                                alert(number_title+'尚未確認間隔數量');
+                                alert(number_title+"{% trans '尚未確認間隔數量' %}");
                                 return;
                             }
                             number_dict[number_title] = {'type':type, 'value_list':interval_value_list};
@@ -186,7 +184,7 @@
                     }
                     
                     if (lose_required) {
-                        alert('尚有對應關係還沒填寫');                        
+                        alert("{% trans '尚有對應關係還沒填寫' %}");
                     }
                     else {
                         var url = '/json_parser/create_json/';
@@ -208,11 +206,11 @@
                                     i++;
                                 }
                                 if(!type) {
-                                    alert(number_title+'尚未選擇資料類型');
+                                    alert(number_title+"{% trans '尚未選擇資料類型' %}");
                                     return;
                                 }
                                 if(interval_value_list.length == 0) {
-                                    alert(number_title+'尚未確認間隔數量');
+                                    alert(number_title+"{% trans '尚未確認間隔數量' %}");
                                     return;
                                 }
                                 number_dict[number_title] = {'type':type, 'value_list':interval_value_list};
@@ -236,6 +234,6 @@
             })
         </script>
     {% else %}
-        <h2>custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員</h2>
+        <h2>{% blocktrans %}custom_mode錯誤，{{ custom_mode }}不符合預期，請通知開發人員{% endblocktrans %}</h2>
     {% endif %}
 {% endblock script %}

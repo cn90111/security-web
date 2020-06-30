@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
@@ -13,11 +14,8 @@
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
                 {% block content %}
-                    <h2>並列式模板</h2>
-                    <h5 style="font-weight:bold;color:red">說明：</h5>
-                    <p>
-                        Description : 
-                    </p>
+                    <h2>{% trans '並列式模板' %}</h2>
+                    <h5 style="font-weight:bold;color:red">{% trans '說明：' %}</h5>
                 {% endblock content %}
             </div>
         </div>
@@ -39,7 +37,7 @@
                 <div class="form-row">
                     {% block button %}
                         <div class="form-group col-md-2">
-                            <button id="execute" type="button" class="btn btn-primary" style="width:100%">繼續執行</button>
+                            <button id="execute" type="button" class="btn btn-primary" style="width:100%">{% trans '繼續執行' %}</button>
                         </div>
                     {% endblock button %}
                 </div>

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load i18n %}
 <html lang="en">
 	<head>
         <meta charset="UTF-8">
@@ -13,10 +14,7 @@
             <div class="container">
                 {% block content %}
                     <h2>function name</h2>
-                    <h5 style="font-weight:bold;color:red">注意事項1：</h5>
-                    <p>
-                        Description : 
-                    </p>
+                    <h5 style="font-weight:bold;color:red">{% trans '注意事項1：' %}</h5>
                 {% endblock content %}
             </div>
         </div>
@@ -25,7 +23,7 @@
                 {% csrf_token %}
                 <div class="custom-file center" style="height:80px">
                     <input type="file" class="custom-file-input" name="file" id="customFile_csv" accept=".csv" >
-                    <label class="custom-file-label" for="customFile_csv">請選擇將要去識別化的CSV檔案 (.csv)</label>
+                    <label class="custom-file-label" for="customFile_csv">{% trans '請選擇將要去識別化的CSV檔案(.csv)' %}</label>
                 </div>
             </form>
         </div>
@@ -46,16 +44,16 @@
                 csv_name = csv_name.split("\\").pop()
                 
                 if (!csv_name) {
-                    alert('請先選擇檔案');
+                    alert("{% trans '請先選擇檔案' %}");
                     return;
                 }
                 if (!isValidFile(document.getElementById('customFile_csv'))) {
-                    alert("檔案類型錯誤");
+                    alert("{% trans '檔案類型錯誤' %}");
                     return;
                 }
                 let formData = new FormData($('#form_file').get(0));
                 $.ajax({
-                    url: '/{% block upload_url %}json_parser{% endblock upload_url %}/File_Upload/',
+                    url: '/general/File_Upload/{% block upload_mode %}json{% endblock upload_mode %}',
                     type: 'POST',
                     data: formData,
                     dataType: 'json',
