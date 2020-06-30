@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-29 07:48+0000\n"
+"POT-Creation-Date: 2020-06-30 03:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,24 +94,24 @@ msgstr ""
 msgid "說明2：將頁面滾動至最下方，可以選擇存檔或進行後續的可用度檢測"
 msgstr ""
 
-#: Template/general/execute_finish.html:16 Template/general/utility.html:4
+#: Template/general/execute_finish.html:13 Template/general/utility.html:4
 msgid "原始檔案"
 msgstr ""
 
-#: Template/general/execute_finish.html:23 Template/general/utility.html:5
+#: Template/general/execute_finish.html:20 Template/general/utility.html:5
 msgid "去識別化檔案"
 msgstr ""
 
-#: Template/general/execute_finish.html:30 Template/general/utility.html:40
+#: Template/general/execute_finish.html:27 Template/general/utility.html:40
 msgid "下載去識別化檔案"
 msgstr ""
 
-#: Template/general/execute_finish.html:33
+#: Template/general/execute_finish.html:30
 msgid "檔案可用度量測"
 msgstr ""
 
-#: Template/general/execute_finish.html:36 Template/general/function.html:52
-#: Template/general/parameter_custom.html:54 Template/general/utility.html:43
+#: Template/general/execute_finish.html:33 Template/general/function.html:52
+#: Template/general/parameter_custom.html:51 Template/general/utility.html:43
 msgid "返回主選單"
 msgstr ""
 
@@ -132,7 +132,7 @@ msgid "目前進度："
 msgstr ""
 
 #: Template/general/function.html:22 Template/general/parallel_template.html:18
-#: Template/registration/signup.html:15
+#: Template/registration/signup.html:16
 msgid "說明："
 msgstr ""
 
@@ -228,7 +228,7 @@ msgid "並列式模板"
 msgstr ""
 
 #: Template/general/parallel_template.html:40
-#: Template/general/parameter_custom.html:39
+#: Template/general/parameter_custom.html:36
 msgid "繼續執行"
 msgstr ""
 
@@ -248,41 +248,41 @@ msgstr ""
 msgid "說明3：設定完成後，將頁面滾動至最下方，並按下繼續執行"
 msgstr ""
 
-#: Template/general/parameter_custom.html:25
+#: Template/general/parameter_custom.html:22
 msgid "custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員"
 msgstr ""
 
-#: Template/general/parameter_custom.html:32
+#: Template/general/parameter_custom.html:29
 msgid "檔案預覽"
 msgstr ""
 
-#: Template/general/parameter_custom.html:43
+#: Template/general/parameter_custom.html:40
 msgid "進階設定"
 msgstr ""
 
-#: Template/general/parameter_custom.html:47
+#: Template/general/parameter_custom.html:44
 msgid "基礎設定"
 msgstr ""
 
-#: Template/general/parameter_custom.html:51
+#: Template/general/parameter_custom.html:48
 msgid "重新選擇檔案"
 msgstr ""
 
-#: Template/general/parameter_custom.html:99
-#: Template/general/parameter_custom.html:212
+#: Template/general/parameter_custom.html:96
+#: Template/general/parameter_custom.html:209
 msgid "尚未選擇資料類型"
 msgstr ""
 
-#: Template/general/parameter_custom.html:120
-#: Template/general/parameter_custom.html:216
+#: Template/general/parameter_custom.html:117
+#: Template/general/parameter_custom.html:213
 msgid "尚未確認間隔數量"
 msgstr ""
 
-#: Template/general/parameter_custom.html:190
+#: Template/general/parameter_custom.html:187
 msgid "尚有對應關係還沒填寫"
 msgstr ""
 
-#: Template/general/parameter_custom.html:240
+#: Template/general/parameter_custom.html:237
 #, python-format
 msgid "custom_mode錯誤，%(custom_mode)s不符合預期，請通知開發人員"
 msgstr ""
@@ -398,47 +398,51 @@ msgid ""
 "別化的最後一欄 )"
 msgstr ""
 
-#: Template/navbar.html:6
-msgid "主頁"
+#: Template/navbar.html:2
+msgid "帳號管理"
 msgstr ""
 
-#: Template/navbar.html:21
+#: Template/navbar.html:3
 msgid "登出"
 msgstr ""
 
-#: Template/navbar.html:24
+#: Template/navbar.html:4
 msgid "刪除帳號"
 msgstr ""
 
-#: Template/navbar.html:47
+#: Template/navbar.html:9
+msgid "主頁"
+msgstr ""
+
+#: Template/navbar.html:49 Template/navbar.html:77
 msgid "帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入YES"
 msgstr ""
 
-#: Template/navbar.html:51
+#: Template/navbar.html:53 Template/navbar.html:81
 msgid "刪除動作已取消"
 msgstr ""
 
-#: Template/registration/login.html:14
+#: Template/registration/login.html:15
 msgid "歡迎使用本系統，請先登入帳號以繼續操作"
 msgstr ""
 
-#: Template/registration/login.html:15
+#: Template/registration/login.html:16
 msgid "說明：若無帳號請先註冊"
 msgstr ""
 
-#: Template/registration/login.html:30
+#: Template/registration/login.html:31
 msgid "登入"
 msgstr ""
 
-#: Template/registration/login.html:33 Template/registration/signup.html:14
+#: Template/registration/login.html:34 Template/registration/signup.html:15
 msgid "註冊"
 msgstr ""
 
-#: Template/registration/signup.html:36
+#: Template/registration/signup.html:37
 msgid "送出"
 msgstr ""
 
-#: Template/registration/signup.html:39
+#: Template/registration/signup.html:40
 msgid "回到登入"
 msgstr ""
 
