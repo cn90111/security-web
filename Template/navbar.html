@@ -1,4 +1,7 @@
 {% load i18n %}
+{% trans '帳號管理' as account_management %}
+{% trans '登出' as log_out %}
+{% trans '刪除帳號' as delete_account %}
 <div>
     <nav class="navbar navbar-expand-sm fixed-top" style="background-color:#3399ff">
         <ul class="navbar-nav">
@@ -17,12 +20,15 @@
             <li class="nav-item">
                 <a class="navbar-brand" href="/l_Diversity/" style="color:#ffffff">l-Diversity</a>
             </li>
+            {% if user.is_authenticated %}
             <li class="nav-item">
-                <a class="navbar-brand" href="{% url 'logout' %}" style="color:#ffffff">{% trans '登出' %}</a>
+                <select id="account" name="account" class="form-control">
+                    <option value="{{ account_management }}" selected>{{ account_management }}</option>
+                    <option value="{{ log_out }}">{{ log_out }}</option>
+                    <option value="{{ delete_account }}">{{ delete_account }}</option>
+                </select>
             </li>
-            <li class="nav-item">
-                <a class="navbar-brand" href="javascript:void(0)" id="delete_account" style="color:#ffffff">{% trans '刪除帳號' %}</a>
-            </li>
+            {% endif %}
             <li class="nav-item">
                 <form id="i18n" action="{% url 'set_language' %}" method="post">
                     {% csrf_token %}
@@ -39,10 +45,34 @@
 </div>
 
 <script>
+    function delete_account() {
+        answer = prompt("{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入YES' %}", '');
+        if (answer == 'YES') {
+            window.location = "{% url 'delete_account' %}";
+        } else {
+            alert("{% trans '刪除動作已取消' %}")
+        }
+    }
+
     $(function () {
+        $('#account').change(function () {
+            selected = $(this).find(':selected').val();
+            if (selected == '{{ log_out }}') {
+                window.location = "{% url 'logout' %}";
+            } else if (selected == '{{ delete_account }}') {
+                delete_account();
+            }
+            $(this)[0].selectedIndex = 0;
+        });
+    
         $('#i18n').change(function () {
             $(this).submit();
         });
+        
+        $('#log_out').on('click', function () {
+            window.location = "{% url 'logout' %}";
+        });
+        
         $('#delete_account').on('click', function () {
             answer = prompt("{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入YES' %}", '');
             if (answer == 'YES') {
@@ -50,6 +80,6 @@
             }  else {
                 alert("{% trans '刪除動作已取消' %}")
             }
-        })
+        });
     })
 </script>

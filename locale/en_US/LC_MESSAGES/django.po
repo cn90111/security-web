@@ -424,7 +424,7 @@ msgstr "home"
 
 #: Template/navbar.html:21
 msgid "登出"
-msgstr "logout"
+msgstr "log out"
 
 #: Template/navbar.html:24
 msgid "刪除帳號"
