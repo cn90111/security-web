@@ -165,26 +165,6 @@ class DisplayCsvView(View):
         tables = df.head(200).to_html()
         return JsonResponse(tables, safe=False)
 
-class FileListView(View):
-    @method_decorator(login_required)
-    def get(self, request, *arg, **kwargs):
-        path = Path()
-        
-        method = kwargs.get('method').lower()
-        username = request.user.get_username()
-        caller = path.get_caller(request)
-        s = []
-        
-        url = 'general/file_list_'+method+'.html'
-        root = method+'/'+caller+'/'+username+'/'
-        for directory_name in os.listdir(root):
-            s.append(directory_name+'.csv')
-        
-        request_dict = {}
-        request_dict['s'] = s
-        request_dict['caller'] = caller
-        return render(request, url, request_dict)
-
 class DownloadView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):

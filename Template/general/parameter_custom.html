@@ -55,7 +55,7 @@
 {% block script %}
     <script>
         $(function () {
-            var url = '/{{ caller }}/title_check/';
+            var url = '/general/title_check/';
             var data = {
                 'csv_name' : '{{ file_name }}',
             }
@@ -85,21 +85,15 @@
                 $('#execute').on('click', function () {
                     var path = 'upload/{{ caller }}/';
                     var number_title_list = {{ number_title_list|safe }};
-                    var number_title_pair_dict = {}
+                    var number_title_pair_dict = {};
                     
                     for (var number_title of number_title_list) {
-                        if (document.getElementById
-                            (number_title+'_is_discrete').checked) {
-                            number_title_pair_dict[number_title] = 'discrete';
+                        var type = get_check_result(number_title);
+                        if(!type) {
+                            alert(number_title+"{% trans '尚未選擇資料類型' %}");
+                            return;
                         }
-                        else if (document.getElementById
-                            (number_title+'_is_continuous').checked) {
-                            number_title_pair_dict[number_title] = 'continuous';
-                        }
-                        else {
-                            alert(number_title+"{% trans '尚未選擇資料類型' %}")
-                            return
-                        }
+                        number_title_pair_dict[number_title] = type
                     }
                     var url = '/DPSyn/number_preprocessing/';
                     var data = {
@@ -113,10 +107,21 @@
                             var type = get_check_result(number_title);
                             var i = 0;
                             interval_value_list = [];
-                            while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
-                                interval_value_list.push(temp_interval.value);
-                                i++;
+                            
+                            if(type == 'discrete') {
+                                while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
+                                    interval_value_list.push(parseInt(temp_interval.value));
+                                    i++;
+                                }
+                            } else if(type == 'continuous') {
+                                while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
+                                    interval_value_list.push(parseFloat(temp_interval.value));
+                                    i++;
+                                }
+                            } else {
+                                alert('{% blocktrans %}間隔 type 錯誤，{{ type }}不符合預期，請通知開發人員{% endblocktrans %}')
                             }
+                            
                             if(interval_value_list.length == 0) {
                                 alert(number_title+"{% trans '尚未確認間隔數量' %}");
                                 return;
@@ -206,18 +211,31 @@
                                 var type = get_check_result(number_title);
                                 var i = 0;
                                 interval_value_list = []
-                                while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
-                                    interval_value_list.push(temp_interval.value);
-                                    i++;
-                                }
+                                
                                 if(!type) {
                                     alert(number_title+"{% trans '尚未選擇資料類型' %}");
                                     return;
                                 }
+                                
+                                if(type == 'discrete') {
+                                    while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
+                                        interval_value_list.push(parseInt(temp_interval.value));
+                                        i++;
+                                    }
+                                } else if(type == 'continuous') {
+                                    while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
+                                        interval_value_list.push(parseFloat(temp_interval.value));
+                                        i++;
+                                    }
+                                } else {
+                                    alert('{% blocktrans %}間隔 type 錯誤，{{ type }}不符合預期，請通知開發人員{% endblocktrans %}')
+                                }
+                                
                                 if(interval_value_list.length == 0) {
                                     alert(number_title+"{% trans '尚未確認間隔數量' %}");
                                     return;
                                 }
+                                
                                 number_dict[number_title] = {'type':type, 'value_list':interval_value_list};
                             }
                             data['number_dict'] = JSON.stringify(number_dict);
@@ -240,6 +258,6 @@
             })
         </script>
     {% else %}
-        <h2>{% blocktrans %}custom_mode錯誤，{{ custom_mode }}不符合預期，請通知開發人員{% endblocktrans %}</h2>
+        alert('{% blocktrans %}custom_mode 錯誤，{{ custom_mode }}不符合預期，請通知開發人員{% endblocktrans %}')
     {% endif %}
 {% endblock script %}
