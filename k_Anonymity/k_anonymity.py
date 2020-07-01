@@ -133,12 +133,16 @@ def run(request):
                         ele = j
                         left = {ele}
                         while(dic[i]['structure'][ele]!=ele):
+                            if skip:
+                                raise BreakProgramException('程式成功終止')
                             ele = dic[i]['structure'][ele]
                             left.add(ele)
                         
                         ele = k
                         right = {ele}
                         while(dic[i]['structure'][ele]!=ele):
+                            if skip:
+                                raise BreakProgramException('程式成功終止')
                             ele = dic[i]['structure'][ele]
                             right.add(ele)
                             
@@ -147,15 +151,10 @@ def run(request):
                         each_att_distance[(j,k)] = math.log(jie,2)
             
             cate_distance[i] = each_att_distance
-        
         else:
             print(i,':',dic[i]['type'])
-                        
-    
     
     cate_distance
-    
-    
     
     def find_interval(x,att):
         if skip:
@@ -285,7 +284,6 @@ def run(request):
                         
                 DistanceMatrix[i[0], j[0]] = distance
                 DistanceMatrix[j[0], i[0]] = distance
-                
             elif i[0]==j[0]:
                 distance = 0
                 DistanceMatrix[i[0], j[0]] = 0
@@ -328,7 +326,7 @@ def run(request):
     DistanceCenter
     
     
-    glist =[1 for i in range(len(df))]
+    glist = [1 for i in range(len(df))]
     
     final_group = []
     upgroup_num = 1
@@ -535,6 +533,8 @@ def run(request):
             
             # 如果此點尚未被 group，找下一個
             while glist[r4]==1 and distance_list[r4]!=np.inf:
+                if skip:
+                    raise BreakProgramException('程式成功終止')
                 distance_list[r4] = np.inf
                 r4 = np.where(distance_list==np.min(distance_list))[0][0]
             

@@ -54,6 +54,8 @@ def run(request):
     attr_num = df_data.shape[1]
     column_name = list(df_data.columns)
     for attr_id in range(attr_num):
+        if skip:
+            raise BreakProgramException('程式成功終止')
         print("({attr_id}) {attr_name}    ".format(attr_id=attr_id, attr_name=column_name[attr_id]), end='')
     #print("\nWhich is sensitive attribute?")
     #sa_id = int(input("\nWhich is sensitive attribute?"))
@@ -75,6 +77,8 @@ def run(request):
                 ancestor_set.add(category)
                 current_category = category
                 while True:
+                    if skip:
+                        raise BreakProgramException('程式成功終止')
                     father_category = data_dict[column_name[attr_id]]['structure'][current_category]
                     if father_category == current_category:
                         break
@@ -93,6 +97,8 @@ def run(request):
                     # Match generalized result
                     current_category = category_2
                     while True:
+                        if skip:
+                            raise BreakProgramException('程式成功終止')
                         if current_category in category_ancestor_dict[category_1]:
                             category_generalize_dict[(category_1, category_2)] = current_category
                             break
@@ -107,10 +113,7 @@ def run(request):
             data_buffer.append(df_data.iloc[row, col])
         original_data.append(data_buffer)
     
-    
     # In[ ]:
-    
-    
     def KLD(P, Q):
         if skip:
             raise BreakProgramException('程式成功終止')
@@ -145,11 +148,11 @@ def run(request):
         return new_cluster
         
     def force_data_eligible(distribution_dict, distribution, cluster_distribution_dict, cluster_member_num):
-        if skip:
-            raise BreakProgramException('程式成功終止')
         sa_subjects = [ele for ele in cluster_distribution_dict.keys()]
         cluster_distribution = np.array([i for i in cluster_distribution_dict.values()]) / cluster_member_num
         while True:
+            if skip:
+                raise BreakProgramException('程式成功終止')
             over_most = sa_subjects[np.argmax(distribution - cluster_distribution)]
             under_most = sa_subjects[np.argmin(distribution - cluster_distribution)]
             cluster_distribution_dict[over_most] += 1

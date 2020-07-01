@@ -135,7 +135,6 @@
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             var jsonObj = JSON.parse(xhr.responseText);
-                            
                             clearInterval(sitv);
                             clearInterval(mm);
                             $('.progress-text').text("{% trans '執行失敗' %}");
