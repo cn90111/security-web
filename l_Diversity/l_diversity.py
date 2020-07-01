@@ -141,12 +141,16 @@ def run(request):
                         ele = j
                         left = {ele}
                         while(dic[i]['structure'][ele]!=ele):
+                            if skip:
+                                raise BreakProgramException('程式成功終止')
                             ele = dic[i]['structure'][ele]
                             left.add(ele)
                         
                         ele = k
                         right = {ele}
                         while(dic[i]['structure'][ele]!=ele):
+                            if skip:
+                                raise BreakProgramException('程式成功終止')
                             ele = dic[i]['structure'][ele]
                             right.add(ele)
                             
@@ -158,11 +162,8 @@ def run(request):
         
         else:
             print(i,':',dic[i]['type'])
-                        
-    
     
     cate_distance
-    
     
     def find_interval(x,att):
         if skip:
@@ -336,8 +337,7 @@ def run(request):
     
     DistanceCenter
     
-    
-    glist =[1 for i in range(len(df))]
+    glist = [1 for i in range(len(df))]
     
     final_group = []
     upgroup_num = 1
@@ -390,7 +390,6 @@ def run(request):
                     raise BreakProgramException('程式成功終止')
                 # 如果尚未 group
                 if glist[r2] == 1:
-                    
                     # 計算加入r2之前的diversity
                     diversity = {}
                     for i in group:
@@ -544,6 +543,8 @@ def run(request):
             
             # 如果此點尚未被 group，找下一個
             while glist[r4]==1 and distance_list[r4]!=np.inf:
+                if skip:
+                    raise BreakProgramException('程式成功終止')
                 distance_list[r4] = np.inf
                 r4 = np.where(distance_list==np.min(distance_list))[0][0]
             

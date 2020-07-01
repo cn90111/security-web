@@ -27,6 +27,7 @@
                 </div>
             </form>
         </div>
+        
         <script>
             function isValidFile(file) {
                 var type = "." + file.value.split(".")[1];
@@ -35,23 +36,26 @@
                 }
                 return false;
             }
+            
+            function reset() {
+                $("#customFile_csv").val('')
+            }
         
             $("#customFile_csv").on("change", function() {
-                var fileName = $(this).val().split("\\").pop();
-                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
-                
-                var csv_name = $("#customFile_csv").val();
-                csv_name = csv_name.split("\\").pop()
+                var csv_name = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(csv_name);
                 
                 if (!csv_name) {
                     alert("{% trans '請先選擇檔案' %}");
                     return;
                 }
+                
                 if (!isValidFile(document.getElementById('customFile_csv'))) {
                     alert("{% trans '檔案類型錯誤' %}");
                     return;
                 }
                 let formData = new FormData($('#form_file').get(0));
+                
                 $.ajax({
                     url: '/general/File_Upload/{% block upload_mode %}json{% endblock upload_mode %}',
                     type: 'POST',
@@ -60,6 +64,7 @@
                     contentType: false,
                     processData: false,
                     success: function () {
+                        reset()
                         window.location = '/{% block custom_url %}json_parser{% endblock custom_url %}/custom/csv_name='+csv_name+'/';
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
