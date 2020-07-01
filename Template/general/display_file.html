@@ -10,7 +10,7 @@
 <script>
  $(function () {
     var display_table = $('#{{ id }}');
-    var url = '/{{caller}}/CSV_View_{{method}}/'
+    var url = '/general/CSV_View_{{method}}/'
     $.getJSON(url,
         {
             'File' : '{{file_name}}',

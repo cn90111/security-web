@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="container" style="width:inherit;">
     <h2>{% trans '檔名：' %}{{file_name}}</h2>
-    <form id="parameter_form" data-toggle="validator">
+    <form data-toggle="validator">
         {% csrf_token %}
         {% if not number_title_list %}
             <h2>{% trans '無需預先設定的參數' %}</h2>
