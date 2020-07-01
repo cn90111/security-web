@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-01 03:28+0000\n"
+"POT-Creation-Date: 2020-07-01 07:30+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: Template/DPSyn/DPSyn.html:5 Template/home.html:23
+#: Template/DPSyn/DPSyn.html:6 Template/home.html:23
 msgid ""
 "說明： 差分隱私適用於資料筆數較大的資料集，建議至少含有一萬筆紀錄且維度也會受"
 "資料筆數影響不能太高。"
@@ -274,23 +274,29 @@ msgstr ""
 msgid "重新選擇檔案"
 msgstr ""
 
-#: Template/general/parameter_custom.html:100
-#: Template/general/parameter_custom.html:214
+#: Template/general/parameter_custom.html:93
+#: Template/general/parameter_custom.html:216
 msgid "尚未選擇資料類型"
 msgstr ""
 
-#: Template/general/parameter_custom.html:121
-#: Template/general/parameter_custom.html:218
+#: Template/general/parameter_custom.html:122
+#: Template/general/parameter_custom.html:231
+#, python-format
+msgid "間隔 type 錯誤，%(type)s不符合預期，請通知開發人員"
+msgstr ""
+
+#: Template/general/parameter_custom.html:126
+#: Template/general/parameter_custom.html:235
 msgid "尚未確認間隔數量"
 msgstr ""
 
-#: Template/general/parameter_custom.html:192
+#: Template/general/parameter_custom.html:197
 msgid "尚有對應關係還沒填寫"
 msgstr ""
 
-#: Template/general/parameter_custom.html:243
+#: Template/general/parameter_custom.html:261
 #, python-format
-msgid "custom_mode錯誤，%(custom_mode)s不符合預期，請通知開發人員"
+msgid "custom_mode 錯誤，%(custom_mode)s不符合預期，請通知開發人員"
 msgstr ""
 
 #: Template/general/utility.html:3
