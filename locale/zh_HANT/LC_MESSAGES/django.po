@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-30 03:37+0000\n"
+"POT-Creation-Date: 2020-07-01 03:28+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: Template/DPSyn/DPSyn.html:5 Template/home.html:23
+msgid ""
+"說明： 差分隱私適用於資料筆數較大的資料集，建議至少含有一萬筆紀錄且維度也會受"
+"資料筆數影響不能太高。"
+msgstr ""
 
 #: Template/DPSyn/DPSyn_home.html:11
 msgid "說明：差分隱私適用於資料筆數較大的資料集，建議至少含有一萬筆紀錄"
@@ -156,7 +162,7 @@ msgstr ""
 msgid "檔案執行完畢"
 msgstr ""
 
-#: Template/general/function.html:141
+#: Template/general/function.html:140
 msgid "執行失敗"
 msgstr ""
 
@@ -168,11 +174,11 @@ msgstr ""
 msgid "請選擇將要去識別化的CSV檔案(.csv)"
 msgstr ""
 
-#: Template/general/function_home.html:47
+#: Template/general/function_home.html:49
 msgid "請先選擇檔案"
 msgstr ""
 
-#: Template/general/function_home.html:51
+#: Template/general/function_home.html:54
 msgid "檔案類型錯誤"
 msgstr ""
 
@@ -268,21 +274,21 @@ msgstr ""
 msgid "重新選擇檔案"
 msgstr ""
 
-#: Template/general/parameter_custom.html:96
-#: Template/general/parameter_custom.html:209
+#: Template/general/parameter_custom.html:100
+#: Template/general/parameter_custom.html:214
 msgid "尚未選擇資料類型"
 msgstr ""
 
-#: Template/general/parameter_custom.html:117
-#: Template/general/parameter_custom.html:213
+#: Template/general/parameter_custom.html:121
+#: Template/general/parameter_custom.html:218
 msgid "尚未確認間隔數量"
 msgstr ""
 
-#: Template/general/parameter_custom.html:187
+#: Template/general/parameter_custom.html:192
 msgid "尚有對應關係還沒填寫"
 msgstr ""
 
-#: Template/general/parameter_custom.html:237
+#: Template/general/parameter_custom.html:243
 #, python-format
 msgid "custom_mode錯誤，%(custom_mode)s不符合預期，請通知開發人員"
 msgstr ""
@@ -321,12 +327,6 @@ msgstr ""
 
 #: Template/home.html:3
 msgid "使用"
-msgstr ""
-
-#: Template/home.html:23
-msgid ""
-"說明： 差分隱私適用於資料筆數較大的資料集，建議至少含有一萬筆紀錄且維度也會受"
-"資料筆數影響不能太高。"
 msgstr ""
 
 #: Template/json_parser/json_parser.html:4
