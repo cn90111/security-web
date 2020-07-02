@@ -40,15 +40,21 @@ class LogInView(View):
         form = TwUserCreationForm(request.POST)
         username = request.POST.get('username', None)
         raw_password = request.POST.get('password1', None)
+        referer = request.META.get('HTTP_REFERER')
+        
         user = auth.authenticate(username=username, password=raw_password)
         if user is None:
             return render(request, 'registration/login.html',\
-                            {'form': form, 'error_message': '帳密錯誤'})
+                {'form': form, 'error_message': '帳密錯誤'})
         if not user.is_active:
             return render(request, 'registration/login.html',\
-                            {'form': form, 'error_message': '帳戶已被凍結'})
+                {'form': form, 'error_message': '帳戶已被凍結'})
         auth.login(request, user)
-        return redirect('home')
+        
+        next_page = 'home'
+        if referer.find('next') != -1:
+            next_page = referer.split('next=')[-1]
+        return redirect(next_page)
         
     def get(self, request, *arg, **kwargs):
         next_page = request.GET.get('next', 'home')
