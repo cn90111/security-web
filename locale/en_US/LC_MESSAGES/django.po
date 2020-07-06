@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-01 07:30+0000\n"
+"POT-Creation-Date: 2020-07-06 08:02+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -125,7 +125,11 @@ msgstr "download de-identification file"
 msgid "檔案可用度量測"
 msgstr "check utility"
 
-#: Template/general/execute_finish.html:33 Template/general/function.html:52
+#: Template/general/execute_finish.html:33
+msgid "再次執行去識別化"
+msgstr "de-identification again"
+
+#: Template/general/execute_finish.html:36 Template/general/function.html:52
 #: Template/general/parameter_custom.html:51 Template/general/utility.html:43
 msgid "返回主選單"
 msgstr "back to home"
@@ -416,7 +420,6 @@ msgid "注意事項4：檔案請另存新檔為CSV檔(.csv)"
 msgstr "Attention 4: file save as csv file(.csv)"
 
 #: Template/l_Diversity/l_Diversity.html:6
-#: Template/t_Closeness/t_Closeness.html:6
 msgid "說明1：執行速度較快，但去識別化後的檔案不一定具備可用性"
 msgstr "Description 1: run time is fastest, but utility is worst."
 
@@ -473,6 +476,10 @@ msgstr "send"
 #: Template/registration/signup.html:40
 msgid "回到登入"
 msgstr "back to login"
+
+#: Template/t_Closeness/t_Closeness.html:6
+msgid "說明1：執行速度較快，若可用性過低可藉由調高T來提升可用性"
+msgstr "Description 1: run time is fastest, if utility is too bad, add T value can let utility up."
 
 #: Template/t_Closeness/t_Closeness.html:8
 msgid ""

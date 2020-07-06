@@ -30,6 +30,9 @@
         <button onclick="location.href='/{{caller}}/utility_page/csv_name={{file_name}}'" type="button" class="btn btn-primary" style="width:100%">{% trans '檔案可用度量測' %}</button>
     </div>
     <div class="form-group col-md-2">
+        <button onclick="location.href='/{{ caller }}/Execute_Page/csv_name={{file_name}}/'" type="button" class="btn btn-primary" style="width:100%">{% trans '再次執行去識別化' %}</button>
+    </div>
+    <div class="form-group col-md-2">
         <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
     </div>
 {% endblock button %}
