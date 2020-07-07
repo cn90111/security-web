@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import auth
 from django.views import View
 from django.conf import settings
+from django.utils.translation import gettext
 from accounts.forms import TwUserCreationForm
 import os
 import shutil
@@ -45,10 +46,10 @@ class LogInView(View):
         user = auth.authenticate(username=username, password=raw_password)
         if user is None:
             return render(request, 'registration/login.html',\
-                {'form': form, 'error_message': '帳密錯誤'})
+                {'form': form, 'error_message': gettext('帳密錯誤')})
         if not user.is_active:
             return render(request, 'registration/login.html',\
-                {'form': form, 'error_message': '帳戶已被凍結'})
+                {'form': form, 'error_message': gettext('帳戶已被凍結')})
         auth.login(request, user)
         
         next_page = 'home'
@@ -71,11 +72,16 @@ class LogOutView(View):
 class DeleteAccountView(View):
     def get(self, request, *arg, **kwargs):
         user = request.user
+        password = request.GET.get('password', None)
         username = user.get_username()
+        check = auth.authenticate(username=username, password=password)
+        if check is None:
+            return JsonResponse({'message':gettext('密碼錯誤，刪除動作已取消')}, status=401)
+            
         function_name = ['DPSyn', 'k_Anonymity', 'l_Diversity', 't_Closeness']
         for name in function_name:
             shutil.rmtree(settings.UPLOAD_ROOT+name+'/'+username+'/')
             shutil.rmtree(settings.OUTPUT_ROOT+name+'/'+username+'/')
         shutil.rmtree(settings.DPSYN_TEMP_ROOT+username+'/')
         user.delete()
-        return redirect('login')
+        return HttpResponse(status=204)

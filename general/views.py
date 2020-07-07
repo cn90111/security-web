@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.conf import settings
+from django.utils.translation import gettext
 
 from general.machine_learning import MachineLearning
 from general.function import Path
@@ -40,12 +41,12 @@ class FileView(View):
                     self.handle_upload_file(request, file)
             except Exception as e:
                 print(e)
-                return JsonResponse({'message':'程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務'}, status=404)
+                return JsonResponse({'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
             else:
                 return HttpResponse(status=204)
-            return JsonResponse({'message':'有尚未捕捉到的例外，請回報服務人員，謝謝'}, status=404)
+            return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)
         else:
-            return JsonResponse({'message':'檔案格式錯誤'}, status=415)
+            return JsonResponse({'message':gettext('檔案格式錯誤')}, status=415)
 
     def json_check_file_limit(self, file):
         upload_form = FileModel()
@@ -56,7 +57,7 @@ class FileView(View):
         else:
             cln = str(df.shape[1])
             row = str(df.shape[0])
-            return JsonResponse({'message':'欄數限制最多為4, 列數限制最多為200\n文件欄數：'+ cln +', 列數：'+ row + ', 不符合標準'}, status=400)
+            return JsonResponse({'message':gettext('欄數限制最多為4, 列數限制最多為200\n文件欄數：'+ cln +', 列數：'+ row + ', 不符合標準')}, status=400)
     
     def dpsyn_check_file_limit(self, file):
         upload_form = FileModel()
@@ -66,7 +67,9 @@ class FileView(View):
             return None
         else:
             cln = str(df.shape[1])
-            return JsonResponse({"status":"錯誤","message":"欄數限制最少為3\n文件欄數："+ cln +", 不符合標準"}, status=400)
+            return JsonResponse({"status":gettext("錯誤"),\
+                "message":gettext("欄數限制最少為3\n文件欄數："+ cln +", 不符合標準")},\
+                status=400)
             
     def handle_upload_file(self, request, f):
         path = Path()
@@ -105,7 +108,7 @@ class AbstractMethodView(View):
         file_name = str(request.GET.get('csv_name',None))
         form = self.get_form(request.GET)
         if username in self.execute_pair:
-            return JsonResponse({'message':'您正在執行另一個檔案，檔名為:'+self.execute_pair[username]+'，若想執行目前的檔案，請先把另一個檔案關閉'}, status=423)
+            return JsonResponse({'message':gettext('您正在執行另一個檔案，檔名為:'+self.execute_pair[username]+'，若想執行目前的檔案，請先把另一個檔案關閉')}, status=423)
         else:
             self.execute_pair[username] = file_name
             
@@ -115,17 +118,17 @@ class AbstractMethodView(View):
             except BreakProgramException as e:
                 print(e)
                 self.execute_pair.pop(username, None)
-                return JsonResponse({'message':'程式已終止'}, status=404)
+                return JsonResponse({'message':gettext('程式已終止')}, status=404)
             except Exception as e:
                 print(e)
                 self.execute_pair.pop(username, None)
-                return JsonResponse({'message':'程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務'}, status=404)
+                return JsonResponse({'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
             else:
                 self.execute_pair.pop(username, None)
                 return HttpResponse(status=204)
-            return JsonResponse({'message':'有尚未捕捉到的例外，請回報服務人員，謝謝'}, status=404)
+            return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)
         else:
-            return JsonResponse({'message':'表單格式錯誤'}, status=400)
+            return JsonResponse({'message':gettext('表單格式錯誤')}, status=400)
     
     def get_form(self, requestContent):
         raise AttributeError('應藉由子類別實作此方法，return form(requestContent)')
@@ -160,7 +163,7 @@ class DisplayCsvView(View):
         elif method == 'upload':
             file_path = path.get_upload_path(request, file_name)
         else:
-            raise AttributeError('無此method：' + method)
+            raise AttributeError(gettext('無此method：') + method)
         df = pd.read_csv(file_path)
         tables = df.head(200).to_html()
         return JsonResponse(tables, safe=False)
@@ -224,7 +227,7 @@ class CheckUtilityView(View):
         elif file_path == 'upload':
             file_path = path.get_upload_path(request, file_name)
         else:
-            raise AttributeError('無此file_path：' + file_path)
+            raise AttributeError(gettext('無此file_path：') + file_path)
         
         accuracy = 0
         try:
@@ -233,10 +236,10 @@ class CheckUtilityView(View):
             accuracy = ml.score() * 100
         except Exception as e:
             print(e)
-            return JsonResponse({'accuracy':accuracy, 'message':'程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務'}, status=404)
+            return JsonResponse({'accuracy':accuracy, 'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
         else:
             return JsonResponse({'accuracy':accuracy}, status=200)
-        return JsonResponse({'message':'有尚未捕捉到的例外，請回報服務人員，謝謝'}, status=404)
+        return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)
         
 class TitleCheckView(View):        
     @method_decorator(login_required)
@@ -253,13 +256,13 @@ class TitleCheckView(View):
                 return result
         except Exception as e:
             print(e)
-            return JsonResponse({'message':'程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務'}, status=404)
+            return JsonResponse({'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
         else:
             return HttpResponse(status=204)
-        return JsonResponse({'message':'有尚未捕捉到的例外，請回報服務人員，謝謝'}, status=404)    
+        return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)    
     
     def title_check(self, dataframe):
         for column_title in dataframe:
             element = set(dataframe.loc[:, column_title].values.tolist())
             if column_title in element:
-                return JsonResponse({'message':'經由系統偵測，此檔案沒有標題列，可能導致去識別化結果不如預期，若為系統誤判則不需理會'}, status=200)
+                return JsonResponse({'message':gettext('經由系統偵測，此檔案沒有標題列，可能導致去識別化結果不如預期，若為系統誤判則不需理會')}, status=200)

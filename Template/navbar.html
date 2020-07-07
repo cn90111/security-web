@@ -46,14 +46,25 @@
 
 <script>
     function delete_account() {
-        answer = prompt("{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入YES' %}", '');
-        if (answer == 'YES') {
-            window.location = "{% url 'delete_account' %}";
-        } else {
-            alert("{% trans '刪除動作已取消' %}")
-        }
+        answer = prompt("{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入密碼' %}", '');
+        var url = '{% url 'delete_account' %}';
+        var data = {
+            'password' : answer,
+        };
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: data,
+            success: function () {
+                window.location = "{% url 'login' %}";
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                var jsonObj = JSON.parse(xhr.responseText);
+                alert(jsonObj.message);
+            }
+        });
     }
-
+    
     $(function () {
         $('#account').change(function () {
             selected = $(this).find(':selected').val();

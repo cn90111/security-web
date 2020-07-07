@@ -13,6 +13,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponse
 from django.http import JsonResponse
 from django.conf import settings
+from django.utils.translation import gettext
 
 from general.exception import BreakProgramException
 
@@ -41,7 +42,7 @@ def run(request):
     num_progress = 5
     log = 'Building data information...'
     if skip:
-        raise BreakProgramException('程式成功終止')
+        raise BreakProgramException(gettext('程式成功終止'))
 
     #file_name = 'dataset1.csv'
     #dict_file_name = file_name[:-4] + '_dict.json'
@@ -55,7 +56,7 @@ def run(request):
     column_name = list(df_data.columns)
     for attr_id in range(attr_num):
         if skip:
-            raise BreakProgramException('程式成功終止')
+            raise BreakProgramException(gettext('程式成功終止'))
         print("({attr_id}) {attr_name}    ".format(attr_id=attr_id, attr_name=column_name[attr_id]), end='')
     #print("\nWhich is sensitive attribute?")
     #sa_id = int(input("\nWhich is sensitive attribute?"))
@@ -78,7 +79,7 @@ def run(request):
                 current_category = category
                 while True:
                     if skip:
-                        raise BreakProgramException('程式成功終止')
+                        raise BreakProgramException(gettext('程式成功終止'))
                     father_category = data_dict[column_name[attr_id]]['structure'][current_category]
                     if father_category == current_category:
                         break
@@ -98,7 +99,7 @@ def run(request):
                     current_category = category_2
                     while True:
                         if skip:
-                            raise BreakProgramException('程式成功終止')
+                            raise BreakProgramException(gettext('程式成功終止'))
                         if current_category in category_ancestor_dict[category_1]:
                             category_generalize_dict[(category_1, category_2)] = current_category
                             break
@@ -116,14 +117,14 @@ def run(request):
     # In[ ]:
     def KLD(P, Q):
         if skip:
-            raise BreakProgramException('程式成功終止')
+            raise BreakProgramException(gettext('程式成功終止'))
         buffer = np.log(P / Q)
         buffer[buffer==np.inf] = 1000000
         return np.sum(P * buffer)
     
     def person_distance(p1, p2):
         if skip:
-            raise BreakProgramException('程式成功終止')
+            raise BreakProgramException(gettext('程式成功終止'))
         diff = 0
         for attr_id in qi_list:
             if data_dict[column_name[attr_id]]['type'] == 'numerical':
@@ -135,7 +136,7 @@ def run(request):
         
     def merge_k_anony(cluster_1, cluster_2):
         if skip:
-            raise BreakProgramException('程式成功終止')
+            raise BreakProgramException(gettext('程式成功終止'))
         new_cluster = []
         for attr_id in range(attr_num):
             if attr_id in qi_list:
@@ -152,7 +153,7 @@ def run(request):
         cluster_distribution = np.array([i for i in cluster_distribution_dict.values()]) / cluster_member_num
         while True:
             if skip:
-                raise BreakProgramException('程式成功終止')
+                raise BreakProgramException(gettext('程式成功終止'))
             over_most = sa_subjects[np.argmax(distribution - cluster_distribution)]
             under_most = sa_subjects[np.argmin(distribution - cluster_distribution)]
             cluster_distribution_dict[over_most] += 1
@@ -172,7 +173,7 @@ def run(request):
     num_progress = 20
     log = 'Building data information...'
     if skip:
-        raise BreakProgramException('程式成功終止')
+        raise BreakProgramException(gettext('程式成功終止'))
     
     # First K anonymize
     k_anony_data = [] # [(qi_1_min, qi_1_max), qi_2_category, ..., (qi_n_min, qi_n_max), [SA_data]]
@@ -238,7 +239,7 @@ def run(request):
     num_progress = 50
     log = 'Building data information...'
     if skip:
-        raise BreakProgramException('程式成功終止')
+        raise BreakProgramException(gettext('程式成功終止'))
     
     
     # Calculate whole SA's distribution
@@ -252,7 +253,7 @@ def run(request):
     
     while True:
         if skip:
-            raise BreakProgramException('程式成功終止')
+            raise BreakProgramException(gettext('程式成功終止'))
         # Find ineligible clusters
         above_t_cluster_id = []
         for cluster_id in range(len(k_anony_data)):
@@ -337,7 +338,7 @@ def run(request):
     num_progress = 80
     log = 'Building data information...'
     if skip:
-        raise BreakProgramException('程式成功終止')
+        raise BreakProgramException(gettext('程式成功終止'))
         
     # In[ ]:
     
