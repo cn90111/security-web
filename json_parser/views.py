@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext
 
 from django.views import View
 from general.function import NumberDataframe
@@ -35,10 +36,10 @@ class ParserView(View):
                     structure_mode, structure_dict)
         except Exception as e:
             print(e)
-            return JsonResponse({"message":"程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"}, status=404)
+            return JsonResponse({"message":gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務")}, status=404)
         else:
             return HttpResponse(status=204)
-        return JsonResponse({"message":"有尚未捕捉到的例外，請回報服務人員，謝謝"}, status=404)
+        return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
     
 class CustomView(View):
     @method_decorator(login_required)
