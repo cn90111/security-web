@@ -19,7 +19,7 @@
                 </div>
             </div>
             {% if advanced_settings %}
-                <div id="{{ number_title }}_display" class="form-row" style="display:none">
+                <div id="{{ number_title }}_display" class="form-row">
                     <label for="{{ number_title }}_n">{% trans '間隔數量：' %}</label><br>
                     <div class="form-check col-md-3">
                         <input type="number" name="n" value="1" min="1" max="{{ max_interval_quantity_dict | get_item:number_title}}" class="form-control" required id="{{ number_title }}_n">
@@ -44,7 +44,6 @@
         var checkbox_continuous = document.getElementById
                 (number_title+'_is_continuous');
                 
-        $('#'+number_title+'_display').toggle();
         $('#'+number_title+'_interval_text').hide();
         $('#'+number_title+'_interval').hide();
         
@@ -66,18 +65,26 @@
             return 'discrete'
         } else if (checkbox_continuous.checked) {
             return 'continuous'
-        } 
+        } else {
+            return null
+        }
     }
     
     {% if advanced_settings %}
         function set_interval(number_title) {
+            var checked_result = get_check_result(number_title);
+            
+            if(!checked_result) {
+                alert("{% trans '尚未選擇數值類型' %}");
+                return
+            }
+            
             $('#'+number_title+'_interval_text').show();
             $('#'+number_title+'_interval').show();
             var interval_quantity = parseInt($('#'+number_title+'_n').val());
             var interval_area = $('#'+number_title+'_interval');
             var base = {{ min_value_dict | safe }};
             var bias = {{ max_interval_quantity_dict | safe }};
-            var checked_result = get_check_result(number_title);
             
             base = base[number_title]
             if (checked_result == 'discrete') {
