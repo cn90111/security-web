@@ -15,45 +15,47 @@
     {% include 'navbar.html' %}
 
     <div class="container-fluid" style="padding-top: 50px;">
-      <div class="card text-white mb-3" style="background-color:#3399ff">
-  			<div class="card-header" style="background-color:#0066ff">
-    			<h2>GDPR-Compliant Differentially Private Synthetic Dataset Generation</h2>
-  			</div>
-  			<div class="card-body">
+        <div class="card text-white mb-3" style="background-color:#3399ff">
+            <div class="card-header" style="background-color:#0066ff">
+                <h2>GDPR-Compliant Differentially Private Synthetic Dataset Generation</h2>
+            </div>
+            <div class="card-body">
                 <h5 class="card-title"style="font-weight:bold;color:yellow">{% trans '說明： 差分隱私適用於資料筆數較大的資料集，建議至少含有一萬筆紀錄且維度也會受資料筆數影響不能太高。' %}</h5>
-    			<a href="/DPSyn/" class="btn btn-primary btn-lg">{{ enter }}</a>
-  			</div>
-			</div>
-			<div class="card text-white bg-secondary mb-3 " >
-  			<div class="card-header" style="background-color:#FF4500">
-          <h2>t-Closeness</h2>
+                <a href="/DPSyn/" class="btn btn-primary btn-lg">{{ enter }}</a>
+            </div>
         </div>
-  			<div class="card-body" style="background-color:#FFAA33">
-    			<h5 class="card-title"></h5>
-    			<p class="card-text"></p>
-          <a href="/t_Closeness/" class="btn btn-lg" style="background-color:#EE7700;color:white;">{{ enter }}</a>
-  			</div>
-			</div>
-      <div class="card text-white bg-secondary mb-3">
-        <div class="card-header" style="background-color:#28a428">
-          <h2>k-Anonymity</h2>
-        </div>
-        <div class="card-body" style="background-color:#5bd75b">
-          <h5 class="card-title"></h5>
-          <p class="card-text"></p>
-          <a href="/k_Anonymity/" class="btn btn-lg" style="background-color:#2db92d;color:white;">{{ enter }}</a>
-        </div>
-      </div>
-      <div class="card text-white bg-secondary mb-3">
-        <div class="card-header" style="background-color:#cc0000">
-          <h2>l-Diversity</h2>
-        </div>
-        <div class="card-body" style="background-color:#ff6666">
-          <h5 class="card-title"></h5>
-          <p class="card-text"></p>
-          <a href="/l_Diversity/" class="btn btn-lg" style="background-color:#ff0000;color:white;">{{ enter }}</a>
-        </div>
-      </div>
+            <div class="card text-white bg-secondary mb-3 " >
+                <div class="card-header" style="background-color:#FF4500">
+                    <h2>t-Closeness</h2>
+                </div>
+                <div class="card-body" style="background-color:#FFAA33">
+                    <h5 class="card-title"></h5>
+                    <p class="card-text"></p>
+                    <a href="/t_Closeness/" class="btn btn-lg" style="background-color:#EE7700;color:white;">{{ enter }}</a>
+                </div>
+            </div>
+        {% if false %}
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-header" style="background-color:#28a428">
+                    <h2>k-Anonymity</h2>
+                </div>
+                <div class="card-body" style="background-color:#5bd75b">
+                    <h5 class="card-title"></h5>
+                    <p class="card-text"></p>
+                    <a href="/k_Anonymity/" class="btn btn-lg" style="background-color:#2db92d;color:white;">{{ enter }}</a>
+                </div>
+            </div>
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-header" style="background-color:#cc0000">
+                    <h2>l-Diversity</h2>
+                </div>
+                <div class="card-body" style="background-color:#ff6666">
+                    <h5 class="card-title"></h5>
+                    <p class="card-text"></p>
+                    <a href="/l_Diversity/" class="btn btn-lg" style="background-color:#ff0000;color:white;">{{ enter }}</a>
+                </div>
+            </div>
+        {% endif %}
     </div>
     {% include 'footer.html' %}
     <script>

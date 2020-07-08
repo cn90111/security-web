@@ -48,8 +48,8 @@ def run(request):
     #dict_file_name = file_name[:-4] + '_dict.json'
     #k = 7
     #t = 0.01
-    k = int(request.GET.get('k',None))
-    t = float(request.GET.get('t',None))
+    k = int(request.GET.get('k', None))
+    t = float(request.GET.get('t', 100000))
     df_data = pd.read_csv(settings.UPLOAD_ROOT + 't_Closeness/' + username + '/' + directory_name + '/' + file_name)
     record_num = df_data.shape[0]
     attr_num = df_data.shape[1]

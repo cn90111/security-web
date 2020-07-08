@@ -14,12 +14,14 @@
             <li class="nav-item" >
                 <a class="navbar-brand" href="/t_Closeness/" style="color:#ffffff">t-Closeness</a>
             </li>
-            <li class="nav-item">
-                <a class="navbar-brand" href="/k_Anonymity/" style="color:#ffffff">k-Anonymity</a>
-            </li>
-            <li class="nav-item">
-                <a class="navbar-brand" href="/l_Diversity/" style="color:#ffffff">l-Diversity</a>
-            </li>
+            {% if false %}
+                <li class="nav-item">
+                    <a class="navbar-brand" href="/k_Anonymity/" style="color:#ffffff">k-Anonymity</a>
+                </li>
+                <li class="nav-item">
+                    <a class="navbar-brand" href="/l_Diversity/" style="color:#ffffff">l-Diversity</a>
+                </li>
+            {% endif %}
             {% if user.is_authenticated %}
             <li class="nav-item">
                 <select id="account" name="account" class="form-control">

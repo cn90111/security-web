@@ -180,6 +180,9 @@ class DownloadView(View):
         file_path = path.get_output_path(request, file_name)
         df = pd.read_csv(file_path)
         
+        if caller == 'DPSyn':
+            caller = 'DPView'
+        
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+directory_name+'_output.csv'
         df.to_csv(path_or_buf=response,index=False,decimal=',')
