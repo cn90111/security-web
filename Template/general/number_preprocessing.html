@@ -10,19 +10,23 @@
             <h5>{% trans '欄位：' %}{{ number_title }}</h5>
             <div class="form-row justify-content-center">
                 <div class="form-check col-md-4">
-                    <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_discrete" onclick="click_number_checkbox('{{ number_title }}', 'discrete')">
-                    <label class="form-check-label" for="{{ number_title }}_is_discrete">{% trans '資料為離散型資料' %}</label>
+                    <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_number" onclick="click_number_checkbox('{{ number_title }}', 'number')">
+                    <label class="form-check-label" for="{{ number_title }}_is_number">{% trans '資料為數值型資料' %}</label>
                 </div>
                 <div class="form-check col-md-4">
-                    <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_continuous" onclick="click_number_checkbox('{{ number_title }}', 'continuous')">
-                    <label class="form-check-label" for="{{ number_title }}_is_continuous">{% trans '資料為連續型資料' %}</label>
+                    <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_single" onclick="click_number_checkbox('{{ number_title }}', 'single')">
+                    <label class="form-check-label" for="{{ number_title }}_is_single">{% trans '資料只有唯一值' %}</label>
+                </div>
+                <div class="form-check col-md-4">
+                    <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_category" onclick="click_number_checkbox('{{ number_title }}', 'category')">
+                    <label class="form-check-label" for="{{ number_title }}_is_category">{% trans '資料為類別型資料' %}</label>
                 </div>
             </div>
             {% if advanced_settings %}
-                <div id="{{ number_title }}_display" class="form-row">
+                <div id="{{ number_title }}_display" class="form-row" style="display:none">
                     <label for="{{ number_title }}_n">{% trans '間隔數量：' %}</label><br>
                     <div class="form-check col-md-3">
-                        <input type="number" name="n" value="1" min="1" max="{{ max_interval_quantity_dict | get_item:number_title}}" class="form-control" required id="{{ number_title }}_n">
+                        <input type="number" name="n" value="1" min="1" class="form-control" required id="{{ number_title }}_n">
                     </div>
                     <div class="form-check col-md-6">
                         <button id="{{ number_title }}_interval_determine" type="button" class="btn btn-primary" onclick="set_interval('{{ number_title }}')">{% trans '確定' %}</button>
@@ -39,32 +43,45 @@
 
 <script>
     function click_number_checkbox(number_title, box_name) {
-        var checkbox_discrete = document.getElementById
-                (number_title+'_is_discrete');
-        var checkbox_continuous = document.getElementById
-                (number_title+'_is_continuous');
+        var checkbox_number = document.getElementById
+                (number_title+'_is_number');
+        var checkbox_single = document.getElementById
+                (number_title+'_is_single');
+        var checkbox_category = document.getElementById
+                (number_title+'_is_category');
                 
         $('#'+number_title+'_interval_text').hide();
         $('#'+number_title+'_interval').hide();
         
-        if (box_name == 'discrete'){
-            checkbox_continuous.disabled = !checkbox_continuous.disabled
-        } else if (box_name == 'continuous') {
-            checkbox_discrete.disabled = !checkbox_discrete.disabled
+        checkbox_number.disabled = !checkbox_number.disabled
+        checkbox_single.disabled = !checkbox_single.disabled
+        checkbox_category.disabled = !checkbox_category.disabled
+        
+        if (box_name == 'number'){
+            $('#'+number_title+'_display').toggle();
+            checkbox_number.disabled = !checkbox_number.disabled
+        } else if (box_name == 'single') {
+            checkbox_single.disabled = !checkbox_single.disabled
+        } else if (box_name == 'category') {
+            checkbox_category.disabled = !checkbox_category.disabled
         } else {
             console.log("box_name exception:" + box_name)
         }
     }
     
     function get_check_result(number_title) {
-        var checkbox_discrete = document.getElementById
-                (number_title+'_is_discrete');
-        var checkbox_continuous = document.getElementById
-                (number_title+'_is_continuous');
-        if (checkbox_discrete.checked) {
-            return 'discrete'
-        } else if (checkbox_continuous.checked) {
-            return 'continuous'
+        var checkbox_number = document.getElementById
+                (number_title+'_is_number');
+        var checkbox_single = document.getElementById
+                (number_title+'_is_single');
+        var checkbox_category = document.getElementById
+                (number_title+'_is_category');
+        if (checkbox_number.checked) {
+            return 'number'
+        } else if (checkbox_single.checked) {
+            return 'single'
+        } else if (checkbox_category.checked) {
+            return 'category'
         } else {
             return null
         }
@@ -84,17 +101,10 @@
             var interval_quantity = parseInt($('#'+number_title+'_n').val());
             var interval_area = $('#'+number_title+'_interval');
             var base = {{ min_value_dict | safe }};
-            var bias = {{ max_interval_quantity_dict | safe }};
+            var max = {{ max_value_dict | safe }};
             
             base = base[number_title]
-            if (checked_result == 'discrete') {
-                bias = Math.ceil(bias[number_title]/interval_quantity);
-            } else if (checked_result == 'continuous') {
-                bias = bias[number_title]/interval_quantity;
-            } else {
-                alert("{% trans 'checked_result錯誤呼叫：' %}"+checked_result);
-                return;
-            }
+            bias = (max[number_title] - base)/interval_quantity;
             
             var i;
             var temp;
@@ -127,7 +137,7 @@
                 if (next_value > min_value) {
                     next_value = min_value;
                 }
-            } else if (i == interval_quantity-1) {
+            } else if (i == interval_quantity) {
                 var max_value = {{ max_value_dict | safe }};
                 max_value = max_value[number_title];
                 previous_value = $('#'+number_title+'_interval_'+(i-1)).val();

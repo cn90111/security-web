@@ -37,8 +37,12 @@ class NumberDataframe():
         dataframe = pd.read_csv(file_path)
         number_title_list = []
         for column_title in dataframe:
-            data = dataframe.loc[0, column_title]
-            if type(data) is not str and data:
+            data = None
+            i = 0
+            while not data:
+                data = dataframe.loc[i, column_title]
+                i = i + 1
+            if type(data) is not str and type(data) is not chr:
                 number_title_list.append(column_title)
         return number_title_list
         
@@ -51,10 +55,3 @@ class NumberDataframe():
             max_value_dict[number_title] = max(data)
             min_value_dict[number_title] = min(data)
         return max_value_dict, min_value_dict
-        
-    def get_max_interval_quantity(self, max_value_dict, min_value_dict):
-        max_interval_quantity_dict = {}
-        for number_title in max_value_dict.keys():
-            max_interval_quantity_dict[number_title] \
-                = max_value_dict[number_title] - min_value_dict[number_title]
-        return max_interval_quantity_dict
