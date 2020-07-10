@@ -1,8 +1,5 @@
 {% extends "general/parallel_template.html" %}
 {% load i18n %}
-{% trans '已完成' as finish %}
-{% trans '原始檔案' as origin_file %}
-{% trans '去識別化檔案' as de_identification_file %}
 {% block title %}utility{% endblock title %}
 
 {% block content %}
@@ -45,6 +42,9 @@
 {% endblock button %}
 
 {% block script %}
+    {% trans '已完成' as finish %}
+    {% trans '原始檔案' as origin_file %}
+    {% trans '去識別化檔案' as de_identification_file %}
     <script>
         finish_text = '{{ finish }}'
         unlock_count = 0

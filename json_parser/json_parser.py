@@ -15,7 +15,7 @@ class JsonParser():
         if not item_list:
             return False
         for item in item_list:
-            if type(item) is not str and type(item) is not chr:
+            if type(item) is not str and type(item) is not chr and item:
                 return False
         return True
         
@@ -23,7 +23,7 @@ class JsonParser():
         if not item_list:
             return False
         for item in item_list:
-            if type(item) is not int and type(item) is not float:
+            if type(item) is not int and type(item) is not float and item:
                 return False
         return True
     
@@ -31,7 +31,7 @@ class JsonParser():
         if not self.is_number(item_list):
             return False
         for item in item_list:
-            if type(item) is float:
+            if type(item) is float or not item:
                 return True
         return False
     
@@ -115,10 +115,11 @@ class JsonParser():
     def parser_to_json(self, file_path, structure, **kwargs):
         json_dict = {}
         dataframe = pd.read_csv(file_path)
-        number_dict = None
-        
-        if 'number_dict' in kwargs:
-            number_dict = kwargs.get('number_dict')
+        number_title_pair_dict = None
+        interval_dict = None
+        if 'number_title_pair_dict' in kwargs:
+            number_title_pair_dict = kwargs.get('number_title_pair_dict')
+            interval_dict = kwargs.get('interval_dict')
         for column_title in dataframe:
             temp = {}
             column = dataframe.loc[:, column_title].values.tolist()
@@ -130,23 +131,14 @@ class JsonParser():
                 temp['min'] = min(column)
                 temp['max'] = max(column)
                 
-                if number_dict:
-                    if number_dict[column_title]['type'] == 'continuous':
-                        temp['num_type'] = 'float'
-                    elif number_dict[column_title]['type'] == 'discrete':
-                        temp['num_type'] = 'int'
-                    else:
-                        message = column_title+'的type輸入錯誤:'+type+'\n'
-                        message = message+'目前type僅支援continuous及discrete'+'\n'
-                        raise AttributeError(message)
+                if self.is_float(column):
+                    temp['num_type'] = 'float'
                 else:
-                    if self.is_float(column):
-                        temp['num_type'] = 'float'
-                    else:
-                        temp['num_type'] = 'int'
-                if number_dict:
+                    temp['num_type'] = 'int'
+                    
+                if number_title_pair_dict and number_title_pair_dict[column_title] == 'number':
                     interval = []
-                    value_list = number_dict[column_title]['value_list']
+                    value_list = interval_dict[column_title]
                     for i in range(len(value_list)-1):
                         interval.append([value_list[i], value_list[i+1]])
                     temp['interval'] = interval
@@ -154,8 +146,40 @@ class JsonParser():
                     temp['interval'] = self.get_interval(column)
             json_dict[column_title] = temp
         return json_dict
+    
+    def parser_to_DPView_json(self, file_path, pair_dict, **kwargs):
+        json_dict = {}
+        dataframe = pd.read_csv(file_path)
+        interval_dict = None
+        if 'interval_dict' in kwargs:
+            interval_dict = kwargs.get('interval_dict')
+        print('1')
+        for column_title in dataframe:
+            print(column_title)
+            temp = {}
+            column = dataframe.loc[:, column_title].values.tolist()
+            if self.is_string(column):
+                temp['type'] = 'cat'
+            elif self.is_number(column):
+                if pair_dict[column_title] == 'number':
+                    temp['type'] = 'num'
+                elif pair_dict[column_title] == 'single':
+                    temp['type'] = 'single'
+                elif pair_dict[column_title] == 'category':
+                    temp['type'] = 'num2cat'
+                print(pair_dict[column_title])        
+                if interval_dict and pair_dict[column_title] == 'number':
+                    interval = []
+                    value_list = interval_dict[column_title]
+                    for i in range(len(value_list)-1):
+                        interval.append([value_list[i], value_list[i+1]])
+                    temp['bucket'] = interval
+                else:
+                    temp['bucket'] = self.get_interval(column)
+            json_dict[column_title] = temp
+        return json_dict
         
-    def create_json_file(self, file_path, csv_file_name, structure_mode, structure_dict, **kwargs):
+    def create_json_file(self, file_path, file_name, structure_mode, structure_dict, **kwargs):
         for key in structure_mode:
             mode = structure_mode[key]
             if mode == 'tw_address':
@@ -167,14 +191,30 @@ class JsonParser():
             elif mode == 'unrelated':
                 structure_dict[key] = \
                     self.get_unrelated_structure(structure_dict[key].keys(), key)
-        directory_name = csv_file_name.split(".")[-2]
+        directory_name = file_name.split(".")[-2]
         file_path = file_path + directory_name + '/'
         json_path = file_path + directory_name + '_dict.json'
-        if 'number_dict' in kwargs:
+        if 'number_title_pair_dict' in kwargs:
             json_object = json.dumps(self.parser_to_json\
-                                (file_path+csv_file_name, structure_dict, number_dict=kwargs.get('number_dict')))
+                (file_path+file_name, structure_dict,
+                number_title_pair_dict=kwargs.get('number_title_pair_dict'),
+                interval_dict=kwargs.get('interval_dict')))
         else:
             json_object = json.dumps(self.parser_to_json\
-                                (file_path+csv_file_name, structure_dict))
+                                (file_path+file_name, structure_dict))
+        with open(json_path, 'w') as file:
+            file.write(json_object)
+            
+    def create_DPView_json_file(self, file_path, file_name, pair_dict, **kwargs):
+        directory_name = file_name.split(".")[-2]
+        file_path = file_path + directory_name + '/'
+        json_path = file_path + directory_name + '_dict.json'
+        if 'interval_dict' in kwargs:
+            json_object = json.dumps(self.parser_to_DPView_json\
+                (file_path+file_name, pair_dict,
+                interval_dict=kwargs.get('interval_dict')))
+        else:
+            json_object = json.dumps(self.parser_to_DPView_json\
+                (file_path+file_name, pair_dict))
         with open(json_path, 'w') as file:
             file.write(json_object)

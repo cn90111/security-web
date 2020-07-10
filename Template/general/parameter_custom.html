@@ -95,40 +95,34 @@
                         }
                         number_title_pair_dict[number_title] = type
                     }
-                    var url = '/DPSyn/number_preprocessing/';
+                    var url = '/json_parser/create_DPView_json/';
                     var data = {
                         'path' : path,
                         'csv_name' : '{{ file_name }}',
                         'number_title_pair_dict' : JSON.stringify(number_title_pair_dict),
                     }
                     {% if advanced_settings %}
-                        var number_dict = {};
+                        var interval_dict = {};
                         for (var number_title of number_title_list) {
                             var type = get_check_result(number_title);
-                            var i = 0;
-                            interval_value_list = [];
                             
-                            if(type == 'discrete') {
-                                while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
-                                    interval_value_list.push(parseInt(temp_interval.value));
-                                    i++;
-                                }
-                            } else if(type == 'continuous') {
+                            if (type == 'number') {
+                                var i = 0;
+                                interval_value_list = [];
+                                
                                 while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
                                     interval_value_list.push(parseFloat(temp_interval.value));
                                     i++;
                                 }
-                            } else {
-                                alert('{% blocktrans %}間隔 type 錯誤，{{ type }}不符合預期，請通知開發人員{% endblocktrans %}')
+                                
+                                if(interval_value_list.length == 0) {
+                                    alert(number_title+"{% trans '尚未確認間隔數量' %}");
+                                    return;
+                                }
+                                interval_dict[number_title] = interval_value_list;
                             }
-                            
-                            if(interval_value_list.length == 0) {
-                                alert(number_title+"{% trans '尚未確認間隔數量' %}");
-                                return;
-                            }
-                            number_dict[number_title] = {'type':type, 'value_list':interval_value_list};
                         }
-                        data['number_dict'] = JSON.stringify(number_dict);
+                        data['interval_dict'] = JSON.stringify(interval_dict);
                     {% endif %}
                     $.ajax({
                         url: url,
@@ -206,39 +200,38 @@
                         }
                         {% if advanced_settings %}
                             var number_title_list = {{ number_title_list|safe }};
-                            var number_dict = {};
+                            var number_title_pair_dict = {};
                             for (var number_title of number_title_list) {
                                 var type = get_check_result(number_title);
-                                var i = 0;
-                                interval_value_list = []
-                                
                                 if(!type) {
                                     alert(number_title+"{% trans '尚未選擇資料類型' %}");
                                     return;
                                 }
+                                number_title_pair_dict[number_title] = type
+                            }
+                            data['number_title_pair_dict'] = JSON.stringify(number_title_pair_dict);  
+                            
+                            var interval_dict = {};
+                            for (var number_title of number_title_list) {
+                                var type = get_check_result(number_title);
                                 
-                                if(type == 'discrete') {
-                                    while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
-                                        interval_value_list.push(parseInt(temp_interval.value));
-                                        i++;
-                                    }
-                                } else if(type == 'continuous') {
+                                if (type == 'number') {
+                                    var i = 0;
+                                    interval_value_list = [];
+                                    
                                     while (temp_interval = document.getElementById(number_title+'_interval_'+i)) {
                                         interval_value_list.push(parseFloat(temp_interval.value));
                                         i++;
                                     }
-                                } else {
-                                    alert('{% blocktrans %}間隔 type 錯誤，{{ type }}不符合預期，請通知開發人員{% endblocktrans %}')
+                                    
+                                    if(interval_value_list.length == 0) {
+                                        alert(number_title+"{% trans '尚未確認間隔數量' %}");
+                                        return;
+                                    }
+                                    interval_dict[number_title] = interval_value_list;
                                 }
-                                
-                                if(interval_value_list.length == 0) {
-                                    alert(number_title+"{% trans '尚未確認間隔數量' %}");
-                                    return;
-                                }
-                                
-                                number_dict[number_title] = {'type':type, 'value_list':interval_value_list};
                             }
-                            data['number_dict'] = JSON.stringify(number_dict);
+                            data['interval_dict'] = JSON.stringify(interval_dict);                            
                         {% endif %}
                         $.ajax({
                             url: url,

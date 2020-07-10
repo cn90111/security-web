@@ -3,7 +3,11 @@
     <h2>Pair</h2>
     <h5 style="font-weight:bold;color:red">{% trans '說明1：配對檔案裡文字的上下關係，例如：gmail 屬於 google，可自行輸入或使用下拉式選單' %}</h5>
         {% if advanced_settings %}
-            <h5 style="font-weight:bold;color:red">{% trans '說明2：請設定數字欄位去識別化時，所使用的分區間隔' %}</h5>
+            <h5 style="font-weight:bold;color:red">{% trans '說明2：請選擇下列數字欄位的資料類型' %}</h5>
+            <h5 style="font-weight:bold;color:red">{% trans '說明3：請設定數字欄位去識別化時，所使用的分區間隔' %}</h5>
+            <h5 style="font-weight:bold;color:red">{% trans '說明4：數值型資料，生成的分區間隔可手動輸入調整' %}</h5>
+            <h5 style="font-weight:bold;color:red">{% trans '說明5：資料只有唯一值，當欄位內容的值全部相同時，將其勾選' %}</h5>
+            <h5 style="font-weight:bold;color:red">{% trans '說明6：類別型資料，當欄位的數字不該作為數字解讀時勾選，如電池型號' %}</h5>
         {% endif %}
 </div>
 <div class="container" style="width:inherit;">

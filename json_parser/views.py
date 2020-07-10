@@ -18,19 +18,23 @@ class ParserView(View):
     def get(self, request, *arg, **kwargs):
         parser = JsonParser()
         
-        file_path = str(request.GET.get('path', None))
+        file_path = request.GET.get('path', None)
         file_name = request.GET.get('csv_name', None)
         structure_mode = json.loads(request.GET.get('structure_mode', None))
         structure_dict = json.loads(request.GET.get('structure_dict', None))
-        number_dict = request.GET.get('number_dict', None)
+        number_title_pair_dict = request.GET.get('number_title_pair_dict', None)
+        interval_dict = request.GET.get('interval_dict', None)
         username = request.user.get_username()
         file_path = file_path+username+'/'
         
         try:
-            if number_dict:
-                number_dict = json.loads(number_dict)
+            if number_title_pair_dict:
+                number_title_pair_dict = json.loads(number_title_pair_dict)
+                interval_dict = json.loads(interval_dict)
                 parser.create_json_file(file_path, file_name,
-                    structure_mode, structure_dict, number_dict=number_dict)
+                    structure_mode, structure_dict,
+                    number_title_pair_dict=number_title_pair_dict,
+                    interval_dict=interval_dict)
             else:
                 parser.create_json_file(file_path, file_name,
                     structure_mode, structure_dict)
@@ -40,7 +44,33 @@ class ParserView(View):
         else:
             return HttpResponse(status=204)
         return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
-    
+
+class DPViewParserView(View):
+    @method_decorator(login_required)
+    def get(self, request, *arg, **kwargs):
+        parser = JsonParser()
+        
+        file_path = str(request.GET.get('path', None))
+        file_name = str(request.GET.get('csv_name',None))
+        pair_dict = json.loads(request.GET.get('number_title_pair_dict', None))
+        interval_dict = request.GET.get('interval_dict', None)
+        username = request.user.get_username()
+        file_path = file_path+username+'/'
+        
+        try:
+            if interval_dict:
+                interval_dict = json.loads(interval_dict)
+                parser.create_DPView_json_file(file_path, file_name,
+                    pair_dict, interval_dict=interval_dict)
+            else:
+                parser.create_DPView_json_file(file_path, file_name, pair_dict)
+        except Exception as e:
+            print(e)
+            return JsonResponse({"message":gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務")}, status=404)
+        else:
+            return HttpResponse(status=204)
+        return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
+        
 class CustomView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
@@ -78,8 +108,7 @@ class AdvancedSettingsView(CustomView):
         string_element_dict = parser.get_file_string_element(file_path)
         number_title_list = number_data_frame.get_number_title(file_path)
         max_value_dict, min_value_dict = number_data_frame.get_number_limit(file_path, number_title_list)
-        max_interval_quantity_dict = number_data_frame.get_max_interval_quantity(max_value_dict, min_value_dict)
-            
+           
         request_dict['string_element_dict'] = string_element_dict
         request_dict['caller'] = caller
         request_dict['file_name'] = file_name
@@ -88,5 +117,4 @@ class AdvancedSettingsView(CustomView):
         request_dict['number_title_list'] = number_title_list
         request_dict['max_value_dict'] = max_value_dict
         request_dict['min_value_dict'] = min_value_dict
-        request_dict['max_interval_quantity_dict'] = max_interval_quantity_dict
         return render(request, 'general/parameter_custom.html', request_dict)
