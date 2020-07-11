@@ -4,6 +4,7 @@
 	<head>
         <meta charset="UTF-8">
         <title>{% block title %}title{% endblock title %}</title>
+        {% load static %}
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
     	<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -19,6 +20,7 @@
             </div>
         </div>
 	   	<div class="container">
+            <h2 id="loading" style="display:none">{% trans '檔案上傳中，請稍後' %}</h2>
             <form id="form_file" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="custom-file center" style="height:80px">
@@ -43,15 +45,18 @@
         
             $("#customFile_csv").on("change", function() {
                 var csv_name = $(this).val().split("\\").pop();
+                $('#loading').show()
                 $(this).siblings(".custom-file-label").addClass("selected").html(csv_name);
                 
                 if (!csv_name) {
                     alert("{% trans '請先選擇檔案' %}");
+                    $('#loading').hide()
                     return;
                 }
                 
                 if (!isValidFile(document.getElementById('customFile_csv'))) {
                     alert("{% trans '檔案類型錯誤' %}");
+                    $('#loading').hide()
                     return;
                 }
                 let formData = new FormData($('#form_file').get(0));

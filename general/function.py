@@ -1,5 +1,6 @@
 import pandas as pd
 from django.conf import settings
+from django.utils.html import escape
 
 class Path():        
     def get_caller(self, request):

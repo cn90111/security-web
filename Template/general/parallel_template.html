@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 {% load i18n %}
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<title>{% block title %}parallel template{% endblock title %}</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
-    	<script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}parallel template{% endblock title %}</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
-	</head>
-	<body style="padding-top:50px;">
+    </head>
+    <body style="padding-top:50px;">
         {% include 'navbar.html' %}
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
@@ -19,7 +19,7 @@
                 {% endblock content %}
             </div>
         </div>
-    	<div class="container" style="width:100%;">
+        <div class="container" style="width:100%;">
             <form id="parameter_form" data-toggle="validator">
                 {% csrf_token %}
                 {% block up_container %}
@@ -42,7 +42,7 @@
                     {% endblock button %}
                 </div>
             </form>
-    	</div>
+        </div>
         {% block script %}
             <script>
                 $(function () {
@@ -53,5 +53,5 @@
                 })
             </script>
         {% endblock script %}
-	</body>
+    </body>
 </html>
