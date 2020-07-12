@@ -28,11 +28,7 @@ class MachineLearning():
         test_feature, test_label = self.getDataset(test_file_path)
         
         train_feature, test_feature = self.one_hot_encoding(train_feature, test_feature)
-        train_label, test_label = self.one_hot_encoding(train_label, test_label)
-        
-        train_label = [item for sublist in train_label for item in sublist]
-        test_label = [item for sublist in test_label for item in sublist]
-        
+                
         split_point = len(train_feature)*self.train_percent//100        
         self.train_feature = train_feature[0:split_point]
         self.train_label = train_label[0:split_point]
@@ -40,7 +36,7 @@ class MachineLearning():
         split_point = len(test_feature)*self.train_percent//100
         self.test_feature = test_feature[split_point:]
         self.test_label = test_label[split_point:]
-            
+    
     def fit(self):
         self.method_object.fit(self.train_feature, self.train_label)
         
@@ -58,7 +54,7 @@ class MachineLearning():
     def getDataset(self, file_path):
         dataframe = pd.read_csv(file_path)
         feature = dataframe.iloc[:, 0:-1]
-        label = dataframe.iloc[:, [-1]]
+        label = dataframe.iloc[:, [-1]].values.tolist()
         return feature, label
         
     def one_hot_encoding(self, dataframe1, dataframe2):

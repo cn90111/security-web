@@ -153,9 +153,7 @@ class JsonParser():
         interval_dict = None
         if 'interval_dict' in kwargs:
             interval_dict = kwargs.get('interval_dict')
-        print('1')
         for column_title in dataframe:
-            print(column_title)
             temp = {}
             column = dataframe.loc[:, column_title].values.tolist()
             if self.is_string(column):
@@ -166,8 +164,7 @@ class JsonParser():
                 elif pair_dict[column_title] == 'single':
                     temp['type'] = 'single'
                 elif pair_dict[column_title] == 'category':
-                    temp['type'] = 'num2cat'
-                print(pair_dict[column_title])        
+                    temp['type'] = 'num2cat'    
                 if interval_dict and pair_dict[column_title] == 'number':
                     interval = []
                     value_list = interval_dict[column_title]
