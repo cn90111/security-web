@@ -2,6 +2,7 @@ from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import svm
 from sklearn.metrics import mean_squared_error
+from sklearn.utils import shuffle
 import pandas as pd
 
 class MachineLearning():
@@ -53,6 +54,7 @@ class MachineLearning():
     
     def getDataset(self, file_path):
         dataframe = pd.read_csv(file_path)
+        dataframe = shuffle(dataframe)
         feature = dataframe.iloc[:, 0:-1]
         label = dataframe.iloc[:, [-1]].values.tolist()
         return feature, label
