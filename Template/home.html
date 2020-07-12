@@ -5,8 +5,8 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>Home</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 		{% load static %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
     	<script src="http://cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     	<script src="{% static 'js/docs.min.js' %}"></script>
@@ -17,7 +17,7 @@
     <div class="container-fluid" style="padding-top: 50px;">
         <div class="card text-white mb-3" style="background-color:#3399ff">
             <div class="card-header" style="background-color:#0066ff">
-                <h2>GDPR-Compliant Differentially Private Synthetic Dataset Generation</h2>
+                <h2>DPView: Differentially Private Synthetic Dataset Generation</h2>
             </div>
             <div class="card-body">
                 <h5 class="card-title"style="font-weight:bold;color:yellow">{% trans '說明： 差分隱私適用於資料筆數較大的資料集，建議至少含有一萬筆紀錄且維度也會受資料筆數影響不能太高。' %}</h5>
@@ -26,7 +26,7 @@
         </div>
             <div class="card text-white bg-secondary mb-3 " >
                 <div class="card-header" style="background-color:#FF4500">
-                    <h2>t-Closeness</h2>
+                    <h2>t-Closeness for De-Identifying Dataset</h2>
                 </div>
                 <div class="card-body" style="background-color:#FFAA33">
                     <h5 class="card-title"></h5>

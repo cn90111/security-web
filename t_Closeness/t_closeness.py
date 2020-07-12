@@ -364,7 +364,6 @@ def run(request):
     if not os.path.isdir(settings.OUTPUT_ROOT + 't_Closeness/' + username + '/' + directory_name + '/'):
         os.makedirs(settings.OUTPUT_ROOT + 't_Closeness/' + username + '/' + directory_name + '/')
     df_output.to_csv(settings.OUTPUT_ROOT + 't_Closeness/' + username + '/' + directory_name + '/' +  directory_name + '_output.csv', encoding='cp950', index=False, columns=column_name)
-    df_output.to_csv(directory_name + '_output.csv', encoding='cp950', index=False, columns=column_name)
-
+    
     num_progress = 100
     log = 'OVER'

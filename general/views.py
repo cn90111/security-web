@@ -222,19 +222,16 @@ class CheckUtilityView(View):
         
         caller = path.get_caller(request)
         machine_learning_method = request.GET.get('machine_learning_method', None)
-        file_path = request.GET.get('file_path', None)
+        train_file_path = request.GET.get('train_file_path', None)
+        test_file_path = request.GET.get('test_file_path', None)
         file_name = request.GET.get('csv_name', None)
         
-        if file_path == 'output':
-            file_path = path.get_output_path(request, file_name)
-        elif file_path == 'upload':
-            file_path = path.get_upload_path(request, file_name)
-        else:
-            raise AttributeError(gettext('無此file_path：') + file_path)
+        train_file_path = self.get_full_path(train_file_path, request, file_name)
+        test_file_path = self.get_full_path(test_file_path, request, file_name)
         
         accuracy = 0
         try:
-            ml = MachineLearning(machine_learning_method, file_path);
+            ml = MachineLearning(machine_learning_method, train_file_path, test_file_path);
             ml.fit()
             accuracy = ml.score() * 100
         except Exception as e:
@@ -243,7 +240,16 @@ class CheckUtilityView(View):
         else:
             return JsonResponse({'accuracy':accuracy}, status=200)
         return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)
-        
+
+    def get_full_path(self, file_path, request, file_name):
+        path = Path()
+        if file_path == 'output':
+            return path.get_output_path(request, file_name)
+        elif file_path == 'upload':
+            return path.get_upload_path(request, file_name)
+        else:
+            raise AttributeError(gettext('無此file_path：') + file_path)
+
 class TitleCheckView(View):        
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):

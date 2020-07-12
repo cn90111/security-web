@@ -40,7 +40,7 @@ class NumberDataframe():
         for column_title in dataframe:
             data = None
             i = 0
-            while not data:
+            while not data and i < dataframe.shape[0]:
                 data = dataframe.loc[i, column_title]
                 i = i + 1
             if type(data) is not str and type(data) is not chr:
