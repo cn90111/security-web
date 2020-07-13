@@ -11,7 +11,6 @@ from django.contrib.auth.password_validation import NumericPasswordValidator
 from django.core.exceptions import ValidationError
 from django.utils.translation import ngettext, gettext
 
-
 class TwMinimumLengthValidator(MinimumLengthValidator):
     def validate(self, password, user=None):
         if len(password) < self.min_length:

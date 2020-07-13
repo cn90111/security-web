@@ -75,6 +75,7 @@
                     error: function (xhr, ajaxOptions, thrownError) {
                         var jsonObj = JSON.parse(xhr.responseText);
                         alert(jsonObj.message);
+                        $('#loading').hide()
                     }
                 });
             });
