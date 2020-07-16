@@ -90,7 +90,7 @@
                 $(window).on('beforeunload', function(){
                     $.ajax({
                         type: 'GET',
-                        url: '/{{ caller }}/break_program/',
+                        url: '{{ break_program_url }}',
                     });
                 });
                 
@@ -99,10 +99,9 @@
                     window.scrollTo(0, document.body.scrollHeight)
                     var mm = window.setInterval("Check_Time()", 1000);
                     $('#execute').attr('disabled', 'disabled');
-                    console.log("come in {{ caller }}")
                     var log = "";
                     var sitv = setInterval( function () {
-                        var prog_url = '/{{ caller }}/show_progress/'
+                        var prog_url = '{{ show_progress_url }}'
                         $.getJSON(prog_url, function (data) {
                             {# console.log("come in num_progress="+num_progress)#}
                             $('.progress-div').css('visibility', 'visible');
@@ -113,10 +112,10 @@
                             $('#prog_in').width(data.num_progress + '%');
                         });
                     }, 10000);
-                    var url = '/{{ caller }}/Execute/'
-                    var data = {csv_name : '{{file_name}}'}
+                    var url = '{{ execute_url }}'
+                    var data = {csv_name : '{{ file_name }}'}
                     {% for field in form %}
-                        data['{{field.html_name}}'] = $('#{{field.auto_id }}').val()
+                        data['{{ field.html_name }}'] = $('#{{ field.auto_id }}').val()
                     {% endfor %}
                     $.ajax({
                         url: url,
@@ -132,7 +131,7 @@
                             $('#execute').removeAttr('disabled');
                             alert("{% trans '檔案執行完畢' %}");
                             $(window).off()
-                            window.location = '/{{ caller }}/finish/csv_name={{file_name}}';
+                            window.location = '{{ finish_url }}';
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             var jsonObj = JSON.parse(xhr.responseText);

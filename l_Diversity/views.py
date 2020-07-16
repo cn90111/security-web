@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.urls import reverse
+
 from l_Diversity import l_diversity
 from l_Diversity.forms import ParameterForm
 
@@ -10,7 +12,12 @@ from general.views import AbstractBreakProgramView
 
 @login_required
 def index(request):
-	return render(request, 'l_Diversity/l_Diversity_home.html')
+    request_dict = {}
+    file_upload_url = reverse('file_upload', args=['json'])
+    custom_url = reverse('l_Diversity:custom')
+    request_dict['file_upload_url'] = file_upload_url
+    request_dict['custom_url'] = custom_url
+    return render(request, 'l_Diversity/l_Diversity_home.html', request_dict)
     
 class LDiversityView(AbstractMethodView):
     def get_form(self, requestContent):

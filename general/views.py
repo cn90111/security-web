@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.conf import settings
 from django.utils.translation import gettext
+from django.urls import reverse
 
 from general.machine_learning import MachineLearning
 from general.function import Path
@@ -34,7 +35,7 @@ class FileView(View):
             mode = kwargs.get('mode')
             try:
                 for file in files:
-                    if mode == 'DPSyn':
+                    if mode == 'DPView':
                         check_result = self.dpsyn_check_file_limit(file)
                     if mode == 'json':
                         check_result = self.json_check_file_limit(file)
@@ -97,6 +98,7 @@ class AbstractExecuteView(View):
         form = self.get_empty_form()
         
         request_dict = {}
+        request_dict = self.set_url_path(request_dict, caller, file_name)
         request_dict['caller'] = caller
         request_dict['file_name'] = file_name
         request_dict['form'] = form
@@ -104,6 +106,13 @@ class AbstractExecuteView(View):
         
     def get_empty_form(self):
         raise AttributeError('應藉由子類別實作此方法，return form()')
+        
+    def set_url_path(self, request_dict, caller, file_name):
+        request_dict['break_program_url'] = reverse(caller+':break_program')
+        request_dict['show_progress_url'] = reverse(caller+':show_progress')
+        request_dict['execute_url'] = reverse(caller+':execute')
+        request_dict['finish_url'] = reverse(caller+':finish', args=[file_name])
+        return request_dict
 
 class AbstractMethodView(View):
     execute_pair = {}
@@ -186,8 +195,8 @@ class DownloadView(View):
         file_path = path.get_output_path(request, file_name)
         df = pd.read_csv(file_path)
         
-        if caller == 'DPSyn':
-            caller = 'DPView'
+        if caller == 't_Closeness':
+            caller = 'k_Anonymity'
         
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+directory_name+'_output.csv'
@@ -203,9 +212,18 @@ class FinishView(View):
         caller = path.get_caller(request)
         
         request_dict = {}
+        request_dict = self.set_url_path(request_dict, caller, file_name)
         request_dict['file_name'] = file_name
         request_dict['caller'] = caller
         return render(request, 'general/execute_finish.html', request_dict)
+        
+    def set_url_path(self, request_dict, caller, file_name):
+        request_dict['download_output_url'] = reverse('download_output', args=[file_name])
+        request_dict['utility_page_url'] = reverse(caller+':utility_page', args=[file_name])
+        request_dict['execute_page_url'] = reverse(caller+':execute_page', args=[file_name])
+        request_dict['upload_display_url'] = reverse('display', args=['upload'])
+        request_dict['output_display_url'] = reverse('display', args=['output'])
+        return request_dict
         
 class UtilityPageView(View):        
     @method_decorator(login_required)
@@ -216,10 +234,16 @@ class UtilityPageView(View):
         caller = path.get_caller(request)
         
         request_dict = {}
+        request_dict = self.set_url_path(request_dict, caller, file_name)
         request_dict['file_name'] = file_name
         request_dict['caller'] = caller
         request_dict['machine_learning_list'] = MachineLearning.SUPPORT_LIST
         return render(request, 'general/utility.html', request_dict)
+         
+    def set_url_path(self, request_dict, caller, file_name):
+        request_dict['download_output_url'] = reverse('download_output', args=[file_name])
+        request_dict['check_utility_url'] = reverse('check_utility')
+        return request_dict
         
 class CheckUtilityView(View):        
     @method_decorator(login_required)

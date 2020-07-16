@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext
+from django.urls import reverse
 
 from django.views import View
 from general.function import NumberDataframe
@@ -17,15 +18,14 @@ class ParserView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         parser = JsonParser()
+        path = Path()
         
-        file_path = request.GET.get('path', None)
         file_name = request.GET.get('csv_name', None)
         structure_mode = json.loads(request.GET.get('structure_mode', None))
         structure_dict = json.loads(request.GET.get('structure_dict', None))
         number_title_pair_dict = request.GET.get('number_title_pair_dict', None)
         interval_dict = request.GET.get('interval_dict', None)
-        username = request.user.get_username()
-        file_path = file_path+username+'/'
+        file_path = path.get_upload_root(request)
         
         try:
             if number_title_pair_dict:
@@ -49,13 +49,13 @@ class DPViewParserView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         parser = JsonParser()
+        path = Path()
         
         file_path = str(request.GET.get('path', None))
         file_name = str(request.GET.get('csv_name',None))
         pair_dict = json.loads(request.GET.get('number_title_pair_dict', None))
         interval_dict = request.GET.get('interval_dict', None)
-        username = request.user.get_username()
-        file_path = file_path+username+'/'
+        file_path = path.get_upload_root(request)
         
         try:
             if interval_dict:
@@ -78,19 +78,30 @@ class CustomView(View):
         path = Path()
         
         string_element_dict = {} # column_title - element
-        caller = path.get_caller(request)
-        file_name = kwargs.get('csv_name')
-        request_dict = {}
         
+        file_name = kwargs.get('csv_name')
+        if not file_name:
+            return redirect('home')
+        caller = path.get_caller(request)
         file_path = path.get_upload_path(request, file_name)
         string_element_dict = parser.get_file_string_element(file_path)
-                
+              
+        request_dict = {}  
+        request_dict = self.set_url_path(request_dict, caller, file_name)        
         request_dict['string_element_dict'] = string_element_dict
         request_dict['caller'] = caller
         request_dict['file_name'] = file_name
         request_dict['custom_mode'] = 'json_parser'
         return render(request, 'general/parameter_custom.html', request_dict)
         
+    def set_url_path(self, request_dict, caller, file_name):
+        request_dict['advanced_settings_url'] = reverse(caller+':advanced_settings', args=[file_name])
+        request_dict['base_settings_url'] = reverse(caller+':custom')+file_name        
+        request_dict['previous_page_url'] = reverse(caller+':home')
+        request_dict['execute_url'] = reverse(caller+':execute_page', args=[file_name])
+        request_dict['upload_display_url'] = reverse('display', args=['upload'])
+        return request_dict
+
 class AdvancedSettingsView(CustomView):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
@@ -102,15 +113,15 @@ class AdvancedSettingsView(CustomView):
         username = request.user.get_username()
         caller = path.get_caller(request)
         file_name = kwargs.get('csv_name')
-        request_dict = {}
         
         file_path = path.get_upload_path(request, file_name)
         string_element_dict = parser.get_file_string_element(file_path)
         number_title_list = number_data_frame.get_number_title(file_path)
         max_value_dict, min_value_dict = number_data_frame.get_number_limit(file_path, number_title_list)
            
+        request_dict = {}
+        request_dict = self.set_url_path(request_dict, caller, file_name)  
         request_dict['string_element_dict'] = string_element_dict
-        request_dict['caller'] = caller
         request_dict['file_name'] = file_name
         request_dict['custom_mode'] = 'json_parser'
         request_dict['advanced_settings'] = True

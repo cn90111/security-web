@@ -4,14 +4,16 @@ from general import views as general_views
 from json_parser import views as json_parser_views
 from . import t_closeness
 
+app_name = 't_Closeness'
 urlpatterns = [
-    path('',views.index),
-    path('Execute/', views.TClosenessView.as_view()),
-    path('break_program/', views.BreakProgramView.as_view()),
-    path('show_progress/', t_closeness.show_progress),
-    path('Execute_Page/csv_name=<str:csv_name>/', views.ExecuteView.as_view()),
-    path('custom/csv_name=<str:csv_name>/', json_parser_views.CustomView.as_view()),
-    path('finish/csv_name=<str:csv_name>/', general_views.FinishView.as_view()),
-    path('utility_page/csv_name=<str:csv_name>/', general_views.UtilityPageView.as_view()),
-    path('advanced_settings/csv_name=<str:csv_name>/', json_parser_views.AdvancedSettingsView.as_view()),
+    path('', views.index, name = 'home'),
+    path('execute', views.TClosenessView.as_view(), name = 'execute'),
+    path('break_program/', views.BreakProgramView.as_view(), name = 'break_program'),
+    path('show_progress/', t_closeness.show_progress, name = 'show_progress'),
+    path('execute_page/<str:csv_name>/', views.ExecuteView.as_view(), name = 'execute_page'),
+    path('custom/', json_parser_views.CustomView.as_view(), name = 'custom'),
+    path('custom/<str:csv_name>/', json_parser_views.CustomView.as_view()),
+    path('finish/<str:csv_name>/', general_views.FinishView.as_view(), name = 'finish'),
+    path('utility_page/<str:csv_name>/', general_views.UtilityPageView.as_view(), name = 'utility_page'),
+    path('advanced_settings/<str:csv_name>/', json_parser_views.AdvancedSettingsView.as_view(), name = 'advanced_settings'),
 ]

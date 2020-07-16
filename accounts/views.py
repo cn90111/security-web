@@ -30,7 +30,7 @@ class SignUpView(View):
         return render(request, 'registration/signup.html', {'form': form})
     
     def accounts_init(self, username):
-        function_name = ['DPSyn', 'k_Anonymity', 'l_Diversity', 't_Closeness']
+        function_name = ['DPView', 'k_Anonymity', 'l_Diversity', 't_Closeness']
         for name in function_name:
             os.makedirs(settings.UPLOAD_ROOT+name+'/'+username+'/')
             os.makedirs(settings.OUTPUT_ROOT+name+'/'+username+'/')
@@ -78,7 +78,7 @@ class DeleteAccountView(View):
         if check is None:
             return JsonResponse({'message':gettext('密碼錯誤，刪除動作已取消')}, status=401)
             
-        function_name = ['DPSyn', 'k_Anonymity', 'l_Diversity', 't_Closeness']
+        function_name = ['DPView', 'k_Anonymity', 'l_Diversity', 't_Closeness']
         for name in function_name:
             shutil.rmtree(settings.UPLOAD_ROOT+name+'/'+username+'/')
             shutil.rmtree(settings.OUTPUT_ROOT+name+'/'+username+'/')

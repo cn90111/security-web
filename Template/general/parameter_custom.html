@@ -11,8 +11,8 @@
 
 {% block left_container %}
     <div class="form-group col-md-8">
-        {% if custom_mode == 'DPSyn' %}
-            {% include 'DPSyn/DPSyn_number_preprocessing.html' %}
+        {% if custom_mode == 'DPView' %}
+            {% include 'DPView/DPView_number_preprocessing.html' %}
         {% elif custom_mode == 'json_parser' %}
             {% include 'json_parser/json_parser.html' %}
             {% if advanced_settings %}
@@ -27,7 +27,7 @@
 {% block right_container %}
     <div class="form-group col-md-4">
         {% trans '檔案預覽' as preview_file %}
-        {% include 'general/display_file.html' with title=preview_file method="upload" id="preview" %}
+        {% include 'general/display_file.html' with title=preview_file display_url=upload_display_url id="preview" %}
     </div>
 {% endblock right_container %}
 
@@ -37,15 +37,15 @@
     </div>
     {% if not advanced_settings %}
         <div class="form-group col-md-2">
-            <button onclick="location.href='/{{ caller }}/advanced_settings/csv_name={{file_name}}/'" type="button" class="btn btn-primary" style="width:100%">{% trans '進階設定' %}</button>
+            <button onclick="location.href='{{ advanced_settings_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '進階設定' %}</button>
         </div>
     {% else %}
         <div class="form-group col-md-2">
-            <button onclick="location.href='/{{ caller }}/custom/csv_name={{file_name}}/'" type="button" class="btn btn-primary" style="width:100%">{% trans '基礎設定' %}</button>
+            <button onclick="location.href='{{ base_settings_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '基礎設定' %}</button>
         </div>
     {% endif %}
     <div class="form-group col-md-2">
-        <button onclick="location.href='/{{ caller }}/'" type="button" class="btn btn-primary" style="width:100%">{% trans '重新選擇檔案' %}</button>
+        <button onclick="location.href='{{ previous_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '重新選擇檔案' %}</button>
     </div>
     <div class="form-group col-md-2">
         <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
@@ -55,7 +55,7 @@
 {% block script %}
     <script>
         $(function () {
-            var url = '/general/title_check/';
+            var url = "{% url 'title_check' %}";
             var data = {
                 'csv_name' : '{{ file_name }}',
             }
@@ -79,11 +79,10 @@
             $("input[type='checkbox']").prop('checked', false)
         }
     </script>
-    {% if custom_mode == 'DPSyn' %}
+    {% if custom_mode == 'DPView' %}
         <script>
             $(function () {
                 $('#execute').on('click', function () {
-                    var path = 'upload/{{ caller }}/';
                     var number_title_list = {{ number_title_list|safe }};
                     var number_title_pair_dict = {};
                     
@@ -96,9 +95,8 @@
                         number_title_pair_dict[number_title] = type
                     }
                     
-                    var url = '/json_parser/create_DPView_json/';
+                    var url = "{% url 'create_DPView_json' %}";
                     var data = {
-                        'path' : path,
                         'csv_name' : '{{ file_name }}',
                         'number_title_pair_dict' : JSON.stringify(number_title_pair_dict),
                     }
@@ -131,7 +129,7 @@
                         data: data,
                         success: function () {
                             reset()
-                            window.location = '/{{ caller }}/Execute_Page/csv_name={{file_name}}/';
+                            window.location = '{{ execute_url }}';
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             var jsonObj = JSON.parse(xhr.responseText);
@@ -145,7 +143,6 @@
         <script>
             $(function () {
                 $('#execute').on('click', function () {
-                    var path = 'upload/{{ caller }}/';
                     var string_element_dict = {{ string_element_dict|safe }};
                     var lose_required = false;
                     
@@ -192,9 +189,8 @@
                         alert("{% trans '尚有對應關係還沒填寫' %}");
                     }
                     else {
-                        var url = '/json_parser/create_json/';
+                        var url = "{% url 'create_json' %}";
                         data = {
-                            'path' : path,
                             'csv_name' : '{{ file_name }}',
                             'structure_mode' : JSON.stringify(structure_mode),
                             'structure_dict' : JSON.stringify(structure_dict),
@@ -240,7 +236,7 @@
                             data: data,
                             success: function () {
                                 reset()
-                                window.location = '/{{ caller }}/Execute_Page/csv_name={{ file_name }}/';
+                                window.location = '{{ execute_url }}';
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
                                 var jsonObj = JSON.parse(xhr.responseText);

@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',
     't_Closeness',
-    'DPSyn',
+    'DPView',
     'l_Diversity',
     'k_Anonymity',
     'json_parser',
@@ -147,6 +147,6 @@ STATIC_URL = '/static/'
 UPLOAD_ROOT = 'upload/'
 OUTPUT_ROOT = 'output/'
 
-# DPSyn temp
+# DPView temp
 
-DPSYN_TEMP_ROOT = 'dpsyn_temp/'
+DPVIEW_TEMP_ROOT = 'dpview_temp/'

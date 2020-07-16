@@ -20,11 +20,11 @@ class InitializeView(View):
         username = request.user.get_username()
         finish = False
         for path in ['upload', 'output']:
-            for method in ['DPSyn', 'k_Anonymity', 'l_Diversity', 't_Closeness']:
+            for method in ['DPView', 'k_Anonymity', 'l_Diversity', 't_Closeness']:
                 temp_path = path+'/'+method+'/'+username+'/'
                 for directory_path in os.listdir(temp_path):
                     shutil.rmtree(temp_path+directory_path)
-        path = settings.DPSYN_TEMP_ROOT+username+'/'
+        path = settings.DPVIEW_TEMP_ROOT+username+'/'
         for directory_path in os.listdir(path):
             shutil.rmtree(path+directory_path)
         finish = True

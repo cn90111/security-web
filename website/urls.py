@@ -26,7 +26,7 @@ urlpatterns += i18n_patterns(
     path('admin/', admin.site.urls),
     path('home/', include('home.urls')),
     path('t_Closeness/', include('t_Closeness.urls')),
-    path('DPSyn/', include('DPSyn.urls')),
+    path('DPView/', include('DPView.urls')),
     path('l_Diversity/', include('l_Diversity.urls')),
     path('k_Anonymity/', include('k_Anonymity.urls')),
     path('json_parser/', include('json_parser.urls')),
