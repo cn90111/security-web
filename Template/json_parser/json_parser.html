@@ -150,19 +150,42 @@
                 (column_title+'_is_unrelated');
         var table = document.getElementById
                 (column_title+'_table');
+        var check_status;
 
         if (box_name == 'address'){
-            checkbox_unrelated.disabled = !checkbox_unrelated.disabled
+            check_status = checkbox_address.checked
         } else if (box_name == 'unrelated') {
-            checkbox_address.disabled = !checkbox_address.disabled
+            check_status = checkbox_unrelated.checked
         } else {
             console.log("box_name exception" + box_name)
         }
-        for (var count = 0; count<table.tBodies[0].rows.length; count++) {
-            var pair_to_element = document.
-                getElementById(column_title+'_pair_label_'+count);
-            pair_to_element.disabled = !pair_to_element.disabled
-            pair_to_element.required = !pair_to_element.required
+        
+        checkbox_address.checked = false
+        checkbox_unrelated.checked = false
+        
+        if (box_name == 'address'){
+            checkbox_address.checked = check_status
+        } else if (box_name == 'unrelated') {
+            checkbox_unrelated.checked = check_status
+        } else {
+            console.log("box_name exception" + box_name)
+        }
+        
+        if (checkbox_address.checked || checkbox_unrelated.checked) {
+            for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+                var pair_to_element = document.
+                    getElementById(column_title+'_pair_label_'+count);
+                pair_to_element.disabled = true
+                pair_to_element.required = false
+            }
+        }
+        else {
+            for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+                var pair_to_element = document.
+                    getElementById(column_title+'_pair_label_'+count);
+                pair_to_element.disabled = false
+                pair_to_element.required = true
+            }
         }
     }
     
