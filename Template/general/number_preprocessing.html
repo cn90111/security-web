@@ -32,10 +32,13 @@
                         <button id="{{ number_title }}_interval_determine" type="button" class="btn btn-primary" onclick="set_interval('{{ number_title }}')">{% trans '確定' %}</button>
                     </div>
                 </div>
-                <br>
-                <label id="{{ number_title }}_interval_text" style="display:none">{% trans '間隔區間(每個區間皆包含最小值不包含最大值)：' %}</label><br>
-                <div id="{{ number_title }}_interval" class="form-row justify-content-center">
+                <div id="{{ number_title }}_interval_display" style="display:none">
+                    <label id="{{ number_title }}_interval_text" style="display:none">{% trans '間隔區間(每個區間皆包含最小值不包含最大值)：' %}</label><br>
+                    <div id="{{ number_title }}_interval" class="form-row justify-content-center">
+                    </div>
                 </div>
+                <br>
+                <br>
             {% endif %}
         {% endfor %}
     </form>
@@ -53,32 +56,56 @@
     }
     function click_number_checkbox(number_title, box_name) {
         var checkbox_number = document.getElementById
-                (number_title+'_is_number');
+            (number_title+'_is_number');
         var checkbox_single = document.getElementById
-                (number_title+'_is_single');
+            (number_title+'_is_single');
         var checkbox_category = document.getElementById
-                (number_title+'_is_category');
-        
-        {% if advanced_settings %}
-            document.getElementById(number_title+'_interval_text').style.display = 'none'
-            document.getElementById(number_title+'_interval').style.display = 'none'
-        {% endif %}
-        
-        checkbox_number.disabled = !checkbox_number.disabled
-        checkbox_single.disabled = !checkbox_single.disabled
-        checkbox_category.disabled = !checkbox_category.disabled
-        
+            (number_title+'_is_category');
+        var check_status;
+                
         if (box_name == 'number'){
-            interval_display = document.getElementById(number_title+'_display');
-            toggle(interval_display);
-            checkbox_number.disabled = !checkbox_number.disabled
+            check_status = checkbox_number.checked
         } else if (box_name == 'single') {
-            checkbox_single.disabled = !checkbox_single.disabled
+            check_status = checkbox_single.checked
         } else if (box_name == 'category') {
-            checkbox_category.disabled = !checkbox_category.disabled
+            check_status = checkbox_category.checked
         } else {
             console.log("box_name exception:" + box_name)
         }
+        
+        checkbox_number.checked = false
+        checkbox_single.checked = false
+        checkbox_category.checked = false
+        
+        if (box_name == 'number'){
+            checkbox_number.checked = check_status
+        } else if (box_name == 'single') {
+            checkbox_single.checked = check_status
+        } else if (box_name == 'category') {
+            checkbox_category.checked = check_status
+        } else {
+            console.log("box_name exception:" + box_name)
+        }
+        
+        {% if advanced_settings %}
+            var interval_display = document.getElementById 
+                (number_title+'_display');
+            var interval_input_display = document.getElementById 
+                (number_title+'_interval_display');
+            
+            if (box_name == 'number'){
+                toggle(interval_display);
+                toggle(interval_input_display);
+            } else if (box_name == 'single') {
+                interval_display.style.display = 'none'
+                interval_input_display.style.display = 'none'
+            } else if (box_name == 'category') {
+                interval_display.style.display = 'none'
+                interval_input_display.style.display = 'none'
+            } else {
+                console.log("box_name exception:" + box_name)
+            }
+        {% endif %}
     }
     
     function get_check_result(number_title) {
