@@ -52,7 +52,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-2">
-                        <button onclick="location.href='/general/Download_Output/csv_name={{file_name}}'" type="button" class="btn btn-primary" style="width:100%">{% trans '下載去識別化檔案' %}</button>
+                        <button onclick="location.href='{{ download_output_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '下載去識別化檔案' %}</button>
                     </div>
                     <div class="form-group col-md-2">
                         <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
@@ -83,7 +83,7 @@
                 bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}")
             }
             function utility_check(train_file_path, test_file_path, text_element, file_kind) {
-                var url = '/general/check_utility/'
+                var url = '{{ check_utility_url }}'
                 var data = {
                     csv_name : '{{file_name}}',
                     machine_learning_method : selecter.val(),

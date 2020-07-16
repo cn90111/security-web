@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.urls import reverse
+
 from k_Anonymity import k_anonymity
 from k_Anonymity.forms import ParameterForm
 
@@ -10,7 +12,12 @@ from general.views import AbstractBreakProgramView
 
 @login_required
 def index(request):
-	return render(request, 'k_Anonymity/k_Anonymity_home.html')
+    request_dict = {}
+    file_upload_url = reverse('file_upload', args=['json'])
+    custom_url = reverse('k_Anonymity:custom')
+    request_dict['file_upload_url'] = file_upload_url
+    request_dict['custom_url'] = custom_url
+    return render(request, 'k_Anonymity/k_Anonymity_home.html', request_dict)
     
 class KAnonymityView(AbstractMethodView):
     def get_form(self, requestContent):

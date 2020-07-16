@@ -60,9 +60,8 @@
                     return;
                 }
                 let formData = new FormData($('#form_file').get(0));
-                
                 $.ajax({
-                    url: '/general/File_Upload/{% block upload_mode %}json{% endblock upload_mode %}',
+                    url: "{{ file_upload_url }}",
                     type: 'POST',
                     data: formData,
                     dataType: 'json',
@@ -70,7 +69,7 @@
                     processData: false,
                     success: function () {
                         reset()
-                        window.location = '/{% block custom_url %}json_parser{% endblock custom_url %}/custom/csv_name='+csv_name+'/';
+                        window.location = '{{ custom_url }}'+csv_name+'/';
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         var jsonObj = JSON.parse(xhr.responseText);

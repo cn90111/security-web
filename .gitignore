@@ -1,11 +1,11 @@
 #DPSyn files
-DPSyn
+DPView
 
 #Data files
 output/*
 upload/*
 data
-dpsyn_temp
+dpview_temp
 *.csv
 *.json
 
