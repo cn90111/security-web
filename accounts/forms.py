@@ -44,3 +44,8 @@ class TwUserCreationForm(UserCreationForm):
         password2.error_messages['required'] = '請填寫密碼確認'
         
         self.error_messages['password_mismatch'] = '密碼與密碼確認不一致'
+        
+class ChangePasswordForm(TwUserCreationForm):
+     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].required = False

@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.contrib import auth
 from django.views import View
 from django.conf import settings
 from django.utils.translation import gettext
-from accounts.forms import TwUserCreationForm
+from accounts.forms import TwUserCreationForm, ChangePasswordForm
 import os
 import shutil
 
@@ -71,17 +72,41 @@ class LogOutView(View):
         
 class DeleteAccountView(View):
     def get(self, request, *arg, **kwargs):
-        user = request.user
-        password = request.GET.get('password', None)
         username = user.get_username()
-        check = auth.authenticate(username=username, password=password)
-        if check is None:
-            return JsonResponse({'message':gettext('密碼錯誤，刪除動作已取消')}, status=401)
-            
         function_name = ['DPView', 'k_Anonymity', 'l_Diversity', 't_Closeness']
         for name in function_name:
             shutil.rmtree(settings.UPLOAD_ROOT+name+'/'+username+'/')
             shutil.rmtree(settings.OUTPUT_ROOT+name+'/'+username+'/')
         shutil.rmtree(settings.DPSYN_TEMP_ROOT+username+'/')
         user.delete()
+        return redirect('home')
+        
+class PasswordCheckView(View):
+    def get(self, request, *arg, **kwargs):
+        user = request.user
+        password = request.GET.get('password', None)
+        username = user.get_username()
+        check = auth.authenticate(username=username, password=password)
+        if check is None:
+            return JsonResponse({'message':gettext('密碼錯誤，動作已取消')}, status=401)
+        if not check.is_active:
+            return JsonResponse({'message':gettext('帳戶已被凍結，動作已取消')}, status=401)
         return HttpResponse(status=204)
+
+class ChangePasswordView(View):
+    def post(self, request, *arg, **kwargs):
+        user = request.user
+        username = user.get_username()
+        form = ChangePasswordForm(request.POST)
+        if form.is_valid():
+            account = User.objects.get(username__exact=username)
+            account.set_password(form.cleaned_data.get('password1'))
+            account.save()
+            auth.login(request, account)
+            return redirect('home')
+        else:
+            return render(request, 'registration/change_password.html', {'form': form})
+            
+    def get(self, request, *arg, **kwargs):
+        form = ChangePasswordForm()
+        return render(request, 'registration/change_password.html', {'form': form})
