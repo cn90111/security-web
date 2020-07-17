@@ -35,7 +35,7 @@ class SignUpView(View):
         for name in function_name:
             os.makedirs(settings.UPLOAD_ROOT+name+'/'+username+'/')
             os.makedirs(settings.OUTPUT_ROOT+name+'/'+username+'/')
-        os.makedirs(settings.DPSYN_TEMP_ROOT+username+'/')
+        os.makedirs(settings.DPVIEW_TEMP_ROOT+username+'/')
         
 class LogInView(View):
     def post(self, request, *arg, **kwargs):
@@ -72,12 +72,13 @@ class LogOutView(View):
         
 class DeleteAccountView(View):
     def get(self, request, *arg, **kwargs):
+        user = request.user
         username = user.get_username()
         function_name = ['DPView', 'k_Anonymity', 'l_Diversity', 't_Closeness']
         for name in function_name:
             shutil.rmtree(settings.UPLOAD_ROOT+name+'/'+username+'/')
             shutil.rmtree(settings.OUTPUT_ROOT+name+'/'+username+'/')
-        shutil.rmtree(settings.DPSYN_TEMP_ROOT+username+'/')
+        shutil.rmtree(settings.DPVIEW_TEMP_ROOT+username+'/')
         user.delete()
         return redirect('home')
         
