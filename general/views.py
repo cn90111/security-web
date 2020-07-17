@@ -301,7 +301,13 @@ class TitleCheckView(View):
         return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)    
     
     def title_check(self, dataframe):
+        if dataframe.shape[1] == 1:
+            return JsonResponse({'message':gettext('經由系統偵測，此檔案分隔符號錯誤，CSV檔案應由逗號分隔資料，請藉由另存新檔選CSV，以符合CSV應有的格式')}, status=200)
         for column_title in dataframe:
             element = set(dataframe.loc[:, column_title].values.tolist())
             if column_title in element:
                 return JsonResponse({'message':gettext('經由系統偵測，此檔案沒有標題列，可能導致去識別化結果不如預期，若為系統誤判則不需理會')}, status=200)
+                
+class UpdateLogView(View):
+    def get(self, request, *arg, **kwargs):
+        return render(request, 'general/update_log.html', {})

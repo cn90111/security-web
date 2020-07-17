@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load i18n %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{% trans '更新日誌' %}</title>
+        {% load static %}
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/4.3.1/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+    </head>
+    <body style="padding-top:50px;">
+        {% include 'navbar.html' %}
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h2>{% trans '最新更新 X/X ver X.X' %}</h2>
+                <h4 style="font-weight:bold;color:green">{% trans '新增項目：' %}</h5>
+                <h5 style="font-weight:bold;color:green">{% trans '1. 公佈欄' %}</h5>
+                <h5 style="font-weight:bold;color:green">{% trans '2. 更新日誌' %}</h5>
+                <h5 style="font-weight:bold;color:green">{% trans '3. 更改密碼功能' %}</h5>
+                <h4 style="font-weight:bold;color:red">{% trans '調整項目：' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '1. 檔案上傳限制，無上限→1MB' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '2. 勾選框操作，勾選時其餘選項鎖定→可自由切換勾選的內容' %}</h5>
+            </div>
+        </div>
+        <div class="container" style="width:100%;">
+            <form id="parameter_form" data-toggle="validator">
+                <div class="container">
+                    <div class="form-group">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

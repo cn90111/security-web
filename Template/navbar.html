@@ -23,6 +23,9 @@
                     <a class="navbar-brand" href="{% url 'l_Diversity:home' %}" style="color:#ffffff">l-Diversity</a>
                 </li>
             {% endif %}
+            <li class="nav-item">
+                <a class="navbar-brand" href="{% url 'update_log' %}" style="color:#ffffff">{% trans '更新日誌' %}</a>
+            </li>
             {% if user.is_authenticated %}
             <li class="nav-item">
                 <select id="account" name="account" class="form-control">
