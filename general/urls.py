@@ -7,4 +7,5 @@ urlpatterns = [
     path('display_<str:method>/', views.DisplayCsvView.as_view(), name = 'display'),
     path('check_utility/', views.CheckUtilityView.as_view(), name = 'check_utility'),
     path('title_check/', views.TitleCheckView.as_view(), name = 'title_check'),
+    path('update_log/', views.UpdateLogView.as_view(), name = 'update_log'),
 ]

@@ -15,6 +15,17 @@
     {% include 'navbar.html' %}
 
     <div class="container-fluid" style="padding-top: 50px;">
+        {% if True %}
+        <div class="card text-white bg-secondary mb-3">
+            <div class="card-header" style="background-color:#2C6E49">
+                <h2>更新公告</h2>
+            </div>
+            <div class="card-body" style="background-color:#E3F09B">
+                <h5 class="card-title"style="font-weight:bold;color:#C8553D">{% trans '說明： 將於 X/X X:X 時關閉伺服器進行系統更新，請您不要進行任何操作，預計於 X:X 時重新啟動伺服器，感謝您的使用' %}</h5>
+                <a href="{% url 'update_log' %}" class="btn btn-lg" style="background-color:#4C956C;color:#000000;">{% trans '更新日誌' %}</a>
+            </div>
+        </div>
+        {% endif %}
         <div class="card text-white mb-3" style="background-color:#3399ff">
             <div class="card-header" style="background-color:#0066ff">
                 <h2>DPView: Differentially Private Synthetic Dataset Generation</h2>
@@ -24,17 +35,17 @@
                 <a href="{% url 'DPView:home' %}" class="btn btn-primary btn-lg">{{ enter }}</a>
             </div>
         </div>
-            <div class="card text-white bg-secondary mb-3 " >
-                <div class="card-header" style="background-color:#FF4500">
-                    <h2>k-Anonymity for De-Identifying Dataset</h2>
-                </div>
-                <div class="card-body" style="background-color:#FFAA33">
-                    <h5 class="card-title"></h5>
-                    <p class="card-text"></p>
-                    <a href="{% url 't_Closeness:home' %}" class="btn btn-lg" style="background-color:#EE7700;color:white;">{{ enter }}</a>
-                </div>
+        <div class="card text-white bg-secondary mb-3 " >
+            <div class="card-header" style="background-color:#FF4500">
+                <h2>k-Anonymity for De-Identifying Dataset</h2>
             </div>
-        {% if false %}
+            <div class="card-body" style="background-color:#FFAA33">
+                <h5 class="card-title"></h5>
+                <p class="card-text"></p>
+                <a href="{% url 't_Closeness:home' %}" class="btn btn-lg" style="background-color:#EE7700;color:white;">{{ enter }}</a>
+            </div>
+        </div>
+        {% if False %}
             <div class="card text-white bg-secondary mb-3">
                 <div class="card-header" style="background-color:#28a428">
                     <h2>k-Anonymity</h2>
