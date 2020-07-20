@@ -5,10 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext
 from django.urls import reverse
-
 from django.views import View
+
 from general.function import NumberDataframe
 from general.function import Path
+from general.exception import PairLoopException
 
 from .forms import UploadFileForm
 from json_parser.json_parser import JsonParser
@@ -26,8 +27,11 @@ class ParserView(View):
         number_title_pair_dict = request.GET.get('number_title_pair_dict', None)
         interval_dict = request.GET.get('interval_dict', None)
         file_path = path.get_upload_root(request)
-        
         try:
+            for key in structure_mode:
+                if structure_mode[key] == 'custom':
+                    structure_dict[key] = self.pair_check(structure_dict[key])
+            
             if number_title_pair_dict:
                 number_title_pair_dict = json.loads(number_title_pair_dict)
                 interval_dict = json.loads(interval_dict)
@@ -38,12 +42,35 @@ class ParserView(View):
             else:
                 parser.create_json_file(file_path, file_name,
                     structure_mode, structure_dict)
+        except PairLoopException as e:
+            print(e)
+            return JsonResponse({"message":str(e)}, status=400)
         except Exception as e:
             print(e)
             return JsonResponse({"message":gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務")}, status=404)
         else:
             return HttpResponse(status=204)
         return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
+    
+    def pair_check(self, pair_dict):
+        for key in list(pair_dict.keys()):
+            value = pair_dict[key]
+            previous_value = value
+            ancestor_set = set()
+            ancestor_set.add(value)
+            while value in pair_dict:
+                value = pair_dict[value]
+                if previous_value == value:
+                    return pair_dict
+                if value in ancestor_set:
+                    temp = ""
+                    for element in ancestor_set:
+                        temp = temp + element + ', '
+                    raise PairLoopException(gettext("配對關係出現循環，將導致程式無限執行，請重新配對：") + temp)
+                previous_value = value
+                ancestor_set.add(value)
+            pair_dict[value] = value
+        return pair_dict
 
 class DPViewParserView(View):
     @method_decorator(login_required)
