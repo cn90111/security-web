@@ -19,7 +19,7 @@
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
                 <h2>{% trans '可用性評估' %}</h2>
-                <h5 style="font-weight:bold;color:red">{% trans '說明1：請選擇用以量測的機器學習方法，選擇後將立即開始量測' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '說明1：請選擇用以量測的機器學習方法，選擇後請按下確定' %}</h5>
                 <h5 style="font-weight:bold;color:red">{% trans '說明2：將會以資料集最後一欄做為量測目標(Label)' %}</h5>
                 <h5 style="font-weight:bold;color:red">{% trans '說明3：上方為以80%原始檔案訓練，20%原始檔案驗證的準確度' %}</h5>
                 <h5 style="font-weight:bold;color:red">{% trans '說明4：中間為以80%去識別化檔案訓練，20%去識別化檔案驗證的準確度' %}</h5>
@@ -28,14 +28,21 @@
         </div>
         <div class="container" style="width:100%;">
             <form id="parameter_form" data-toggle="validator">
-                {% csrf_token %}
-                <label for="machine_learning_select">{% trans '用以量測的機器學習：' %}</label>
-                <select class="form-control" id="machine_learning_select">
-                    <option selected="selected"></option>
-                    {% for item in machine_learning_list %}
-                        <option value="{{ item }}">{{ item }}</option>
-                    {%endfor%}
-                </select>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {% csrf_token %}
+                        <label for="machine_learning_select">{% trans '用以量測的機器學習：' %}</label>
+                        <select class="form-control" id="machine_learning_select">
+                            <option selected="selected"></option>
+                            {% for item in machine_learning_list %}
+                                <option value="{{ item }}">{{ item }}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button onclick="check_start()" type="button" class="btn btn-primary" style="width:100%">{% trans '確定' %}</button>
+                    </div>
+                </div>
                 <h2 id="loading" style="display:none">{% trans '量測中請稍後' %}</h2>
                 <br>
                 
@@ -113,7 +120,7 @@
                     }
                 });
             }
-            $('#machine_learning_select').on('change', function() {
+            function check_start() {
                 reset();
                 
                 if (!selecter.val()) {
@@ -126,7 +133,7 @@
                 utility_check('upload', 'upload', left_accuracy, '{{ origin_file }}')
                 utility_check('output', 'output', right_accuracy, '{{ de_identification_file }}')
                 utility_check('output', 'upload', bottom_accuracy, '{{ utility_file }}')
-            });
+            }
         </script>
     </body>
 </html>
