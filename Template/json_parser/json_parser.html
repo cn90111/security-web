@@ -106,7 +106,7 @@
     }
     
     function add_element_list(column_title, id) {
-        var check_exist = document.getElementById('option_'+column_title+'_'+id);
+        var check_exist = document.getElementById('pair_0_option_'+column_title+'_'+id);
         if(check_exist) {
             delete_element_list(column_title, id)
         }
@@ -115,7 +115,7 @@
         for (var count = 0; count<table.tBodies[0].rows.length; count++) {
             var datalist = document.
                 getElementById(column_title+'_select_pair_'+count);
-            datalist.innerHTML += '<option id="option_'+column_title+'_'+id+'" value="'+element.value+'">'+element.value+'</option>'
+            datalist.innerHTML += '<option id="pair_'+count+'_option_'+column_title+'_'+id+'" value="'+element.value+'">'+element.value+'</option>'
         }
     }
     
@@ -132,11 +132,11 @@
     
     function delete_element_list(column_title, id) {
         var table = document.getElementById(column_title+'_table');
-        if (document.getElementById('option_'+column_title+'_'+id)) {
+        if (document.getElementById('pair_0_option_'+column_title+'_'+id)) {
             for (var count = 0; count<table.tBodies[0].rows.length; count++) {
                 var datalist = document.
                     getElementById(column_title+'_select_pair_'+count);
-                datalist.removeChild(document.getElementById('option_'+column_title+'_'+id))
+                datalist.removeChild(document.getElementById('pair_'+count+'_option_'+column_title+'_'+id))
             }
         }
     }
