@@ -30,8 +30,8 @@ class FileView(View):
         files = request.FILES.getlist('file')
         if form.is_valid():
             for file in files:
-                if self.more_than_file_size_limit(file, 1048576):
-                    return JsonResponse({'message':gettext("檔案過大，不能超過 1 MB")}, status=415)
+                if self.more_than_file_size_limit(file, 4194304):
+                    return JsonResponse({'message':gettext("檔案過大，不能超過 4 MB")}, status=415)
             mode = kwargs.get('mode')
             try:
                 for file in files:
