@@ -20,10 +20,7 @@
             </div>
         </div>
 	   	<div class="container">
-            <div id="loading" style="display:none">
-                <div class="spinner-border"></div>
-            </div>
-            <br>
+            <h2 id="loading" style="display:none">{% trans '檔案上傳中，請稍後' %}</h2>
             <form id="form_file" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="custom-file center" style="height:80px">
