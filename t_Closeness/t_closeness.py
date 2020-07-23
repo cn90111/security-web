@@ -39,10 +39,10 @@ def run(request):
     username = request.user.get_username()
     dict_file_name = settings.UPLOAD_ROOT + 't_Closeness/' + username + '/' + directory_name + '/' + directory_name + '_dict.json'
     num_progress = 5
+    progress_count = 0
     log = 'Building data information...'
     if skip:
         raise BreakProgramException(gettext('程式成功終止'))
-
     #file_name = 'dataset1.csv'
     #dict_file_name = file_name[:-4] + '_dict.json'
     #k = 7
@@ -169,7 +169,7 @@ def run(request):
     
     # In[ ]:
     
-    num_progress = 20
+    num_progress = 10
     log = 'Building data information...'
     if skip:
         raise BreakProgramException(gettext('程式成功終止'))
@@ -179,6 +179,10 @@ def run(request):
     used_id = []
     current_used_num = 0 
     for id_ in range(0, record_num):
+        progress_count = progress_count + 1
+        if progress_count%20 == 0 and num_progress < 60:
+            progress_count = 0
+            num_progress = num_progress + 1
         if id_ in used_id:
             continue
         if record_num - current_used_num < 2 * k:
@@ -189,7 +193,7 @@ def run(request):
                 candidates.append((target_id, 0))
         else:
             candidates = [(-1, 0) for i in range(k - 1)] # (id, distance)
-            for target_id in range(id_ + 1, record_num):
+            for target_id in range(id_ + 1, record_num):                
                 if target_id in used_id:
                     continue
                 d = person_distance(original_data[id_], original_data[target_id])
@@ -235,7 +239,7 @@ def run(request):
     
     
     # In[ ]:
-    num_progress = 50
+    num_progress = 60
     log = 'Building data information...'
     if skip:
         raise BreakProgramException(gettext('程式成功終止'))
@@ -251,6 +255,10 @@ def run(request):
     distribution = np.array([i for i in distribution_dict.values()]) / record_num
     
     while True:
+        progress_count = progress_count + 1
+        if progress_count%20 == 0 and num_progress < 99:
+            progress_count = 0
+            num_progress = num_progress + 1
         if skip:
             raise BreakProgramException(gettext('程式成功終止'))
         # Find ineligible clusters
@@ -334,7 +342,7 @@ def run(request):
                             break
                     k_anony_data[cluster_index][attr_id] = (lower_bound, upper_bound)
     
-    num_progress = 80
+    num_progress = 99
     log = 'Building data information...'
     if skip:
         raise BreakProgramException(gettext('程式成功終止'))
