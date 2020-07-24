@@ -34,6 +34,8 @@
         </div>
         
         <script>
+            loading_jquery = $('#loading');
+            
             function isValidFile(file) {
                 var type = "." + file.value.split(".")[1];
                 if (type == file.accept) {
@@ -43,23 +45,24 @@
             }
             
             function reset() {
-                $("#customFile_csv").val('')
+                $("#customFile_csv").val('');
             }
         
             $("#customFile_csv").on("change", function() {
                 var csv_name = $(this).val().split("\\").pop();
-                $('#loading').show()
+                loading_jquery.show();
+                close_alert();
                 $(this).siblings(".custom-file-label").addClass("selected").html(csv_name);
                 
                 if (!csv_name) {
-                    alert("{% trans '請先選擇檔案' %}");
-                    $('#loading').hide()
+                    danger_alert("{% trans '請先選擇檔案' %}");
+                    loading_jquery.hide();
                     return;
                 }
                 
                 if (!isValidFile(document.getElementById('customFile_csv'))) {
-                    alert("{% trans '檔案類型錯誤' %}");
-                    $('#loading').hide()
+                    danger_alert("{% trans '檔案類型錯誤' %}");
+                    loading_jquery.hide();
                     return;
                 }
                 let formData = new FormData($('#form_file').get(0));
@@ -76,8 +79,8 @@
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         var jsonObj = JSON.parse(xhr.responseText);
-                        alert(jsonObj.message);
-                        $('#loading').hide()
+                        danger_alert(jsonObj.message);
+                        loading_jquery.hide();
                     }
                 });
             });

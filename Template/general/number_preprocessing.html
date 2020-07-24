@@ -131,9 +131,10 @@
             var checked_result = get_check_result(number_title);
             
             if(!checked_result) {
-                alert("{% trans '尚未選擇數值類型' %}");
+                danger_alert("{% trans '尚未選擇數值類型' %}");
                 return
             }
+            close_alert()
             
             document.getElementById(number_title+'_interval_text').style.display = 'block'
             document.getElementById(number_title+'_interval').style.display = 'block'
@@ -188,13 +189,14 @@
                 previous_value = document.getElementById(number_title+'_interval_'+(i-1)).value;
             }
             
+            close_alert();
             if (next_value && value > next_value) {
                 interval_temp.value = next_value;
-                alert("{% trans '已達最大值' %}")
+                danger_alert("{% trans '已達最大值' %}");
             }
             if (previous_value && value < previous_value) {
                 interval_temp.value = previous_value;
-                alert("{% trans '已達最小值' %}")
+                danger_alert("{% trans '已達最小值' %}");
             }
         }
     {% endif %}
