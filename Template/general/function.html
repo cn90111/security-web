@@ -129,7 +129,7 @@
                             $('#bar').removeClass('active');
                             $('.progress-text').text("{% trans '執行完成' %}");
                             $('#execute').removeAttr('disabled');
-                            alert("{% trans '檔案執行完畢' %}");
+                            success_alert("{% trans '檔案執行完畢' %}");
                             $(window).off()
                             window.location = '{{ finish_url }}';
                         },
@@ -139,7 +139,7 @@
                             clearInterval(mm);
                             $('.progress-text').text("{% trans '執行失敗' %}");
                             $('#execute').removeAttr('disabled');
-                            alert(jsonObj.message);
+                            danger_alert(jsonObj.message);
                         }
                     });
                 })

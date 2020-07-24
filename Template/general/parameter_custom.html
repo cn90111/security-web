@@ -65,12 +65,12 @@
                 data: data,
                 success: function (result) {
                     if (result) {
-                        alert(result.message)
+                        warning_alert(result.message);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     var jsonObj = JSON.parse(xhr.responseText);
-                    alert(jsonObj.message);
+                    danger_alert(jsonObj.message);
                 }
             });
         })
@@ -89,7 +89,7 @@
                     for (var number_title of number_title_list) {
                         var type = get_check_result(number_title);
                         if(!type) {
-                            alert(number_title+"{% trans '尚未選擇資料類型' %}");
+                            danger_alert(number_title+"{% trans '尚未選擇資料類型' %}");
                             return;
                         }
                         number_title_pair_dict[number_title] = type
@@ -115,7 +115,7 @@
                                 }
                                 
                                 if(interval_value_list.length == 0) {
-                                    alert(number_title+"{% trans '尚未確認間隔數量' %}");
+                                    danger_alert(number_title+"{% trans '尚未確認間隔數量' %}");
                                     return;
                                 }
                                 interval_dict[number_title] = interval_value_list;
@@ -133,7 +133,7 @@
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             var jsonObj = JSON.parse(xhr.responseText);
-                            alert(jsonObj.message);
+                            danger_alert(jsonObj.message);
                         }
                     });
                 })
@@ -186,7 +186,7 @@
                     }
                     
                     if (lose_required) {
-                        alert("{% trans '尚有對應關係還沒填寫' %}");
+                        danger_alert("{% trans '尚有對應關係還沒填寫' %}");
                     }
                     else {
                         var url = "{% url 'create_json' %}";
@@ -201,7 +201,7 @@
                             for (var number_title of number_title_list) {
                                 var type = get_check_result(number_title);
                                 if(!type) {
-                                    alert(number_title+"{% trans '尚未選擇資料類型' %}");
+                                    danger_alert(number_title+"{% trans '尚未選擇資料類型' %}");
                                     return;
                                 }
                                 number_title_pair_dict[number_title] = type
@@ -222,7 +222,7 @@
                                     }
                                     
                                     if(interval_value_list.length == 0) {
-                                        alert(number_title+"{% trans '尚未確認間隔數量' %}");
+                                        danger_alert(number_title+"{% trans '尚未確認間隔數量' %}");
                                         return;
                                     }
                                     interval_dict[number_title] = interval_value_list;
@@ -240,7 +240,7 @@
                             },
                             error: function (xhr, ajaxOptions, thrownError) {
                                 var jsonObj = JSON.parse(xhr.responseText);
-                                alert(jsonObj.message);
+                                danger_alert(jsonObj.message);
                             }
                         });
                     }

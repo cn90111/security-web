@@ -60,7 +60,7 @@ class FileView(View):
         else:
             cln = str(df.shape[1])
             row = str(df.shape[0])
-            return JsonResponse({'message':gettext('欄數限制最多為4, 列數限制最多為200\n文件欄數：'+ cln +', 列數：'+ row + ', 不符合標準')}, status=400)
+            return JsonResponse({'message':gettext('欄數限制最多為4、列數限制最多為200，文件欄數：'+ cln +'、列數：'+ row + ', 不符合標準')}, status=400)
     
     def dpsyn_check_file_limit(self, file):
         upload_form = FileModel()
@@ -71,7 +71,7 @@ class FileView(View):
         else:
             cln = str(df.shape[1])
             return JsonResponse({"status":gettext("錯誤"),\
-                "message":gettext("欄數限制最少為3\n文件欄數："+ cln +", 不符合標準")},\
+                "message":gettext("欄數限制最少為3，當前文件欄數為"+ cln +"，不符合標準")},\
                 status=400)
             
     def handle_upload_file(self, request, f):
