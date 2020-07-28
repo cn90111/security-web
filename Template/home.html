@@ -71,9 +71,44 @@
     {% include 'footer.html' %}
     <script>
         $(function () {
-            var url = '{% url 'initialize' %}'
-            $.get(url);
-        })
+            var url = "{% url 'check_file_status' %}"
+            $.getJSON(url, function (request) {
+                console.log(request)
+                if (request == null) {
+                    var url = "{% url 'initialize' %}"
+                    $.get(url);
+                } else if (request.finish == true) {
+                    next = true
+                    while (next) {
+                        if (confirm("{% trans '檔案去識別化完成，是否查看執行結果?' %}")) {
+                            next = false
+                            window.location = request.url;
+                        } else {
+                            if (confirm("{% trans '確定執行新的去識別化嗎?先前的執行結果將不會保留' %}")) {
+                                next = false
+                                $.get("{% url 'initialize' %}");
+                            }
+                        }
+                    }
+                } else if (request.finish == false) {
+                    next = true
+                    while (next) {
+                        if (confirm("{% trans '檔案執行中，是否查看執行進度?' %}")) {
+                            next = false
+                            window.location = request.url;
+                        } else {
+                            if (confirm("{% trans '確定執行新的去識別化嗎?先前的執行進度將不會保留' %}")) {
+                                next = false
+                                $.get(request.break_url);
+                                $.get("{% url 'initialize' %}");
+                            }
+                        }
+                    }
+                } else {
+                    alert("{% trans 'home.html finish不符合預期，請通知開發人員，finish = ' %}"+request.finish);
+                }
+            })
+    })
     </script>
 	</body>
 </html>
