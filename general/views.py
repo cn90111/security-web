@@ -183,13 +183,18 @@ class AbstractBreakProgramView(View):
     def get(self, request, *arg, **kwargs):
         finish = False
         username = request.user.get_username()
-        self.break_program()
-        ExecuteModel.objects.filter(user_name=username).delete()
-        finish = True
-        return JsonResponse(finish, safe=False)
         
-    def break_program(self):
-        raise AttributeError('應藉由子類別實作此方法，method.break_program()')
+        try:
+            file = ExecuteModel.objects.get(user_name=username)
+            self.break_program(file)
+            file.delete()
+            finish = True
+            return JsonResponse(finish, safe=False)
+        except Exception as e:
+            return JsonResponse(finish, safe=False)
+        
+    def break_program(self, file):
+        raise AttributeError('應藉由子類別實作此方法，method.break_program(file)')
 
 class DisplayCsvView(View):
     @method_decorator(login_required)

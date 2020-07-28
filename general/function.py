@@ -5,9 +5,6 @@ from general.models import ExecuteModel
 
 class Path():        
     def get_caller(self, request):
-        print('####')
-        print(ExecuteModel.objects.all())
-        print('####')
         try:
             username = request.user.get_username()
             file = ExecuteModel.objects.get(user_name=username)

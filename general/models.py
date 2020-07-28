@@ -9,7 +9,7 @@ class ExecuteModel(models.Model):
     caller = models.CharField(max_length=255, default='caller')
     log = models.CharField(max_length=255, default='')
     num_progress = models.IntegerField(default=0)
-    stop = models.BooleanField(default=False)
+    skip = models.BooleanField(default=False)
     finish = models.BooleanField(default=False)
     
     def __str__(self):

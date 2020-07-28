@@ -30,8 +30,8 @@ class TClosenessView(AbstractMethodView):
         return 't_Closeness/t_Closeness.html'
     
 class BreakProgramView(AbstractBreakProgramView):
-    def break_program(self):
-        t_closeness.break_program()
+    def break_program(self, file):
+        t_closeness.break_program(file)
     
 class ExecuteView(AbstractExecuteView):
     def get_empty_form(self):
