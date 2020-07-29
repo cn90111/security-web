@@ -68,7 +68,25 @@
 
     	<script>
             var SetMinute = 0;
-            function Check_Time() {
+            var progress_bar_jquary = $('.progress-bar');
+            var progress_text_jquary = $('.progress-text');
+            var execute_jquary = $('#execute');
+            var now_progress = 0;
+            
+            function success(sitv, mm) {
+                clearInterval(sitv);
+                clearInterval(mm);
+                progress_bar_jquary.css('width', '100%');
+                progress_bar_jquary.text('100%');
+                $('#bar').removeClass('active');
+                progress_text_jquary.text("{% trans '執行完成' %}");
+                execute_jquary.removeAttr('disabled');
+                success_alert("{% trans '檔案執行完畢' %}");
+                $(window).off();
+                window.location = '{{ finish_url }}';
+            }
+            
+            function check_time() {
                 SetMinute += 1;
                 var Check_i = document.getElementById("Check_i");
                 var Cal_Hour = Math.floor(SetMinute / 3600);
@@ -79,39 +97,59 @@
             
             function reset() {
                 SetMinute = 0;
-                $('.progress-bar').css('width', 0 + '%');
-                $('.progress-bar').text(0 + '%');
-                $('.progress-text').text('{{ completion_rate }}');
-                $('.progress-text').css('width', '100%');
+                progress_bar_jquary.css('width', 0 + '%');
+                progress_bar_jquary.text(0 + '%');
+                progress_text_jquary.text('{{ completion_rate }}');
+                progress_text_jquary.css('width', '100%');
                 $('#prog_in').width(0 + '%');
-            }   
+            }
+            
+            function progress_check() {
+                var prog_url = '{{ show_progress_url }}'
+                $.getJSON(prog_url, function (data) {
+                    {# console.log("come in num_progress="+num_progress)#}
+                    $('.progress-div').css('visibility', 'visible');
+                    now_progress = data.num_progress;
+                    progress_bar_jquary.css('width', data.num_progress + '%');
+                    progress_bar_jquary.text(data.num_progress + '%');
+                    progress_text_jquary.text('{{ completion_rate }}'+ data.log);
+                    progress_text_jquary.css('width', '100%');
+                    $('#prog_in').width(data.num_progress + '%');
+                });
+            }
             
             $(function () {
-                $(window).on('beforeunload', function(){
-                    $.ajax({
-                        type: 'GET',
-                        url: '{{ break_program_url }}',
-                    });
-                });
-                
-                $('#execute').on('click', function () {
+                var url = "{% url 'check_file_status' %}"
+                $.getJSON(url, function (request) {
+                    if (request == null) {
+                        return;
+                    }
+                    if (request.finish == true) {
+                        window.location = request.url;
+                    } else if (request.finish == false) {
+                        reset()
+                        window.scrollTo(0, document.body.scrollHeight)
+                        execute_jquary.attr('disabled', 'disabled');
+                        progress_check()
+                        var mm = window.setInterval("check_time()", 1000);
+                        var sitv = window.setInterval("progress_check()", 10000);
+                        var success_check = window.setInterval( function () {
+                            if (now_progress == 100) {
+                                clearInterval(success_check);
+                                success(sitv, mm);
+                            }
+                        }, 10000);
+                    }
+                })
+            })
+            
+            $(function () {                
+                execute_jquary.on('click', function () {
                     reset()
                     window.scrollTo(0, document.body.scrollHeight)
-                    var mm = window.setInterval("Check_Time()", 1000);
-                    $('#execute').attr('disabled', 'disabled');
-                    var log = "";
-                    var sitv = setInterval( function () {
-                        var prog_url = '{{ show_progress_url }}'
-                        $.getJSON(prog_url, function (data) {
-                            {# console.log("come in num_progress="+num_progress)#}
-                            $('.progress-div').css('visibility', 'visible');
-                            $('.progress-bar').css('width', data.num_progress + '%');
-                            $('.progress-bar').text(data.num_progress + '%');
-                            $('.progress-text').text( '{{ completion_rate }}'+ data.log );
-                            $('.progress-text').css('width', '100%');
-                            $('#prog_in').width(data.num_progress + '%');
-                        });
-                    }, 10000);
+                    execute_jquary.attr('disabled', 'disabled');
+                    var mm = window.setInterval('check_time()', 1000);
+                    var sitv = window.setInterval('progress_check()', 10000);
                     var url = '{{ execute_url }}'
                     var data = {csv_name : '{{ file_name }}'}
                     {% for field in form %}
@@ -122,23 +160,14 @@
                         type: 'GET',
                         data: data,
                         success: function () {
-                            clearInterval(sitv);
-                            clearInterval(mm);
-                            $('.progress-bar').css('width', '100%');
-                            $('.progress-bar').text('100%');
-                            $('#bar').removeClass('active');
-                            $('.progress-text').text("{% trans '執行完成' %}");
-                            $('#execute').removeAttr('disabled');
-                            success_alert("{% trans '檔案執行完畢' %}");
-                            $(window).off()
-                            window.location = '{{ finish_url }}';
+                            success(sitv, mm);
                         },
                         error: function (xhr, ajaxOptions, thrownError) {
                             var jsonObj = JSON.parse(xhr.responseText);
                             clearInterval(sitv);
                             clearInterval(mm);
-                            $('.progress-text').text("{% trans '執行失敗' %}");
-                            $('#execute').removeAttr('disabled');
+                            progress_text_jquary.text("{% trans '執行失敗' %}");
+                            execute_jquary.removeAttr('disabled');
                             danger_alert(jsonObj.message);
                         }
                     });

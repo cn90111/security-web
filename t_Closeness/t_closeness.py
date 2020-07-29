@@ -15,33 +15,34 @@ from django.conf import settings
 from django.utils.translation import gettext
 
 from general.exception import BreakProgramException
+from general.models import ExecuteModel
 
 def show_progress(request):
-    #print('show_progress------------' + str(num_progress))
+    username = request.user.get_username()
+    file = ExecuteModel.objects.get(user_name=username)
     data = {
-        'log':log,
-        'num_progress':num_progress,
+        'log':file.log,
+        'num_progress':file.num_progress,
     }
     return JsonResponse(data, safe=False)
     
-def break_program():
-    global skip
-    skip = True
+def break_program(file):
+    file.skip = True
+    file.save()
         
 def run(request):
-    global log
-    global num_progress
-    global skip
-    skip = False
+    username = request.user.get_username()
+    file = ExecuteModel.objects.get(user_name=username)
     
     file_name = str(request.GET.get('csv_name',None))
     directory_name = file_name.split(".")[-2]
     username = request.user.get_username()
     dict_file_name = settings.UPLOAD_ROOT + 't_Closeness/' + username + '/' + directory_name + '/' + directory_name + '_dict.json'
-    num_progress = 5
     progress_count = 0
-    log = 'Building data information...'
-    if skip:
+    file.num_progress = 5
+    file.log = 'Building data information...'
+    file.save()
+    if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
     #file_name = 'dataset1.csv'
     #dict_file_name = file_name[:-4] + '_dict.json'
@@ -54,7 +55,7 @@ def run(request):
     attr_num = df_data.shape[1]
     column_name = list(df_data.columns)
     for attr_id in range(attr_num):
-        if skip:
+        if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
         print("({attr_id}) {attr_name}    ".format(attr_id=attr_id, attr_name=column_name[attr_id]), end='')
     #print("\nWhich is sensitive attribute?")
@@ -77,7 +78,7 @@ def run(request):
                 ancestor_set.add(category)
                 current_category = category
                 while True:
-                    if skip:
+                    if file.skip:
                         raise BreakProgramException(gettext('程式成功終止'))
                     father_category = data_dict[column_name[attr_id]]['structure'][current_category]
                     if father_category == current_category:
@@ -97,7 +98,7 @@ def run(request):
                     # Match generalized result
                     current_category = category_2
                     while True:
-                        if skip:
+                        if file.skip:
                             raise BreakProgramException(gettext('程式成功終止'))
                         if current_category in category_ancestor_dict[category_1]:
                             category_generalize_dict[(category_1, category_2)] = current_category
@@ -115,14 +116,14 @@ def run(request):
     
     # In[ ]:
     def KLD(P, Q):
-        if skip:
+        if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
         buffer = np.log(P / Q)
         buffer[buffer==np.inf] = 1000000
         return np.sum(P * buffer)
     
     def person_distance(p1, p2):
-        if skip:
+        if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
         diff = 0
         for attr_id in qi_list:
@@ -134,7 +135,7 @@ def run(request):
         return diff
         
     def merge_k_anony(cluster_1, cluster_2):
-        if skip:
+        if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
         new_cluster = []
         for attr_id in range(attr_num):
@@ -151,7 +152,7 @@ def run(request):
         sa_subjects = [ele for ele in cluster_distribution_dict.keys()]
         cluster_distribution = np.array([i for i in cluster_distribution_dict.values()]) / cluster_member_num
         while True:
-            if skip:
+            if file.skip:
                 raise BreakProgramException(gettext('程式成功終止'))
             over_most = sa_subjects[np.argmax(distribution - cluster_distribution)]
             under_most = sa_subjects[np.argmin(distribution - cluster_distribution)]
@@ -169,9 +170,10 @@ def run(request):
     
     # In[ ]:
     
-    num_progress = 10
-    log = 'Building data information...'
-    if skip:
+    file.num_progress = 10
+    file.log = 'Building data information...'
+    file.save()
+    if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
     
     # First K anonymize
@@ -180,9 +182,10 @@ def run(request):
     current_used_num = 0 
     for id_ in range(0, record_num):
         progress_count = progress_count + 1
-        if progress_count%20 == 0 and num_progress < 60:
+        if progress_count%20 == 0 and file.num_progress < 60:
             progress_count = 0
-            num_progress = num_progress + 1
+            file.num_progress = file.num_progress + 1
+            file.save()
         if id_ in used_id:
             continue
         if record_num - current_used_num < 2 * k:
@@ -239,9 +242,10 @@ def run(request):
     
     
     # In[ ]:
-    num_progress = 60
-    log = 'Building data information...'
-    if skip:
+    file.num_progress = 60
+    file.log = 'Building data information...'
+    file.save()
+    if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
     
     
@@ -256,10 +260,11 @@ def run(request):
     
     while True:
         progress_count = progress_count + 1
-        if progress_count%20 == 0 and num_progress < 99:
+        if progress_count%20 == 0 and file.num_progress < 99:
             progress_count = 0
-            num_progress = num_progress + 1
-        if skip:
+            file.num_progress = file.num_progress + 1
+            file.save()
+        if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
         # Find ineligible clusters
         above_t_cluster_id = []
@@ -342,9 +347,10 @@ def run(request):
                             break
                     k_anony_data[cluster_index][attr_id] = (lower_bound, upper_bound)
     
-    num_progress = 99
-    log = 'Building data information...'
-    if skip:
+    file.num_progress = 99
+    file.log = 'Building data information...'
+    file.save()
+    if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
         
     # In[ ]:
@@ -373,5 +379,6 @@ def run(request):
         os.makedirs(settings.OUTPUT_ROOT + 't_Closeness/' + username + '/' + directory_name + '/')
     df_output.to_csv(settings.OUTPUT_ROOT + 't_Closeness/' + username + '/' + directory_name + '/' +  directory_name + '_output.csv', encoding='cp950', index=False, columns=column_name)
     
-    num_progress = 100
-    log = 'OVER'
+    file.num_progress = 100
+    file.log = 'OVER'
+    file.save()

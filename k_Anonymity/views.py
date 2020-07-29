@@ -30,8 +30,8 @@ class KAnonymityView(AbstractMethodView):
         return 'k_Anonymity/k_Anonymity.html'
         
 class BreakProgramView(AbstractBreakProgramView):
-    def break_program(self):
-        k_anonymity.break_program()
+    def break_program(self, file):
+        k_anonymity.break_program(file)
         
 class ExecuteView(AbstractExecuteView):
     def get_empty_form(self):
