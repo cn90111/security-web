@@ -122,7 +122,7 @@
                 var url = "{% url 'check_file_status' %}"
                 $.getJSON(url, function (request) {
                     if (request == null) {
-                        return
+                        return;
                     }
                     if (request.finish == true) {
                         window.location = request.url;

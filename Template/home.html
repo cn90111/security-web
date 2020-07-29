@@ -73,7 +73,6 @@
         $(function () {
             var url = "{% url 'check_file_status' %}"
             $.getJSON(url, function (request) {
-                console.log(request)
                 if (request == null) {
                     var url = "{% url 'initialize' %}"
                     $.get(url);
@@ -108,7 +107,7 @@
                     alert("{% trans 'home.html finish不符合預期，請通知開發人員，finish = ' %}"+request.finish);
                 }
             })
-    })
+        })
     </script>
 	</body>
 </html>
