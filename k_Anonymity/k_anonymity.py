@@ -13,35 +13,35 @@ from django.utils.translation import gettext
 
 import json
 from general.exception import BreakProgramException
+from general.models import ExecuteModel
 
-def load(load_path):
-    if skip:
+def load(load_path, file):
+    if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
     with open(load_path + '.json','r') as f:
         data = json.load(f)
         return data
 
 def show_progress(request):
+    username = request.user.get_username()
+    file = ExecuteModel.objects.get(user_name=username)
     data = {
-        'log':log,
-        'num_progress':num_progress,
+        'log':file.log,
+        'num_progress':file.num_progress,
     }
     return JsonResponse(data, safe=False)
 
-def break_program():
-    global skip
-    skip = True
+def break_program(file):
+    file.skip = True
+    file.save()
     
 def run(request):    
-    global log
-    global num_progress
-    global skip
-    skip = False
+    username = request.user.get_username()
+    file = ExecuteModel.objects.get(user_name=username)
     
     print('--------------------')
     file_name = str(request.GET.get('csv_name',None))
     directory_name = file_name.split(".")[-2]
-    username = request.user.get_username()
     inputFile = settings.UPLOAD_ROOT + 'k_Anonymity/' + username + '/'  + directory_name + '/' + file_name
     print('--------------------')
     
@@ -60,9 +60,10 @@ def run(request):
             inputFile = input("請重新輸入檔案名稱 : ")
             print('--------------------')
     
-    log = "Get file success!!"
-    num_progress = 20
-    if skip:
+    file.log = "Get file success!!"
+    file.num_progress = 20
+    file.save()
+    if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
     
     attributes = list(df.columns)
@@ -80,9 +81,10 @@ def run(request):
         else:
             break
     
-    log = "Get SA success!!"
-    num_progress = 40
-    if skip:
+    file.log = "Get SA success!!"
+    file.num_progress = 40
+    file.save()
+    if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
     
     num_data = list(df.columns[df.dtypes != object])
@@ -104,16 +106,17 @@ def run(request):
             #a = input("請輸入字典檔案 :")
             a = settings.UPLOAD_ROOT + 'k_Anonymity/' + username + '/'  + directory_name + '/' + directory_name + '_dict'
             print('--------------------')
-            dic = load(a)
+            dic = load(a, file)
             break
         except:
             print("輸入檔案錯誤! 請重新輸入")
             print('--------------------')
     
     
-    log = "Get Dict File success!!"
-    num_progress = 50
-    if skip:
+    file.log = "Get Dict File success!!"
+    file.num_progress = 50
+    file.save()
+    if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
     
     cate_distance = {}
@@ -133,7 +136,7 @@ def run(request):
                         ele = j
                         left = {ele}
                         while(dic[i]['structure'][ele]!=ele):
-                            if skip:
+                            if file.skip:
                                 raise BreakProgramException(gettext('程式成功終止'))
                             ele = dic[i]['structure'][ele]
                             left.add(ele)
@@ -141,7 +144,7 @@ def run(request):
                         ele = k
                         right = {ele}
                         while(dic[i]['structure'][ele]!=ele):
-                            if skip:
+                            if file.skip:
                                 raise BreakProgramException(gettext('程式成功終止'))
                             ele = dic[i]['structure'][ele]
                             right.add(ele)
@@ -157,7 +160,7 @@ def run(request):
     cate_distance
     
     def find_interval(x,att):
-        if skip:
+        if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
         for i in dic[att]['interval']:
             if x >= i[0] and x <= i[1]:
@@ -196,9 +199,10 @@ def run(request):
             print("輸入格式錯誤，請重新輸入!")
             print('--------------------')
     
-    log = "Get K success!!"
-    num_progress = 60
-    if skip:
+    file.log = "Get K success!!"
+    file.num_progress = 60
+    file.save()
+    if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
     # 計算全部資料的 diversity
     diversity = {}
@@ -271,7 +275,7 @@ def run(request):
 
     for i in df.iterrows():
         for j in df.iterrows():
-            if skip:
+            if file.skip:
                 raise BreakProgramException(gettext('程式成功終止'))
             if j[0] > i[0]:
                 distance = 0
@@ -331,9 +335,10 @@ def run(request):
     final_group = []
     upgroup_num = 1
     for x in range(len(df)):
-        if skip:
+        if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
-        log = str(upgroup_num)  + "/" + str(len(df)) 
+        file.log = str(upgroup_num)  + "/" + str(len(df)) 
+        file.save()
         # 檢查剩餘 ungroup 的 diversity，如果不足 l，離開此迴圈
         # 檢查剩餘 ungroup 的數量，如果不足 k，離開此迴圈
         diversity = {}
@@ -364,7 +369,8 @@ def run(request):
             print('--------------------')
             print('開始第一階段(增加diversity) grouping =',group)
             print('--------------------')
-            log = str(upgroup_num)  + "/" + str(len(df)) + " 開始第一階段(增加diversity)"
+            file.log = str(upgroup_num)  + "/" + str(len(df)) + " 開始第一階段(增加diversity)"
+            file.save()
             # 將此點設成已 group
             glist[r] = 0
             
@@ -375,7 +381,7 @@ def run(request):
             r2 = np.where(distance_list==np.min(distance_list))[0][0]
             
             while distance_list[r2]!=np.inf :
-                if skip:
+                if file.skip:
                     raise BreakProgramException(gettext('程式成功終止'))
                 # 如果尚未 group
                 if glist[r2] == 1:
@@ -399,11 +405,13 @@ def run(request):
                 r2 = np.where(distance_list==np.min(distance_list))[0][0]
             print('完成第一階段 grouping =',group)
             print('--------------------')
-            log = str(upgroup_num)  + "/" + str(len(df)) + " 完成第一階段"
+            file.log = str(upgroup_num)  + "/" + str(len(df)) + " 完成第一階段"
+            file.save()
             # extend the group
             print('開始第二階段(extend the group) grouping =',group)
             print('--------------------')
-            log = str(upgroup_num)  + "/" + str(len(df)) + " 開始第二階段(extend the group)"
+            file.log = str(upgroup_num)  + "/" + str(len(df)) + " 開始第二階段(extend the group)"
+            file.save()
             for x in range(len(df)):
                 d_in_list = [np.inf for i in range(len(df))]
                 for i in range(len(df)):
@@ -426,7 +434,7 @@ def run(request):
                     r3 = np.where(d_in_list==np.min(d_in_list))[0][0]
                 
                     while d_in_list[r3]!=np.inf:
-                        if skip:
+                        if file.skip:
                             raise BreakProgramException(gettext('程式成功終止'))
                        # 檢查是否能加入
                     
@@ -462,10 +470,12 @@ def run(request):
                             r3 = np.where(d_in_list==np.min(d_in_list))[0][0]
             print('完成第二階段 grouping =',group)
             print('--------------------')
-            log = str(upgroup_num)  + "/" + str(len(df)) + " 完成第二階段"
+            file.log = str(upgroup_num)  + "/" + str(len(df)) + " 完成第二階段"
+            file.save()
             print('開始第三階段(extend the size to k) grouping =',group)
             print('--------------------')
-            log = str(upgroup_num)  + "/" + str(len(df)) + " 開始第三階段(extend the size to k)"
+            file.log = str(upgroup_num)  + "/" + str(len(df)) + " 開始第三階段(extend the size to k)"
+            file.save()
             if len(group) < k:
                 
                 # 取得所有點至此 group 的最小距離的 list
@@ -488,7 +498,7 @@ def run(request):
                 
                 # 再加入 k-len(group) 個點即可
                 for i in range(k-len(group)):
-                    if skip:
+                    if file.skip:
                         raise BreakProgramException(gettext('程式成功終止'))
                     # 取得與此 group 距離最近的點
                     r5 = np.where(min_distance_list==np.min(min_distance_list))[0][0]
@@ -506,7 +516,8 @@ def run(request):
                     
             print('完成第三階段 grouping =',group)
             print('--------------------')            
-            log = str(upgroup_num)  + "/" + str(len(df)) + " 完成第三階段"
+            file.log = str(upgroup_num)  + "/" + str(len(df)) + " 完成第三階段"
+            file.save()
             # 將 group 放入 final_group清單中
             final_group.append(group)
             print('放入final group中')
@@ -518,9 +529,10 @@ def run(request):
     print('--------------------')
     print('最後階段，將剩下 ungroup 的資料加入鄰近的 grouping')
     print('--------------------')
-    log = '最後階段，將剩下 ungroup 的資料加入鄰近的 grouping'
+    file.log = '最後階段，將剩下 ungroup 的資料加入鄰近的 grouping'
+    file.save()
     for i in range(len(df)):
-        if skip:
+        if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
         # 如果此點為 ungroup
         if glist[i] == 1:
@@ -533,7 +545,7 @@ def run(request):
             
             # 如果此點尚未被 group，找下一個
             while glist[r4]==1 and distance_list[r4]!=np.inf:
-                if skip:
+                if file.skip:
                     raise BreakProgramException(gettext('程式成功終止'))
                 distance_list[r4] = np.inf
                 r4 = np.where(distance_list==np.min(distance_list))[0][0]
@@ -592,7 +604,7 @@ def run(request):
         print('--------------------')
 
     def process_df(df):
-        if skip:
+        if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
         tmp_df = df.copy()
         
@@ -638,8 +650,9 @@ def run(request):
         os.makedirs(settings.OUTPUT_ROOT + 'k_Anonymity/' + username + '/'  + directory_name + '/')
     output_df_with_dic.to_csv(settings.OUTPUT_ROOT + 'k_Anonymity/' + username + '/'  + directory_name + '/' +  directory_name + '_output.csv', encoding='cp950', index=False, columns=list(df.columns))
     
-    log = "All Success!!"
-    num_progress = 100
+    file.log = "All Success!!"
+    file.num_progress = 100
+    file.save()
     # In[43]:
     
     dic['Age']['interval']

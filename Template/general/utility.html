@@ -33,7 +33,6 @@
                         {% csrf_token %}
                         <label for="machine_learning_select">{% trans '用以量測的機器學習：' %}</label>
                         <select class="form-control" id="machine_learning_select">
-                            <option selected="selected"></option>
                             {% for item in machine_learning_list %}
                                 <option value="{{ item }}">{{ item }}</option>
                             {%endfor%}
@@ -112,7 +111,7 @@
                     error: function (xhr, ajaxOptions, thrownError) {
                         var jsonObj = JSON.parse(xhr.responseText);
                         text_element.text(text_element.text() + jsonObj.accuracy + '%')
-                        alert(file_kind+jsonObj.message);
+                        danger_alert(file_kind+jsonObj.message);
                         unlock_count++;
                         if (unlock_count>=3) {
                             selecter.removeAttr('disabled');

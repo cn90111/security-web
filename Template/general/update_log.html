@@ -14,24 +14,32 @@
         {% include 'navbar.html' %}
         <div class="jumbotron jumbotron-fluid">
             <div class="container">
-                <h2>{% trans '最新更新 7/21 ver 0.1' %}</h2>
+                <h2>{% trans '最新更新 7/29 ver 0.2' %}</h2>
                 <h4 style="font-weight:bold;color:green">{% trans '新增項目：' %}</h5>
-                <h5 style="font-weight:bold;color:green">{% trans '1. 公佈欄' %}</h5>
-                <h5 style="font-weight:bold;color:green">{% trans '2. 更新日誌' %}</h5>
-                <h5 style="font-weight:bold;color:green">{% trans '3. 更改密碼功能' %}</h5>
+                <h5 style="font-weight:bold;color:green">{% trans '1. 去識別化進度記錄，現在只需按下執行，就可以關閉網頁，下次進入網站時，將會引導到目前所執行的進度' %}</h5>
                 <h4 style="font-weight:bold;color:red">{% trans '調整項目：' %}</h5>
-                <h5 style="font-weight:bold;color:red">{% trans '1. 檔案上傳限制，無上限 → 4MB' %}</h5>
-                <h5 style="font-weight:bold;color:red">{% trans '2. 勾選框操作，勾選時其餘選項鎖定 → 可自由切換勾選的內容' %}</h5>
-                <h5 style="font-weight:bold;color:red">{% trans '3. 字串關係配對，循環配對時，將引起程式卡死 → 檢測到循環就跳出視窗提示' %}</h5>
-                <h5 style="font-weight:bold;color:red">{% trans '4. 字串關係配對，配對時最高層關係沒配對自己，引起程式錯誤 → 程式將自動配對最高層關係' %}</h5>
-                <h5 style="font-weight:bold;color:red">{% trans '5. 字串關係配對，刪除自訂欄位時，如果自訂欄位沒有輸入內容則會刪除失敗 → 可在任意狀況下刪除' %}</h5>
-                <h5 style="font-weight:bold;color:red">{% trans '6. 可用度檢測，選擇所用方法後就會立刻執行 → 需按下確認後才會執行' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '1. 等候提示，文字 → 轉圈圈' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '2. 進度條%數顯示，完成度粗分 → 細分' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '3. 錯誤提示方式，彈出式視窗 → 置頂公告' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '4. 執行頁面bug修復，排除特定情況下進度條倒退、執行失敗等bug' %}</h5>
             </div>
         </div>
         <div class="container" style="width:100%;">
             <form id="parameter_form" data-toggle="validator">
                 <div class="container">
                     <div class="form-group">
+                        <h2>{% trans '7/21 ver 0.1' %}</h2>
+                        <h4 style="font-weight:bold;color:green">{% trans '新增項目：' %}</h5>
+                        <h5 style="font-weight:bold;color:green">{% trans '1. 公佈欄' %}</h5>
+                        <h5 style="font-weight:bold;color:green">{% trans '2. 更新日誌' %}</h5>
+                        <h5 style="font-weight:bold;color:green">{% trans '3. 更改密碼功能' %}</h5>
+                        <h4 style="font-weight:bold;color:red">{% trans '調整項目：' %}</h5>
+                        <h5 style="font-weight:bold;color:red">{% trans '1. 檔案上傳限制，無上限 → 4MB' %}</h5>
+                        <h5 style="font-weight:bold;color:red">{% trans '2. 勾選框操作，勾選時其餘選項鎖定 → 可自由切換勾選的內容' %}</h5>
+                        <h5 style="font-weight:bold;color:red">{% trans '3. 字串關係配對，循環配對時，將引起程式卡死 → 檢測到循環就跳出視窗提示' %}</h5>
+                        <h5 style="font-weight:bold;color:red">{% trans '4. 字串關係配對，配對時最高層關係沒配對自己，引起程式錯誤 → 程式將自動配對最高層關係' %}</h5>
+                        <h5 style="font-weight:bold;color:red">{% trans '5. 字串關係配對，刪除自訂欄位時，如果自訂欄位沒有輸入內容則會刪除失敗 → 可在任意狀況下刪除' %}</h5>
+                        <h5 style="font-weight:bold;color:red">{% trans '6. 可用度檢測，選擇所用方法後就會立刻執行 → 需按下確認後才會執行' %}</h5>
                     </div>
                 </div>
             </form>

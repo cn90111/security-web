@@ -31,6 +31,47 @@
         </div>
         
         <script>
+            $(function () {
+                var url = "{% url 'check_file_status' %}"
+                $.getJSON(url, function (request) {
+                    if (request == null) {
+                        var url = "{% url 'initialize' %}"
+                        $.get(url);
+                    } else if (request.finish == true) {
+                        next = true
+                        while (next) {
+                            if (confirm("{% trans '檔案去識別化完成，是否查看執行結果?' %}")) {
+                                next = false
+                                window.location = request.url;
+                            } else {
+                                if (confirm("{% trans '確定執行新的去識別化嗎?先前的執行結果將不會保留' %}")) {
+                                    next = false
+                                    $.get("{% url 'initialize' %}");
+                                }
+                            }
+                        }
+                    } else if (request.finish == false) {
+                        next = true
+                        while (next) {
+                            if (confirm("{% trans '檔案執行中，是否查看執行進度?' %}")) {
+                                next = false
+                                window.location = request.url;
+                            } else {
+                                if (confirm("{% trans '確定執行新的去識別化嗎?先前的執行進度將不會保留' %}")) {
+                                    next = false
+                                    $.get(request.break_url);
+                                    $.get("{% url 'initialize' %}");
+                                }
+                            }
+                        }
+                    } else {
+                        alert("{% trans 'home.html finish不符合預期，請通知開發人員，finish = ' %}"+request.finish);
+                    }
+                })
+            })
+            
+            loading_jquery = $('#loading');
+            
             function isValidFile(file) {
                 var type = "." + file.value.split(".")[1];
                 if (type == file.accept) {
@@ -40,23 +81,24 @@
             }
             
             function reset() {
-                $("#customFile_csv").val('')
+                $("#customFile_csv").val('');
             }
         
             $("#customFile_csv").on("change", function() {
                 var csv_name = $(this).val().split("\\").pop();
-                $('#loading').show()
+                loading_jquery.show();
+                close_alert();
                 $(this).siblings(".custom-file-label").addClass("selected").html(csv_name);
                 
                 if (!csv_name) {
-                    alert("{% trans '請先選擇檔案' %}");
-                    $('#loading').hide()
+                    danger_alert("{% trans '請先選擇檔案' %}");
+                    loading_jquery.hide();
                     return;
                 }
                 
                 if (!isValidFile(document.getElementById('customFile_csv'))) {
-                    alert("{% trans '檔案類型錯誤' %}");
-                    $('#loading').hide()
+                    danger_alert("{% trans '檔案類型錯誤' %}");
+                    loading_jquery.hide();
                     return;
                 }
                 let formData = new FormData($('#form_file').get(0));
@@ -73,8 +115,8 @@
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         var jsonObj = JSON.parse(xhr.responseText);
-                        alert(jsonObj.message);
-                        $('#loading').hide()
+                        danger_alert(jsonObj.message);
+                        loading_jquery.hide();
                     }
                 });
             });

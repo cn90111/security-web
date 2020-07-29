@@ -11,6 +11,7 @@ from django.urls import reverse
 from general.machine_learning import MachineLearning
 from general.function import Path
 from general.exception import BreakProgramException
+from general.models import ExecuteModel
 
 from .models import FileModel
 from .forms import UploadFileForm
@@ -60,7 +61,7 @@ class FileView(View):
         else:
             cln = str(df.shape[1])
             row = str(df.shape[0])
-            return JsonResponse({'message':gettext('欄數限制最多為4, 列數限制最多為200\n文件欄數：'+ cln +', 列數：'+ row + ', 不符合標準')}, status=400)
+            return JsonResponse({'message':gettext('欄數限制最多為4、列數限制最多為200，文件欄數：'+ cln +'、列數：'+ row + ', 不符合標準')}, status=400)
     
     def dpsyn_check_file_limit(self, file):
         upload_form = FileModel()
@@ -71,7 +72,7 @@ class FileView(View):
         else:
             cln = str(df.shape[1])
             return JsonResponse({"status":gettext("錯誤"),\
-                "message":gettext("欄數限制最少為3\n文件欄數："+ cln +", 不符合標準")},\
+                "message":gettext("欄數限制最少為3，當前文件欄數為"+ cln +"，不符合標準")},\
                 status=400)
             
     def handle_upload_file(self, request, f):
@@ -115,31 +116,31 @@ class AbstractExecuteView(View):
         return request_dict
 
 class AbstractMethodView(View):
-    execute_pair = {}
-    
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
+        path = Path()
+        
+        caller = path.get_caller(request)
         username = request.user.get_username()
         file_name = str(request.GET.get('csv_name',None))
         form = self.get_form(request.GET)
-        if username in self.execute_pair:
-            return JsonResponse({'message':gettext('您正在執行另一個檔案，檔名為:'+self.execute_pair[username]+'，若想執行目前的檔案，請先把另一個檔案關閉')}, status=423)
+        if ExecuteModel.objects.filter(user_name=username).exists():
+            return JsonResponse({'message':gettext('您正在執行另一個檔案，檔名為:'+ExecuteModel.objects.get(user_name=username).file_name+'，若想執行目前的檔案，請先把另一個檔案關閉')}, status=423)
         else:
-            self.execute_pair[username] = file_name
-            
+            ExecuteModel.objects.create(user_name=username, file_name=file_name, caller=caller, finish=False)
         if form.is_valid():
             try:
                 self.method_run(request)
             except BreakProgramException as e:
                 print(e)
-                self.execute_pair.pop(username, None)
+                ExecuteModel.objects.filter(user_name=username).delete()
                 return JsonResponse({'message':gettext('程式已終止')}, status=404)
             except Exception as e:
                 print(e)
-                self.execute_pair.pop(username, None)
+                ExecuteModel.objects.filter(user_name=username).delete()
                 return JsonResponse({'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
             else:
-                self.execute_pair.pop(username, None)
+                ExecuteModel.objects.filter(user_name=username).update(finish=True)
                 return HttpResponse(status=204)
             return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)
         else:
@@ -154,16 +155,46 @@ class AbstractMethodView(View):
     def get_method_template(self):
         raise AttributeError('應藉由子類別實作此方法，return template_url')
 
+class CheckFileStatus(View):
+    @method_decorator(login_required)
+    def get(self, request, *arg, **kwargs):
+        path = Path()
+        
+        username = request.user.get_username()
+        try:
+            file = ExecuteModel.objects.get(user_name=username)
+            caller = file.caller
+            request_dict = {}
+            request_dict['finish'] = file.finish
+            print(username)
+            print(file.file_name)
+            print(caller)
+            if file.finish:
+                request_dict['url'] = reverse(caller+':finish', args=[file.file_name])
+            if not file.finish:
+                request_dict['url'] = reverse(caller+':execute_page', args=[file.file_name])
+                request_dict['break_url'] = reverse(caller+':break_program')
+            return JsonResponse(request_dict)
+        except Exception as e:
+            return JsonResponse(None, safe=False)
+
 class AbstractBreakProgramView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         finish = False
-        self.break_program()
-        finish = True
-        return JsonResponse(finish, safe=False)
+        username = request.user.get_username()
         
-    def break_program(self):
-        raise AttributeError('應藉由子類別實作此方法，method.break_program()')
+        try:
+            file = ExecuteModel.objects.get(user_name=username)
+            self.break_program(file)
+            file.delete()
+            finish = True
+            return JsonResponse(finish, safe=False)
+        except Exception as e:
+            return JsonResponse(finish, safe=False)
+        
+    def break_program(self, file):
+        raise AttributeError('應藉由子類別實作此方法，method.break_program(file)')
 
 class DisplayCsvView(View):
     @method_decorator(login_required)
@@ -210,6 +241,8 @@ class FinishView(View):
         
         file_name = kwargs.get('csv_name')
         caller = path.get_caller(request)
+        username = request.user.get_username()
+        ExecuteModel.objects.filter(user_name=username).delete()
         
         request_dict = {}
         request_dict = self.set_url_path(request_dict, caller, file_name)

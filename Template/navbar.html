@@ -49,9 +49,45 @@
             </li>
         </ul>
     </nav>
+    <div id="alert" style="display:none" class="alert row justify-content-between" role="alert">
+        <h3 id="alert_text"></h3>
+        <button type="button" class="close" onclick="close_alert()" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 </div>
 
 <script>
+    alert_jquery = $('#alert');
+    alert_text_jquery = $('#alert_text');
+    
+    function initial_alert(text) {
+        alert_jquery.removeClass()
+        alert_jquery.addClass('alert row justify-content-between')
+        alert_text_jquery.text(text)
+        alert_jquery.show()
+        window.scrollTo(0, 0)
+    }
+    
+    function danger_alert(text) {
+        initial_alert(text)
+        alert_jquery.addClass('alert-danger')
+    }
+    
+    function success_alert(text) {
+        initial_alert(text)
+        alert_jquery.addClass('alert-success')
+    }
+    
+    function warning_alert(text) {
+        initial_alert(text)
+        alert_jquery.addClass('alert-warning')
+    }
+    
+    function close_alert() {
+        alert_jquery.hide()
+    }
+    
     $(function () {
         $('#account').change(function () {
             selected = $(this).find(':selected').val();
@@ -85,7 +121,7 @@
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 var jsonObj = JSON.parse(xhr.responseText);
-                alert(jsonObj.message);
+                danger_alert(jsonObj.message);
             }
         });
     }
@@ -105,7 +141,7 @@
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 var jsonObj = JSON.parse(xhr.responseText);
-                alert(jsonObj.message);
+                danger_alert(jsonObj.message);
             }
         });
     }

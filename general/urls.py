@@ -8,4 +8,5 @@ urlpatterns = [
     path('check_utility/', views.CheckUtilityView.as_view(), name = 'check_utility'),
     path('title_check/', views.TitleCheckView.as_view(), name = 'title_check'),
     path('update_log/', views.UpdateLogView.as_view(), name = 'update_log'),
+    path('check_file_status/', views.CheckFileStatus.as_view(), name = 'check_file_status'),
 ]
