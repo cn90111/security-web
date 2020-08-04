@@ -1,0 +1,142 @@
+{% load i18n %}
+{% load static %}
+{% for column_title in number_title_list %}
+    <div id="{{ column_title }}_container" class="form-group col-md-6" style="display:none">        
+        <h2>{{ column_title }}</h2>
+        <h4 id="{{ column_title }}_introduction"></h4>
+        <div id="{{ column_title }}_interval_display" style="display:none">
+            <label id="{{ column_title }}_interval_text" style="display:none">{% trans '間隔區間(每個區間皆包含最小值不包含最大值)：' %}</label><br>
+            <table id="{{ column_title }}_interval">
+                <tbody id="{{ column_title }}_interval_tbody" class="form-row">
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endfor %}
+
+<script>
+    $(function () {
+        var number_title_list = {{ number_title_list|safe }};
+        for (number_title of number_title_list) {
+            add_interval(number_title);
+        }
+    })
+
+    function advanced_number_preprocessing_enabled(column_title) {
+        document.getElementById(column_title+'_interval_display').style.display = 'block';
+    }
+    
+    function advanced_number_preprocessing_disabled(column_title) {
+        document.getElementById(column_title+'_interval_display').style.display = 'none';
+    }
+    
+    function add_interval(number_title) {
+        var checked_result = get_select_result(number_title);
+        document.getElementById(number_title+'_interval_text').style.display = 'block'
+        document.getElementById(number_title+'_interval').style.display = 'block'
+        var interval_area = document.getElementById(number_title+'_interval_tbody');
+        var interval_quantity = interval_area.rows.length+1;
+        var base = {{ min_value_dict | safe }};
+        var max = {{ max_value_dict | safe }};
+        
+        base = base[number_title]
+        bias = (max[number_title] - base)/interval_quantity;
+        
+        var i;
+        var j;
+        var temp;
+        var tr;
+        var td;
+        
+        interval_area.innerHTML = ""
+        
+        for (i=0; i<interval_quantity; i++) {
+            tr = interval_area.insertRow(-1);
+            td = tr.insertCell(-1);
+            temp = '';
+            temp += '<input type="number" value="'+(base+(bias*i))+'" class="'+number_title+'_interval_'+i+'" required>'
+            temp += '--';
+            temp += '<input type="number" value="'+(base+(bias*(i+1)))+'" class="'+number_title+'_interval_'+(i+1)+'" required>';
+            if (i==interval_quantity-1) {
+                temp += '<img id="'+number_title+'_icon_'+i+'" src="{% static "img/plus.png" %}" alt="{% trans "新增區間" %}" width="40" onclick="add_interval(\''+number_title+'\')"/>';
+            } else {
+                temp += '<img id="'+number_title+'_icon_'+i+'" src="{% static "img/minus.png" %}" alt="{% trans "刪減區間" %}" width="40" onclick="delete_interval(\''+number_title+'\', '+i+')"/>';
+                temp += '<br><br>';
+            }
+            td.innerHTML = temp;
+        }
+        for (i=0; i<interval_quantity+1; i++) {
+            var interval_temp_list = document.
+                getElementsByClassName(number_title+'_interval_'+i);
+            for (j=0; j<interval_temp_list.length; j++) {
+                interval_temp_list[j].addEventListener('change', interval_check.bind(this, interval_temp_list[j], number_title, i), false);
+            }
+        }
+    }
+    
+    function delete_interval(number_title, delete_id) {
+        var interval_area = document.getElementById(number_title+'_interval_tbody');
+        for (var i=delete_id+1; i<interval_area.rows.length; i++) {
+            now_element = document.getElementsByClassName(number_title+'_interval_'+i);
+            next_element = document.getElementsByClassName(number_title+'_interval_'+(i+1))[0];
+            for (var j=0; j<now_element.length; j++) {
+                now_element[j].value = next_element.value;
+            }
+        }
+        interval_area.deleteRow(-1)
+        var new_last_icon = document.getElementById(number_title+'_icon_'+(interval_area.rows.length-1));
+        new_last_icon.src = '{% static "img/plus.png" %}';
+        new_last_icon.alt = '{% trans "新增區間" %}';
+        new_last_icon.setAttribute('onclick', 'add_interval(\''+number_title+'\')');
+    }
+    
+    function interval_check(interval_temp, number_title, i) {
+        var value = interval_temp.value;
+        var previous_value;
+        var next_value;
+        var error_message;
+        interval_quantity = document.getElementById(number_title+'_interval_tbody').rows.length;
+        if (i == 0) {
+            var min_value = {{ min_value_dict | safe }};
+            min_value = min_value[number_title];
+            next_value = document.getElementsByClassName(number_title+'_interval_'+(i+1))[0].value;
+            if (next_value > min_value) {
+                next_value = min_value;
+                error_message = "{% trans '無法大於欄位最小值' %}";
+            }
+        } else if (i == interval_quantity) {
+            var max_value = {{ max_value_dict | safe }};
+            max_value = max_value[number_title];
+            previous_value = document.getElementsByClassName(number_title+'_interval_'+(i-1))[0].value;
+            if (previous_value < max_value) {
+                previous_value = max_value;
+                error_message = "{% trans '無法小於欄位最大值' %}";
+            }
+        } else {
+            next_value = document.getElementsByClassName(number_title+'_interval_'+(i+1))[0].value;
+            previous_value = document.getElementsByClassName(number_title+'_interval_'+(i-1))[0].value;
+        }
+        
+        close_alert();
+        if (next_value && value > next_value) {
+            interval_temp.value = next_value;
+            if (!error_message) {
+                error_message = "{% trans '已達最大值' %}";
+            }
+            danger_alert(error_message);
+        }
+        if (previous_value && value < previous_value) {
+            interval_temp.value = previous_value;
+            if (!error_message) {
+                error_message = "{% trans '已達最小值' %}";
+            }
+            danger_alert(error_message);
+        }
+        
+        var interval_temp_list = document.
+            getElementsByClassName(number_title+'_interval_'+i);
+        for (var j=0; j<interval_temp_list.length; j++) {
+            interval_temp_list[j].value = interval_temp.value;
+        }
+    }
+</script>
