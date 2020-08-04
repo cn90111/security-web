@@ -1,0 +1,139 @@
+{% load i18n %}
+{% load static %}
+{% for column_title, element_list in string_element_dict.items %}
+    <div id="{{ column_title }}_container" class="form-group col-md-6" style="display:none">
+        <h2>{{ column_title }}</h2>
+        <h4 id="{{ column_title }}_introduction"></h4>
+        <table class="table table-striped" id="{{ column_title }}_table">
+            <tbody id="{{ column_title }}_tbody">
+                {% for element in element_list %}
+                    <tr>
+                        <td>
+                            <input type="text" class="form-control" id="{{ column_title }}_element_{{ forloop.counter0 }}" value="{{ element }}" disabled="disabled" required="required"> 
+                        </td>
+                        <td>
+                            {% trans '對應' %}
+                        </td>
+                        <td>
+                            <input list="{{ column_title }}_select_pair_{{ forloop.counter0 }}" id="{{ column_title }}_pair_label_{{ forloop.counter0 }}" required="required" class="col-sm-6 custom-select custom-select-sm">
+                            <datalist id="{{ column_title }}_select_pair_{{ forloop.counter0 }}">
+                                {% for element in element_list %}
+                                    <option value="{{ element }}">{{ element }}</option>
+                                {%endfor%}
+                            </datalist>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="{{ column_title }}_column_button" class="form-row">
+            <div class="btn-group">
+                <img id="{{ column_title }}_custom_add" src="{% static 'img/plus.png' %}" alt="{% trans '新增欄位' %}" width="40" onclick="add_field('{{ column_title }}', {{ element_list }})"/>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<script>
+    function add_field(column_title, element_list) {
+        var table = document.getElementById(column_title+'_table');
+        var checkbox_address = document.getElementById(column_title+'_is_address');
+        var checkbox_unrelated = document.getElementById(column_title+'_is_unrelated');
+        var count_id = table.tBodies[0].rows.length;
+        var tr = table.insertRow(-1);
+        var td = tr.insertCell(-1);
+        
+        td.innerHTML = 
+            '<input type="text" class="form-control" id="'+column_title+'_element_'+count_id+'" required="required">';
+        var td = tr.insertCell(-1);
+        td.innerHTML = 
+            "對應";
+        var td = tr.insertCell(-1);
+        td.innerHTML = '<input list="'+column_title+'_select_pair_'+count_id+'" id="'+column_title+'_pair_label_'+count_id+'" required="required" class="col-sm-6 custom-select custom-select-sm">'
+        if (checkbox_address.checked || checkbox_unrelated.checked) {
+            var label = document.getElementById(column_title+'_pair_label_'+count_id)
+            label.disabled = true
+            label.required = false
+        }
+        
+        td.innerHTML += 
+            '\
+            <datalist id="'+column_title+'_select_pair_'+count_id+'">\
+            </datalist>\
+            ';
+        td.innerHTML += '<img src="{% static "img/minus.png" %}" alt="{% trans "刪除欄位" %}" width="40" onclick="delete_field(\''+column_title+'\', '+count_id+')"/>';
+        var datalist = document.getElementById(column_title+'_select_pair_'+count_id)
+        for (var element of element_list) {
+            datalist.innerHTML += '<option value="'+ element +'">'+ element +'</option>'
+        }
+        var element = document.getElementById(column_title+'_element_'+count_id);
+        element.addEventListener('change', add_element_list.bind(this, column_title, count_id), false)
+    }
+    
+    function add_element_list(column_title, id) {
+        var check_exist = document.getElementById('pair_0_option_'+column_title+'_'+id);
+        if(check_exist) {
+            delete_element_list(column_title, id)
+        }
+        var table = document.getElementById(column_title+'_table');
+        var element = document.getElementById(column_title+'_element_'+id);
+        for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+            var datalist = document.
+                getElementById(column_title+'_select_pair_'+count);
+            datalist.innerHTML += '<option id="pair_'+count+'_option_'+column_title+'_'+id+'" value="'+element.value+'">'+element.value+'</option>'
+        }
+    }
+    
+    function delete_field(column_title, delete_id) {
+        var table = document.getElementById(column_title+'_table');
+        for (var i=delete_id; i<table.tBodies[0].rows.length-1; i++) {
+            now_element = document.getElementById(column_title+'_element_'+i);
+            next_element = document.getElementById(column_title+'_element_'+(i+1));
+            now_element.value = next_element.value;
+            now_element = document.getElementById(column_title+'_pair_label_'+i);
+            next_element = document.getElementById(column_title+'_pair_label_'+(i+1));
+            now_element.value = next_element.value;
+            add_element_list(column_title, i);
+        }
+        delete_element_list(column_title, table.tBodies[0].rows.length-1);
+        table.deleteRow(-1);
+    }
+    
+    function delete_element_list(column_title, delete_id) {
+        var table = document.getElementById(column_title+'_table');
+        if (document.getElementById('pair_0_option_'+column_title+'_'+delete_id)) {
+            for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+                var datalist = document.
+                    getElementById(column_title+'_select_pair_'+count);
+                datalist.removeChild(document.getElementById('pair_'+count+'_option_'+column_title+'_'+delete_id))
+            }
+        }
+    }
+    
+    function json_pair_disabled(column_title) {
+        var table = document.getElementById(column_title+'_table');
+        var column_button = document.getElementById(column_title+'_column_button');
+        
+        table.style.display = 'none';
+        column_button.style.display = 'none';
+        for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+            var pair_to_element = document.
+                getElementById(column_title+'_pair_label_'+count);
+            pair_to_element.disabled = true
+            pair_to_element.required = false
+        }
+    }
+    
+    function json_pair_enabled(column_title) {
+        var table = document.getElementById(column_title+'_table');
+        var column_button = document.getElementById(column_title+'_column_button');
+        table.style.display = 'block';
+        column_button.style.display = 'block';
+        for (var count = 0; count<table.tBodies[0].rows.length; count++) {
+            var pair_to_element = document.
+                getElementById(column_title+'_pair_label_'+count);
+            pair_to_element.disabled = false
+            pair_to_element.required = true
+        }
+    }
+</script>

@@ -1,203 +1,25 @@
 {% load i18n %}
 <div class="container" style="width:inherit;">
-    <h2>{% trans '檔名：' %}{{file_name}}</h2>
     <form data-toggle="validator">
         {% csrf_token %}
         {% if not number_title_list %}
             <h2>{% trans '無需預先設定的參數' %}</h2>
         {% endif %}
-        {% for number_title in number_title_list %}
-            <h5>{% trans '欄位：' %}{{ number_title }}</h5>
+        {% for column_title in number_title_list %}
             <div class="form-row justify-content-center">
-                <div class="form-check col-md-4">
-                    <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_number" onclick="click_number_checkbox('{{ number_title }}', 'number')">
-                    <label class="form-check-label" for="{{ number_title }}_is_number">{% trans '資料為數值型資料' %}</label>
+                <div class="form-check col-md-7">
+                    <h2 id="{{ column_title }}_title">{{ column_title }}</h2>
                 </div>
-                <div class="form-check col-md-4">
-                    <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_single" onclick="click_number_checkbox('{{ number_title }}', 'single')">
-                    <label class="form-check-label" for="{{ number_title }}_is_single">{% trans '資料只有唯一值' %}</label>
-                </div>
-                <div class="form-check col-md-4">
-                    <input type="checkbox" class="form-check-input" id="{{ number_title }}_is_category" onclick="click_number_checkbox('{{ number_title }}', 'category')">
-                    <label class="form-check-label" for="{{ number_title }}_is_category">{% trans '資料為類別型資料' %}</label>
+                <div class="form-check col-md-5">
+                    <select class="form-control" id="{{ column_title }}_relationship_select_pair" onclick="relationship_set('{{ column_title }}')">
+                        <option selected></option>
+                        <option id="{{ column_title }}_is_number" value="number">{% trans '資料為數值型資料' %}</option>
+                        <option id="{{ column_title }}_is_single" value="single">{% trans '資料只有唯一值' %}</option>
+                        <option id="{{ column_title }}_is_category" value="category">{% trans '資料為類別型資料' %}</option>
+                    </select>
                 </div>
             </div>
-            {% if advanced_settings %}
-                <div id="{{ number_title }}_display" class="form-row" style="display:none">
-                    <label for="{{ number_title }}_n">{% trans '間隔數量：' %}</label><br>
-                    <div class="form-check col-md-3">
-                        <input type="number" name="n" value="1" min="1" class="form-control" required id="{{ number_title }}_n">
-                    </div>
-                    <div class="form-check col-md-6">
-                        <button id="{{ number_title }}_interval_determine" type="button" class="btn btn-primary" onclick="set_interval('{{ number_title }}')">{% trans '確定' %}</button>
-                    </div>
-                </div>
-                <div id="{{ number_title }}_interval_display" style="display:none">
-                    <label id="{{ number_title }}_interval_text" style="display:none">{% trans '間隔區間(每個區間皆包含最小值不包含最大值)：' %}</label><br>
-                    <div id="{{ number_title }}_interval" class="form-row justify-content-center">
-                    </div>
-                </div>
-                <br>
-                <br>
-            {% endif %}
+            <br>
         {% endfor %}
     </form>
 </div>
-
-<script>
-    function toggle(html_dom) {
-        if (html_dom) {
-            if (html_dom.style.display == 'none') {
-                html_dom.style.display = 'block';
-            } else {
-                html_dom.style.display = 'none';
-            }
-        }
-    }
-    function click_number_checkbox(number_title, box_name) {
-        var checkbox_number = document.getElementById
-            (number_title+'_is_number');
-        var checkbox_single = document.getElementById
-            (number_title+'_is_single');
-        var checkbox_category = document.getElementById
-            (number_title+'_is_category');
-        var check_status;
-                
-        if (box_name == 'number'){
-            check_status = checkbox_number.checked
-        } else if (box_name == 'single') {
-            check_status = checkbox_single.checked
-        } else if (box_name == 'category') {
-            check_status = checkbox_category.checked
-        } else {
-            console.log("box_name exception:" + box_name)
-        }
-        
-        checkbox_number.checked = false
-        checkbox_single.checked = false
-        checkbox_category.checked = false
-        
-        if (box_name == 'number'){
-            checkbox_number.checked = check_status
-        } else if (box_name == 'single') {
-            checkbox_single.checked = check_status
-        } else if (box_name == 'category') {
-            checkbox_category.checked = check_status
-        } else {
-            console.log("box_name exception:" + box_name)
-        }
-        
-        {% if advanced_settings %}
-            var interval_display = document.getElementById 
-                (number_title+'_display');
-            var interval_input_display = document.getElementById 
-                (number_title+'_interval_display');
-            
-            if (box_name == 'number'){
-                toggle(interval_display);
-                toggle(interval_input_display);
-            } else if (box_name == 'single') {
-                interval_display.style.display = 'none'
-                interval_input_display.style.display = 'none'
-            } else if (box_name == 'category') {
-                interval_display.style.display = 'none'
-                interval_input_display.style.display = 'none'
-            } else {
-                console.log("box_name exception:" + box_name)
-            }
-        {% endif %}
-    }
-    
-    function get_check_result(number_title) {
-        var checkbox_number = document.getElementById
-                (number_title+'_is_number');
-        var checkbox_single = document.getElementById
-                (number_title+'_is_single');
-        var checkbox_category = document.getElementById
-                (number_title+'_is_category');
-        if (checkbox_number.checked) {
-            return 'number'
-        } else if (checkbox_single.checked) {
-            return 'single'
-        } else if (checkbox_category.checked) {
-            return 'category'
-        } else {
-            return null
-        }
-    }
-    
-    {% if advanced_settings %}
-        function set_interval(number_title) {
-            var checked_result = get_check_result(number_title);
-            
-            if(!checked_result) {
-                danger_alert("{% trans '尚未選擇數值類型' %}");
-                return
-            }
-            close_alert()
-            
-            document.getElementById(number_title+'_interval_text').style.display = 'block'
-            document.getElementById(number_title+'_interval').style.display = 'block'
-            var interval_quantity = parseInt(document.getElementById(number_title+'_n').value);
-            var interval_area = document.getElementById(number_title+'_interval');
-            var base = {{ min_value_dict | safe }};
-            var max = {{ max_value_dict | safe }};
-            
-            base = base[number_title]
-            bias = (max[number_title] - base)/interval_quantity;
-            
-            var i;
-            var temp;
-            interval_area.innerHTML = "";
-            for (i=0; i<interval_quantity+1; i++) {
-                temp = '<input type="number" value="'+(base+(bias*i))+'" class="col-md-2" required id="'+number_title+'_interval_'+i+'">'
-                if (i!=interval_quantity) {
-                    temp = temp + '--';
-                }
-                if ((i+1)%5==0)  {
-                    temp = temp + '<br>';
-                }
-                interval_area.innerHTML = interval_area.innerHTML + temp;
-            }
-            for (i=0; i<interval_quantity+1; i++) {
-                var interval_temp = document.
-                    getElementById(number_title+'_interval_'+i);
-                interval_temp.addEventListener('change', interval_check.bind(this, interval_temp, number_title, i, interval_quantity+1), false);
-            }
-        }
-        
-        function interval_check(interval_temp, number_title, i, interval_quantity) {
-            var value = interval_temp.value;
-            var previous_value;
-            var next_value;
-            if (i == 0) {
-                var min_value = {{ min_value_dict | safe }};
-                min_value = min_value[number_title];
-                next_value = document.getElementById(number_title+'_interval_'+(i+1)).value;
-                if (next_value > min_value) {
-                    next_value = min_value;
-                }
-            } else if (i == interval_quantity) {
-                var max_value = {{ max_value_dict | safe }};
-                max_value = max_value[number_title];
-                previous_value = document.getElementById(number_title+'_interval_'+(i-1)).value;
-                if (previous_value < max_value) {
-                    previous_value = max_value;
-                }
-            } else {
-                next_value = document.getElementById(number_title+'_interval_'+(i+1)).value;
-                previous_value = document.getElementById(number_title+'_interval_'+(i-1)).value;
-            }
-            
-            close_alert();
-            if (next_value && value > next_value) {
-                interval_temp.value = next_value;
-                danger_alert("{% trans '已達最大值' %}");
-            }
-            if (previous_value && value < previous_value) {
-                interval_temp.value = previous_value;
-                danger_alert("{% trans '已達最小值' %}");
-            }
-        }
-    {% endif %}
-</script>
