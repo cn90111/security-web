@@ -1,0 +1,38 @@
+{% extends "general/parallel_template.html" %}
+{% load i18n %}
+{% block title %}finish{% endblock title %}
+
+{% block content %}
+    <h2>{% trans '去識別化完成' %}</h2>
+    <h5 style="font-weight:bold;color:red">{% trans '說明1：左邊為原始檔案，右邊為去識別化檔案' %}</h5>
+    <h5 style="font-weight:bold;color:red">{% trans '說明2：將頁面滾動至最下方，可以選擇存檔或進行後續的可用度檢測' %}</h5>
+{% endblock content %}
+
+{% block left_container %}
+    <div class="form-group col-md-6">
+        {% trans '原始檔案' as origin_file %}
+        {% include 'general/display_file.html' with title=origin_file display_url=upload_display_url id="origin" %}
+    </div>
+{% endblock left_container %}
+
+{% block right_container %}
+    <div class="form-group col-md-6">
+        {% trans '去識別化檔案' as de_identification_file %}
+        {% include 'general/display_file.html' with title=de_identification_file display_url=output_display_url id="finish" %}
+    </div>
+{% endblock right_container %}
+
+{% block button %}
+    <div class="form-group col-md-2">
+        <button onclick="location.href='{{ download_output_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '下載去識別化檔案' %}</button>
+    </div>
+    <div class="form-group col-md-2">
+        <button onclick="location.href='{{ utility_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '檔案可用度量測' %}</button>
+    </div>
+    <div class="form-group col-md-2">
+        <button onclick="location.href='{{ execute_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '再次執行去識別化' %}</button>
+    </div>
+    <div class="form-group col-md-2">
+        <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
+    </div>
+{% endblock button %}

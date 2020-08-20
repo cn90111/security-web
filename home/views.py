@@ -11,7 +11,7 @@ import shutil
 
 @login_required
 def index(request):
-    return render(request, 'home.html')
+    return render(request, 'home.vue')
 
 class InitializeView(View):
     @method_decorator(login_required)

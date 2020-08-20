@@ -1,0 +1,128 @@
+{% extends "base.vue" %}
+{% load i18n %}
+{% block title %}function home{% endblock title %}
+{% block context_area %}
+    {% block hint_area %}{% endblock hint_area %}
+    <function_cell
+        :function_object = "{
+            name: {
+                content: '{% trans '檔案上傳區' %}',
+                is_chinese: '{{ LANGUAGE_CODE }}' === 'zh-hant',
+            },
+        }"
+    >
+        <cell_introduction
+            :introduction = "{
+                content: '{% trans '上傳前請您再次確認檔案符合注意事項' %}',
+                is_chinese: '{{ LANGUAGE_CODE }}' === 'zh-hant',
+            }"
+            end_introduction = true
+        ></cell_introduction>
+        <form id="form_file" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="custom-file center" style="height:80px">
+                <input type="file" class="custom-file-input" name="file" id="customFile_csv" accept=".csv" >
+                <label class="custom-file-label" for="customFile_csv">{% trans '請選擇將要去識別化的CSV檔案(.csv)' %}</label>
+            </div>
+        </form>
+    </function_cell>
+{% endblock context_area %}
+
+{% block script_area %}
+<script>
+    title_area.introduction.content = "{% trans '閱讀完注意事項後，請於最下方區塊上傳檔案' %}";
+    title_area.introduction.is_chinese = '{{ LANGUAGE_CODE }}' === 'zh-hant';        
+</script>
+
+<script>
+    $(function () {
+        var url = "{% url 'check_file_status' %}"
+        $.getJSON(url, function (request) {
+            if (request == null) {
+                var url = "{% url 'initialize' %}"
+                $.get(url);
+            } else if (request.finish == true) {
+                next = true
+                while (next) {
+                    if (confirm("{% trans '檔案去識別化完成，是否查看執行結果?' %}")) {
+                        next = false
+                        window.location = request.url;
+                        } else {
+                            if (confirm("{% trans '確定執行新的去識別化嗎?先前的執行結果將不會保留' %}")) {
+                                next = false
+                                $.get("{% url 'initialize' %}");
+                            }
+                        }
+                    }
+                } else if (request.finish == false) {
+                    next = true
+                    while (next) {
+                        if (confirm("{% trans '檔案執行中，是否查看執行進度?' %}")) {
+                            next = false
+                            window.location = request.url;
+                        } else {
+                            if (confirm("{% trans '確定執行新的去識別化嗎?先前的執行進度將不會保留' %}")) {
+                                next = false
+                                $.get(request.break_url);
+                                $.get("{% url 'initialize' %}");
+                            }
+                        }
+                    }
+                } else {
+                    alert("{% trans 'home.html finish不符合預期，請通知開發人員，finish = ' %}"+request.finish);
+                }
+            })
+        })
+        
+        loading_jquery = $('#loading');
+        
+        function isValidFile(file) {
+            var type = "." + file.value.split(".")[1];
+            if (type == file.accept) {
+                return true;
+            }
+            return false;
+        }
+        
+        function reset() {
+            $("#customFile_csv").val('');
+        }
+
+        $("#customFile_csv").on("change", function() {
+            var csv_name = $(this).val().split("\\").pop();
+            loading_jquery.show();
+            close_alert();
+            $(this).siblings(".custom-file-label").addClass("selected").html(csv_name);
+            
+            if (!csv_name) {
+                danger_alert("{% trans '請先選擇檔案' %}");
+                loading_jquery.hide();
+                return;
+            }
+            
+            if (!isValidFile(document.getElementById('customFile_csv'))) {
+                danger_alert("{% trans '檔案類型錯誤' %}");
+                loading_jquery.hide();
+                return;
+            }
+            let formData = new FormData($('#form_file').get(0));
+            $.ajax({
+                url: "{{ file_upload_url }}",
+                type: 'POST',
+                data: formData,
+                dataType: 'json',
+                contentType: false,
+                processData: false,
+                success: function () {
+                    reset()
+                    window.location = '{{ custom_url }}'+csv_name+'/';
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    var jsonObj = JSON.parse(xhr.responseText);
+                    danger_alert(jsonObj.message);
+                    loading_jquery.hide();
+                }
+            });
+        });
+    </script>
+{% endblock script_area %}

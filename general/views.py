@@ -103,7 +103,7 @@ class AbstractExecuteView(View):
         request_dict['caller'] = caller
         request_dict['file_name'] = file_name
         request_dict['form'] = form
-        return render(request, caller+'/'+caller+'.html', request_dict)
+        return render(request, caller+'/'+caller+'.vue', request_dict)
         
     def get_empty_form(self):
         raise AttributeError('應藉由子類別實作此方法，return form()')
@@ -248,7 +248,7 @@ class FinishView(View):
         request_dict = self.set_url_path(request_dict, caller, file_name)
         request_dict['file_name'] = file_name
         request_dict['caller'] = caller
-        return render(request, 'general/execute_finish.html', request_dict)
+        return render(request, 'general/execute_finish.vue', request_dict)
         
     def set_url_path(self, request_dict, caller, file_name):
         request_dict['download_output_url'] = reverse('download_output', args=[file_name])
@@ -271,7 +271,7 @@ class UtilityPageView(View):
         request_dict['file_name'] = file_name
         request_dict['caller'] = caller
         request_dict['machine_learning_list'] = MachineLearning.SUPPORT_LIST
-        return render(request, 'general/utility.html', request_dict)
+        return render(request, 'general/utility.vue', request_dict)
          
     def set_url_path(self, request_dict, caller, file_name):
         request_dict['download_output_url'] = reverse('download_output', args=[file_name])
@@ -343,4 +343,4 @@ class TitleCheckView(View):
                 
 class UpdateLogView(View):
     def get(self, request, *arg, **kwargs):
-        return render(request, 'general/update_log.html', {})
+        return render(request, 'general/update_log.vue', {})

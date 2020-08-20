@@ -17,7 +17,7 @@ def index(request):
     custom_url = reverse('k_Anonymity:custom')
     request_dict['file_upload_url'] = file_upload_url
     request_dict['custom_url'] = custom_url
-    return render(request, 'k_Anonymity/k_Anonymity_home.html', request_dict)
+    return render(request, 'k_Anonymity/k_Anonymity_home.vue', request_dict)
     
 class KAnonymityView(AbstractMethodView):
     def get_form(self, requestContent):
@@ -27,7 +27,7 @@ class KAnonymityView(AbstractMethodView):
         k_anonymity.run(request)
         
     def get_method_template(self):
-        return 'k_Anonymity/k_Anonymity.html'
+        return 'k_Anonymity/k_Anonymity.vue'
         
 class BreakProgramView(AbstractBreakProgramView):
     def break_program(self, file):

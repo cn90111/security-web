@@ -17,7 +17,7 @@ def index(request):
     custom_url = reverse('l_Diversity:custom')
     request_dict['file_upload_url'] = file_upload_url
     request_dict['custom_url'] = custom_url
-    return render(request, 'l_Diversity/l_Diversity_home.html', request_dict)
+    return render(request, 'l_Diversity/l_Diversity_home.vue', request_dict)
     
 class LDiversityView(AbstractMethodView):
     def get_form(self, requestContent):
@@ -27,7 +27,7 @@ class LDiversityView(AbstractMethodView):
         l_diversity.run(request)
         
     def get_method_template(self):
-        return 'l_Diversity/l_Diversity.html'
+        return 'l_Diversity/l_Diversity.vue'
 
 class BreakProgramView(AbstractBreakProgramView):
     def break_program(self, file):

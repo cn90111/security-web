@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+{% load i18n %}
+{% trans '已完成' as finish %}
+{% trans '原始檔案' as origin_file %}
+{% trans '去識別化檔案' as de_identification_file %}
+{% trans '可用度檢測檔案' as utility_file %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>utility</title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    </head>
+    <body style="padding-top:50px;">
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h2>{% trans '可用性評估' %}</h2>
+                <h5 style="font-weight:bold;color:red">{% trans '說明1：請選擇用以量測的機器學習方法，選擇後請按下確定' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '說明2：將會以資料集最後一欄做為量測目標(Label)' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '說明3：上方為以80%原始檔案訓練，20%原始檔案驗證的準確度' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '說明4：中間為以80%去識別化檔案訓練，20%去識別化檔案驗證的準確度' %}</h5>
+                <h5 style="font-weight:bold;color:red">{% trans '說明5：下方為以80%去識別化檔案訓練，20%原始檔案檔案驗證的準確度' %}</h5>
+            </div>
+        </div>
+        <div class="container" style="width:100%;">
+            <form id="parameter_form" data-toggle="validator">
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        {% csrf_token %}
+                        <label for="machine_learning_select">{% trans '用以量測的機器學習：' %}</label>
+                        <select class="form-control" id="machine_learning_select">
+                            {% for item in machine_learning_list %}
+                                <option value="{{ item }}">{{ item }}</option>
+                            {%endfor%}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button onclick="check_start()" type="button" class="btn btn-primary" style="width:100%">{% trans '確定' %}</button>
+                    </div>
+                </div>
+                <h2 id="loading" style="display:none">{% trans '量測中請稍後' %}</h2>
+                <br>
+                
+                <div class="container">
+                    <div class="form-group">
+                        <h2 id="left_accuracy">{% trans '原始檔案準確度(accuracy)：' %}</h2>
+                    </div>
+                    <div class="form-group">
+                        <h2 id="right_accuracy">{% trans '去識別化檔案準確度(accuracy)：' %}</h2>
+                    </div>
+                    <div class="form-group">
+                        <h2 id="bottom_accuracy">{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}</h2>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <button onclick="location.href='{{ download_output_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '下載去識別化檔案' %}</button>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <script>
+            finish_text = '{{ finish }}'
+            unlock_count = 0
+            var left_accuracy = $('#left_accuracy');
+            var right_accuracy = $('#right_accuracy');
+            var bottom_accuracy = $('#bottom_accuracy');
+            var loading_text = $('#loading');
+            var selecter = $('#machine_learning_select');
+            
+            function finish(text_element, finish_message) {
+                finish_text = finish_message+' '+finish_text;
+                text_element.text(finish_text);
+            }
+            function reset() {
+                finish_text = '{{ finish }}';
+                unlock_count = 0;
+                
+                left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}")
+                right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}")
+                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}")
+            }
+            function utility_check(train_file_path, test_file_path, text_element, file_kind) {
+                var url = '{{ check_utility_url }}'
+                var data = {
+                    csv_name : '{{file_name}}',
+                    machine_learning_method : selecter.val(),
+                    train_file_path : train_file_path,
+                    test_file_path : test_file_path,
+                };
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: data,
+                    success: function (result) {
+                        text_element.text(text_element.text() + result.accuracy + '%')
+                        finish(loading_text, file_kind)
+                        unlock_count++;
+                        if (unlock_count>=3) {
+                            selecter.removeAttr('disabled');
+                        }
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        var jsonObj = JSON.parse(xhr.responseText);
+                        text_element.text(text_element.text() + jsonObj.accuracy + '%')
+                        danger_alert(file_kind+jsonObj.message);
+                        unlock_count++;
+                        if (unlock_count>=3) {
+                            selecter.removeAttr('disabled');
+                        }
+                    }
+                });
+            }
+            function check_start() {
+                reset();
+                
+                if (!selecter.val()) {
+                    return
+                }
+                
+                selecter.attr('disabled', 'disabled');
+                loading_text.show();
+                
+                utility_check('upload', 'upload', left_accuracy, '{{ origin_file }}')
+                utility_check('output', 'output', right_accuracy, '{{ de_identification_file }}')
+                utility_check('output', 'upload', bottom_accuracy, '{{ utility_file }}')
+            }
+        </script>
+    </body>
+</html>

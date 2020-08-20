@@ -17,7 +17,7 @@ def index(request):
     custom_url = reverse('t_Closeness:custom')
     request_dict['file_upload_url'] = file_upload_url
     request_dict['custom_url'] = custom_url
-    return render(request, 't_Closeness/t_Closeness_home.html', request_dict)
+    return render(request, 't_Closeness/t_Closeness_home.vue', request_dict)
 
 class TClosenessView(AbstractMethodView):
     def get_form(self, requestContent):
@@ -27,7 +27,7 @@ class TClosenessView(AbstractMethodView):
         t_closeness.run(request)
         
     def get_method_template(self):
-        return 't_Closeness/t_Closeness.html'
+        return 't_Closeness/t_Closeness.vue'
     
 class BreakProgramView(AbstractBreakProgramView):
     def break_program(self, file):
