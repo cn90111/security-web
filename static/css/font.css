@@ -1,6 +1,8 @@
 .chinese_font {
     font-family:'Taipei_Sans_TC';
+    font-weight:bold;
 }
 .english_font {
     font-family:'Calibri';
+    font-weight:bold;
 }
