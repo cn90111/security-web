@@ -2,25 +2,28 @@
 {% load i18n %}
 {% block title %}parameter custom{% endblock title %}
 
-{% block content %}
-    <h2>{% trans '檔案確認' %}</h2>
-    <h5 style="font-weight:bold;color:red">{% trans '說明1：請確認左邊的參數設定，進行下一步的調整' %}</h5>
-    <h5 style="font-weight:bold;color:red">{% trans '說明2：請確認右邊的檔案預覽，是否為您想要去識別化的檔案' %}</h5>
-    <h5 style="font-weight:bold;color:red">{% trans '說明3：設定完成後，將頁面滾動至最下方，並按下繼續執行' %}</h5>
-{% endblock content %}
+{% block hint %}
+    <cell cell_title="{% trans '說明' %}">
+        <p>{% trans '1：請確認左邊的參數設定，進行下一步的調整' %}</p>
+        <p>{% trans '2：請確認右邊的檔案預覽，是否為您想要去識別化的檔案' %}</p>
+        <p>{% trans '3：設定完成後，將頁面滾動至最下方，並按下繼續執行' %}</p>
+    </cell>
+{% endblock hint %}
 
 {% block left_container %}
     <div class="form-group col-md-6">
-        {% if custom_mode == 'DPView' %}
-            {% include 'DPView/DPView_number_preprocessing.html' %}
-        {% elif custom_mode == 'json_parser' %}
-            {% include 'json_parser/json_title.html' %}
-            {% if advanced_settings %}
-                {% include 'general/number_preprocessing.html' %}
+        <cell cell_title="{% trans '參數設定' %}">
+            {% if custom_mode == 'DPView' %}
+                {% include 'DPView/DPView_number_preprocessing.html' %}
+            {% elif custom_mode == 'json_parser' %}
+                {% include 'json_parser/json_title.html' %}
+                {% if advanced_settings %}
+                    {% include 'general/number_preprocessing.html' %}
+                {% endif %}
+            {% else %}
+                <h2>{% trans 'custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員' %}</h2>
             {% endif %}
-        {% else %}
-            <h2>{% trans 'custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員' %}</h2>
-        {% endif %}
+        </cell>
     </div>
 {% endblock left_container %}
 
@@ -34,31 +37,37 @@
     {% endif %}
     {% if advanced_settings %}
         {% include 'general/advanced_number_preprocessing.html' %}
-    {% endif %}
+    {% endif %}    
 {% endblock right_container %}
 
 {% block button %}
-    <div class="form-group col-md-2">
-        <button id="execute" type="button" class="btn btn-primary" style="width:100%">{% trans '繼續執行' %}</button>
-    </div>
-    {% if not advanced_settings %}
+    <cell cell_title="{% trans '操作列表' %}">
         <div class="form-group col-md-2">
-            <button onclick="location.href='{{ advanced_settings_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '進階設定' %}</button>
+            <button id="execute" type="button" class="btn btn-primary" style="width:100%">{% trans '繼續執行' %}</button>
         </div>
-    {% else %}
+        {% if not advanced_settings %}
+            <div class="form-group col-md-2">
+                <button onclick="location.href='{{ advanced_settings_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '進階設定' %}</button>
+            </div>
+        {% else %}
+            <div class="form-group col-md-2">
+                <button onclick="location.href='{{ base_settings_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '基礎設定' %}</button>
+            </div>
+        {% endif %}
         <div class="form-group col-md-2">
-            <button onclick="location.href='{{ base_settings_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '基礎設定' %}</button>
+            <button onclick="location.href='{{ previous_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '重新選擇檔案' %}</button>
         </div>
-    {% endif %}
-    <div class="form-group col-md-2">
-        <button onclick="location.href='{{ previous_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '重新選擇檔案' %}</button>
-    </div>
-    <div class="form-group col-md-2">
-        <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
-    </div>
+        <div class="form-group col-md-2">
+            <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
+        </div>
+    </cell>    
 {% endblock button %}
 
 {% block script %}
+    <script>
+        page.title = "{% trans '參數設定' %}"
+    </script> 
+    
     <script>
         function initize() {
             document.getElementById('preview_file').style.display = 'none';    

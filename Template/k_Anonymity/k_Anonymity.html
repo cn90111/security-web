@@ -1,8 +1,19 @@
 {% extends "general/function.html" %}
 {% load i18n %}
-{% block title %}k-Anonymity{% endblock title %}
-{% block content %}
-    <h2>k-Anonymity</h2>
-    <h5 style="font-weight:bold;color:red">{% trans '說明1：去識別化後的檔案可用性高，但執行速度較慢，可先執行 t-Closeness 測試是否符合需求' %}</h5>
-    <h5 style="font-weight:bold;color:red">{% trans '說明2：「K」 ── 去識別化後，在任意查詢條件下，至少會同時查到K筆資料' %}</h5>
-{% endblock content %}
+{% block title %}k-Anonymity {{ block.super }}{% endblock title %}
+
+{% block hint %}
+    <cell cell_title="{% trans '說明' %}">
+        <h5 style="font-weight:bold;color:red">{% trans '1：去識別化後的檔案可用性高，但執行速度較慢，可先執行 t-Closeness 測試是否符合需求' %}</h5>
+        <h5 style="font-weight:bold;color:red">{% trans '2：「K」 ── 去識別化後，在任意查詢條件下，至少會同時查到K筆資料' %}</h5>
+    </cell>
+{% endblock hint %}
+
+{% block script %}
+    {{ block.super }}
+    <script>
+        $(function () {
+            sidebar_highlight('k_anonymity');
+        })
+    </script>
+{% endblock script %}

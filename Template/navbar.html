@@ -4,51 +4,40 @@
 {% trans '登出' as log_out %}
 {% trans '刪除帳號' as delete_account %}
 <div>
-    <nav class="navbar navbar-expand-sm fixed-top" style="background-color:#3399ff">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="navbar-brand" href="{% url 'home' %}" style="color:#ffffff">{% trans '主頁' %}</a>
+    <!-- navbar top -->
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="navbar">
+        <!-- navbar-header -->
+        <div class="navbar-header" style="padding-top:20px">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <font size="6" color="white" style="font-weight:bold;">Security lab</font>
+            </a>
+        </div>
+        <!-- end navbar-header -->
+        <!-- navbar-top-links -->
+        <ul class="nav navbar-top-links navbar-right">
+            <!-- main dropdown -->
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
+                    <i class="fa fa-user fa-3x"></i>
+                </a>
+                <!-- dropdown user-->
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="javascript:void(0)" onclick="change_password()"><i class="fa fa-key fa-fw"></i>{% trans '更改密碼' %}</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out fa-fw"></i>{% trans '登出' %}</a>
+                    </li>
+                    <li><a href="javascript:void(0)" onclick="delete_account()"><i class="fa fa-trash-o fa-fw"></i>{% trans '刪除帳號' %}</a>
+                    </li>
+                </ul>
+                <!-- end dropdown-user -->
             </li>
-            <li class="nav-item">
-                <a class="navbar-brand" href="{% url 'DPView:home' %}" style="color:#ffffff">DPView</a>
-            </li>
-            <li class="nav-item" >
-                <a class="navbar-brand" href="{% url 't_Closeness:home' %}" style="color:#ffffff">k-Anonymity</a>
-            </li>
-            {% if false %}
-                <li class="nav-item">
-                    <a class="navbar-brand" href="{% url 'k_Anonymity:home' %}" style="color:#ffffff">k-Anonymity</a>
-                </li>
-                <li class="nav-item">
-                    <a class="navbar-brand" href="{% url 'l_Diversity:home' %}" style="color:#ffffff">l-Diversity</a>
-                </li>
-            {% endif %}
-            <li class="nav-item">
-                <a class="navbar-brand" href="{% url 'update_log' %}" style="color:#ffffff">{% trans '更新日誌' %}</a>
-            </li>
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-                <select id="account" name="account" class="form-control">
-                    <option value="{{ account_management }}" selected>{{ account_management }}</option>
-                    <option value="{{ change_password }}">{{ change_password }}</option>
-                    <option value="{{ log_out }}">{{ log_out }}</option>
-                    <option value="{{ delete_account }}">{{ delete_account }}</option>
-                </select>
-            </li>
-            {% endif %}
-            <li class="nav-item">
-                <form id="i18n" action="{% url 'set_language' %}" method="post">
-                    {% csrf_token %}
-                    <input name="next" type="hidden" value="{{ request.get_full_path|remove_language_code }}" />
-                    <select name="language" class="form-control language-switch">
-                        {% for code, name in LANGUAGES %}
-                            <option value="{{ code }}" {% if code == LANGUAGE_CODE %}selected{% endif %}>{{ name }}</option>
-                        {% endfor %}
-                    </select>
-                </form>
-            </li>
+            <!-- end main dropdown -->
         </ul>
+        <!-- end navbar-top-links -->
+
     </nav>
+    <!-- end navbar top -->
     <div id="alert" style="display:none" class="alert row justify-content-between" role="alert">
         <h3 id="alert_text"></h3>
         <button type="button" class="close" onclick="close_alert()" aria-label="Close">
@@ -87,25 +76,7 @@
     function close_alert() {
         alert_jquery.hide()
     }
-    
-    $(function () {
-        $('#account').change(function () {
-            selected = $(this).find(':selected').val();
-            if (selected == '{{ log_out }}') {
-                window.location = "{% url 'logout' %}";
-            } else if (selected == '{{ delete_account }}') {
-                delete_account();
-            } else if (selected == '{{ change_password }}') {
-                change_password();
-            }
-            $(this)[0].selectedIndex = 0;
-        });
-    
-        $('#i18n').change(function () {
-            $(this).submit();
-        });
-    })
-    
+        
     function delete_account() {
         var answer = prompt("{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入密碼' %}", '');
         var url = "{% url 'password_check' %}";
