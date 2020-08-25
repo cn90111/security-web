@@ -17,6 +17,7 @@ def index(request):
     custom_url = reverse('k_Anonymity:custom')
     request_dict['file_upload_url'] = file_upload_url
     request_dict['custom_url'] = custom_url
+    request_dict['caller'] = 'k_Anonymity'
     return render(request, 'k_Anonymity/k_Anonymity_home.html', request_dict)
     
 class KAnonymityView(AbstractMethodView):

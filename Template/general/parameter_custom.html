@@ -42,22 +42,22 @@
 
 {% block button %}
     <cell cell_title="{% trans '操作列表' %}">
-        <div class="form-group col-md-2">
+        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
             <button id="execute" type="button" class="btn btn-primary" style="width:100%">{% trans '繼續執行' %}</button>
         </div>
         {% if not advanced_settings %}
-            <div class="form-group col-md-2">
+            <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
                 <button onclick="location.href='{{ advanced_settings_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '進階設定' %}</button>
             </div>
         {% else %}
-            <div class="form-group col-md-2">
+            <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
                 <button onclick="location.href='{{ base_settings_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '基礎設定' %}</button>
             </div>
         {% endif %}
-        <div class="form-group col-md-2">
+        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
             <button onclick="location.href='{{ previous_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '重新選擇檔案' %}</button>
         </div>
-        <div class="form-group col-md-2">
+        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
             <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
         </div>
     </cell>    
@@ -65,7 +65,8 @@
 
 {% block script %}
     <script>
-        page.title = "{% trans '參數設定' %}"
+        page.title = "{% trans '參數設定' %}";
+        sidebar_highlight('{{ caller }}');
     </script> 
     
     <script>

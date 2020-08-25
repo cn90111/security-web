@@ -13,10 +13,18 @@
                         <img src="{% static 'img/user.jpg' %}" alt="">
                     </div>
                     <div class="user-info">
-                        <div>{{ user.username }}</div>
-                        <div class="user-text-online">
-                            <span class="user-circle-online btn btn-success btn-circle "></span>&nbsp;Online
-                        </div>
+                        {% if user.is_authenticated %}
+                            <div>{{ user.username }}</div>
+                            <div class="user-text-online">
+                                <span class="user-circle-online btn btn-success btn-circle "></span>&nbsp;Online
+                            </div>
+                        {% else %}
+                            <div>{% trans '尚未登入' %}</div>
+                            <div class="user-text-online">
+                                <span class="user-circle-online btn btn-danger btn-circle "></span>&nbsp;Offline
+                            </div>
+
+                        {% endif %}
                     </div>
                 </div>
                 <!--end user image section-->
@@ -36,17 +44,17 @@
             <li id="home" name="highlight_item">
                 <a href="{% url 'home' %}"><i class="fa fa-dashboard fa-fw"></i>Home</a>
             </li>
-            <li id="dpview" name="highlight_item">
+            <li id="DPView" name="highlight_item">
                 <a href="{% url 'DPView:home' %}"><i class="fa fa-flask fa-fw"></i>DPView</a>
             </li>
-            <li id="t_closeness" name="highlight_item">
+            <li id="t_Closeness" name="highlight_item">
                 <a href="{% url 't_Closeness:home' %}"><i class="fa fa-flask fa-fw"></i>k-Anonymity</a>
             </li>
             {% if false %}
-                <li id="l_diversity" name="highlight_item">
+                <li id="l_Diversity" name="highlight_item">
                     <a href="{% url 'l_Diversity:home' %}"><i class="fa fa-flask fa-fw"></i>l-Diversity</a>
                 </li>
-                <li id="k_anonymity" name="highlight_item">
+                <li id="k_Anonymity" name="highlight_item">
                     <a href="{% url 'k_Anonymity:home' %}"><i class="fa fa-flask fa-fw"></i>k-Anonymity</a>
                 </li>
             {% endif %}

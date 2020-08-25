@@ -11,12 +11,3 @@
         <p>{% trans '5：檔案請另存新檔為CSV檔(.csv)' %}</p>
     </cell>
 {% endblock hint %}
-
-{% block script %}
-    {{ block.super }}
-    <script>
-        $(function () {
-            sidebar_highlight('t_closeness');
-        })
-    </script>
-{% endblock script %}

@@ -57,12 +57,12 @@
         delimiters: ['[[', ']]'],
         props: ['cell_title'],
         template: '\
-            <div class="col-lg-12">\
-                <div class="panel panel-primary">\
+            <div class="col-lg-12" style="width:100%">\
+                <div class="panel panel-primary" style="width:100%">\
                     <div class="panel-heading">\
                         <i class="fa fa-flask fa-fw"></i>[[ cell_title ]]\
                     </div>\
-                    <div class="panel-body">\
+                    <div class="panel-body" style="width:100%">\
                         <slot></slot>\
                     </div>\
                 </div>\
@@ -78,5 +78,4 @@
         },
     });
 </script>
-
 {% block script %}{% endblock script %}

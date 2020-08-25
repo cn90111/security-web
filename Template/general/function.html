@@ -3,10 +3,14 @@
 {% block title %}execute page{% endblock title %}
 
 {% block content %}
+    {% trans '小時' as hour %}
+    {% trans '分' as minute %}
+    {% trans '秒' as second %}
+    {% trans '目前進度：' as completion_rate %}
     {% block hint %}{% endblock hint %}
     <cell cell_title="{% trans '參數設定' %}">
         <div class="container" style="width:inherit;">
-            <form id="parameter_form" data-toggle="validator">
+            <form id="parameter_form">
                 {% csrf_token %}
                 {% for field in form %}
                     {% if forloop.counter0|divisibleby:3 %}
@@ -36,7 +40,7 @@
                 </div>
             </form>
     	</div>
-        <div class="progress-div" style="position:absolute; width:90%;  left:5%;">
+        <div class="progress-div" style="width:90%;  left:5%;">
             <label> {% trans '進度條' %} </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <span id="Check_Txt" style="color:red">{% trans '執行時間：' %}<span id="Check_i">0 {{ hour }} 0 {{ minute }} 0 {{ second }}</span>
             <div id="bar" class="progress progress-striped active">
@@ -50,8 +54,13 @@
 {% endblock content %}
 
 {% block script %}
+    {% trans '小時' as hour %}
+    {% trans '分' as minute %}
+    {% trans '秒' as second %}
+    {% trans '目前進度：' as completion_rate %}
     <script>
-        page.title = "{% trans '去識別化' %}"
+        page.title = "{% trans '去識別化' %}";
+        sidebar_highlight('{{ caller }}');
     </script>
     
     <script>
@@ -134,7 +143,6 @@
         $(function () {                
             execute_jquary.on('click', function () {
                 reset()
-                window.scrollTo(0, document.body.scrollHeight)
                 execute_jquary.attr('disabled', 'disabled');
                 var mm = window.setInterval('check_time()', 1000);
                 var sitv = window.setInterval('progress_check()', 10000);

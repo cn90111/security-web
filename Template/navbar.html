@@ -37,47 +37,54 @@
         <!-- end navbar-top-links -->
 
     </nav>
-    <!-- end navbar top -->
-    <div id="alert" style="display:none" class="alert row justify-content-between" role="alert">
-        <h3 id="alert_text"></h3>
-        <button type="button" class="close" onclick="close_alert()" aria-label="Close">
+<!-- end navbar top -->
+    <div id="alert" style="display:none;z-index:100;position:fixed;width:100%;opacity:0.9;" class="alert row">
+        <h3 id="alert_text" class="col-md-11"></h3>
+        <button type="button" class="close" style="padding-top:20px" onclick="close_alert()" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
 </div>
-
+    
 <script>
     alert_jquery = $('#alert');
     alert_text_jquery = $('#alert_text');
     
     function initial_alert(text) {
-        alert_jquery.removeClass()
-        alert_jquery.addClass('alert row justify-content-between')
-        alert_text_jquery.text(text)
-        alert_jquery.show()
-        window.scrollTo(0, 0)
+        alert_jquery.removeClass();
+        alert_jquery.addClass('alert row');
+        alert_text_jquery.text(text);
+        alert_jquery.show();
+        window.scrollTo(0, 0);
     }
     
     function danger_alert(text) {
-        initial_alert(text)
-        alert_jquery.addClass('alert-danger')
+        initial_alert(text);
+        alert_jquery.addClass('alert-danger');
+        alert_jquery.fadeOut(3000, close_alert);
     }
     
     function success_alert(text) {
-        initial_alert(text)
-        alert_jquery.addClass('alert-success')
+        initial_alert(text);
+        alert_jquery.addClass('alert-success');
+        alert_jquery.fadeOut(3000, close_alert);
     }
     
     function warning_alert(text) {
-        initial_alert(text)
-        alert_jquery.addClass('alert-warning')
-    }
-    
-    function close_alert() {
-        alert_jquery.hide()
+        initial_alert(text);
+        alert_jquery.addClass('alert-warning');
+        alert_jquery.fadeOut(3000, close_alert);
     }
         
+    function close_alert() {
+        alert_jquery.hide();
+    }
+    
     function delete_account() {
+        {% if not user.is_authenticated %}
+            warning_alert("{% trans '請先登入' %}");
+            return;
+        {% endif %}
         var answer = prompt("{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入密碼' %}", '');
         var url = "{% url 'password_check' %}";
         var data = {
@@ -98,6 +105,10 @@
     }
     
     function change_password() {
+        {% if not user.is_authenticated %}
+            warning_alert("{% trans '請先登入' %}");
+            return;
+        {% endif %}
         var answer = prompt("{% trans '請輸入原本的密碼，以繼續進行密碼更改' %}", '');
         var url = "{% url 'password_check' %}";
         var data = {
