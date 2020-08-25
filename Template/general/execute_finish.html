@@ -2,11 +2,12 @@
 {% load i18n %}
 {% block title %}finish{% endblock title %}
 
-{% block content %}
-    <h2>{% trans '去識別化完成' %}</h2>
-    <h5 style="font-weight:bold;color:red">{% trans '說明1：左邊為原始檔案，右邊為去識別化檔案' %}</h5>
-    <h5 style="font-weight:bold;color:red">{% trans '說明2：將頁面滾動至最下方，可以選擇存檔或進行後續的可用度檢測' %}</h5>
-{% endblock content %}
+{% block hint %}
+    <cell cell_title="{% trans '說明' %}">
+        <p>{% trans '1：左邊為原始檔案，右邊為去識別化檔案' %}</p>
+        <p>{% trans '2：檔案預覽完畢後，可以選擇存檔或進行後續的可用度檢測' %}</p>
+    </cell>
+{% endblock hint %}
 
 {% block left_container %}
     <div class="form-group col-md-6">
@@ -23,16 +24,25 @@
 {% endblock right_container %}
 
 {% block button %}
-    <div class="form-group col-md-2">
-        <button onclick="location.href='{{ download_output_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '下載去識別化檔案' %}</button>
-    </div>
-    <div class="form-group col-md-2">
-        <button onclick="location.href='{{ utility_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '檔案可用度量測' %}</button>
-    </div>
-    <div class="form-group col-md-2">
-        <button onclick="location.href='{{ execute_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '再次執行去識別化' %}</button>
-    </div>
-    <div class="form-group col-md-2">
-        <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
-    </div>
+    <cell cell_title="{% trans '操作列表' %}">
+        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
+            <button onclick="location.href='{{ download_output_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '下載去識別化檔案' %}</button>
+        </div>
+        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
+            <button onclick="location.href='{{ utility_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '檔案可用度量測' %}</button>
+        </div>
+        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
+            <button onclick="location.href='{{ execute_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '再次執行去識別化' %}</button>
+        </div>
+        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
+            <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
+        </div>
+    </cell>    
 {% endblock button %}
+
+{% block script %}
+    <script>
+        page.title = "{% trans '參數設定' %}";
+        sidebar_highlight('{{ caller }}');
+    </script>
+{% endblock script %}

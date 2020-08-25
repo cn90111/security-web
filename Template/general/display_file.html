@@ -1,11 +1,10 @@
 {% load i18n %}
-<div class="modal-title">
-    <h2>{{ title }}{% trans '(前200筆)' %}</h2>
-</div>
-<div class="modal-body">
-    <div id={{ id }} aligh="center" style = "height:500px; overflow:scroll; border:2px black solid; " >
+<cell cell_title="{{ title }}{% trans '(前200筆)' %}">
+    <div class="modal-body" style="padding:0px">
+        <div id={{ id }} aligh="center" style = "height:250px; overflow:scroll; border:2px black solid; " >
+        </div>
     </div>
-</div>
+</cell>
 
 <script>
  $(function () {
