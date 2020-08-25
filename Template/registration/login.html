@@ -1,41 +1,32 @@
-<!DOCTYPE html>
+{% extends "base.vue" %}
 {% load i18n %}
-<html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<title>login</title>
-        {% load static %}
-        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    	<script src="{% static 'js/jquery-3.5.1.min.js' %}"></script>
-    	<script src="{% static 'js/bootstrap.min.js' %}"></script>
-	</head>
-	<body style="padding-top:50px;">
-        {% include 'navbar.html' %}
-        <div class="jumbotron jumbotron-fluid">
-            <div class="container">
-                <h2>{% trans '歡迎使用本系統，請先登入帳號以繼續操作' %}</h2>
-                <h5 style="font-weight:bold;color:red">{% trans '說明：若無帳號請先註冊' %}</h5>
-            </div>
-        </div>
-	   	<div class="container">
-            <form action="{% url 'login' %}" method="post">
-                {% csrf_token %}
-                <p>
-                    {{ form.username.label_tag }}<br>
-                    {{ form.username }}<br>
-                    {{ form.password1.label_tag }}<br>
-                    {{ form.password1 }}<br>
-                    <p style="color: red">{{ error_message }}</p>
-                <p>
-                <div class="form-row">
-                    <div class="form-group col-md-2">
-                        <button type="submit" class="btn btn-primary" style="width:100%">{% trans '登入' %}</button>
-                    </div>
-                    <div class="form-group col-md-2">
-                        <button type="button" class="btn btn-primary" style="width:100%" onclick="location.href='{% url 'signup' %}'">{% trans '註冊' %}</button>
-                    </div>
+{% block title %}login{% endblock title %}
+
+{% block content %}
+    <cell cell_title="{% trans '系統登入' %}">
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <p>
+                {{ form.username.label_tag }}<br>
+                {{ form.username }}<br>
+                {{ form.password1.label_tag }}<br>
+                {{ form.password1 }}<br>
+                <p style="color: red">{{ error_message }}</p>
+            <p>
+            <div class="form-row">
+                <div class="form-group col-md-2">
+                    <button type="submit" class="btn btn-primary" style="width:100%">{% trans '登入' %}</button>
                 </div>
-            </form>
-        </div>
-	</body>
-</html>
+                <div class="form-group col-md-2">
+                    <button type="button" class="btn btn-primary" style="width:100%" onclick="location.href='{% url 'signup' %}'">{% trans '註冊' %}</button>
+                </div>
+            </div>
+        </form>
+    </cell>
+{% endblock content %}
+
+{% block script %}
+    <script>
+        page.title = "{% trans '歡迎使用本系統，請先登入帳號以繼續操作' %}"
+    </script>
+{% endblock script %}

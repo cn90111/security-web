@@ -17,6 +17,7 @@ def index(request):
     custom_url = reverse('t_Closeness:custom')
     request_dict['file_upload_url'] = file_upload_url
     request_dict['custom_url'] = custom_url
+    request_dict['caller'] = 't_Closeness'
     return render(request, 't_Closeness/t_Closeness_home.html', request_dict)
 
 class TClosenessView(AbstractMethodView):

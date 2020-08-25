@@ -17,6 +17,7 @@ def index(request):
     custom_url = reverse('l_Diversity:custom')
     request_dict['file_upload_url'] = file_upload_url
     request_dict['custom_url'] = custom_url
+    request_dict['caller'] = 'l_Diversity'
     return render(request, 'l_Diversity/l_Diversity_home.html', request_dict)
     
 class LDiversityView(AbstractMethodView):
