@@ -124,10 +124,9 @@
                 if (request.finish == true) {
                     window.location = request.url;
                 } else if (request.finish == false) {
-                    reset()
-                    window.scrollTo(0, document.body.scrollHeight)
+                    reset();
                     execute_jquary.attr('disabled', 'disabled');
-                    progress_check()
+                    progress_check();
                     var mm = window.setInterval("check_time()", 1000);
                     var sitv = window.setInterval("progress_check()", 10000);
                     var success_check = window.setInterval( function () {
