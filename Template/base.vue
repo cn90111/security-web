@@ -12,7 +12,6 @@
         <link href="{% static 'plugins/bootstrap/customfile.css' %}" rel="stylesheet" />
         <link href="{% static 'plugins/bootstrap/typesetting.css' %}" rel="stylesheet" />
         <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
-        <link href="{% static 'plugins/pace/pace-theme-big-counter.css' %}" rel="stylesheet" />
         <link href="{% static 'css/style.css' %}" rel="stylesheet" />
         <link href="{% static 'css/main-style.css' %}" rel="stylesheet" />
         <!-- Page-Level CSS -->
@@ -23,7 +22,6 @@
     	<script src="{% static 'plugins/jquery-3.5.1.min.js' %}"></script>
         <script src="{% static 'plugins/bootstrap/bootstrap.min.js' %}"></script>
         <script src="{% static 'plugins/metisMenu/jquery.metisMenu.js' %}"></script>
-        <script src="{% static 'plugins/pace/pace.js' %}"></script>
         <!-- Page-Level Plugin Scripts-->
         <script src="{% static 'plugins/morris/raphael-2.1.0.min.js' %}"></script>
         <script src="{% static 'plugins/morris/morris.js' %}"></script>
