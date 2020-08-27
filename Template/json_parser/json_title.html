@@ -13,9 +13,9 @@
                 <div class="form-check col-md-6" style="padding-top:15px;">
                     <select class="form-control" id="{{ column_title }}_relationship_select_pair" onclick="relationship_set('{{ column_title }}')">
                         <option selected></option>
-                        <option id="custom_{{ column_title }}" value="custom">{% trans '自行設定資料關係' %}</option>
-                        <option id="{{ column_title }}_is_address" value="address">{% trans '資料為地址' %}</option>
-                        <option id="{{ column_title }}_is_unrelated" value="unrelated">{% trans '資料間無關聯' %}</option>
+                        <option id="custom_{{ column_title }}" value="custom" data-toggle="tooltip" title="{% trans '配對檔案裡文字的上下關係，例如：gmail 屬於 google、服務生屬於外場人員等' %}">{% trans '自行設定資料關係' %}</option>
+                        <option id="{{ column_title }}_is_address" value="address" data-toggle="tooltip" title="{% trans '限於台灣地址，將會以縣市鄉鎮等自動劃分層級' %}">{% trans '資料為地址' %}</option>
+                        <option id="{{ column_title }}_is_unrelated" value="unrelated" data-toggle="tooltip" title="{% trans '欄位內容互相無上下關係，例如「鉛筆、彩色筆、水彩」或「電腦、電視、冰箱」' %}">{% trans '資料間無關聯' %}</option>
                     </select>
                 </div>
             </div>
@@ -23,29 +23,3 @@
         {% endfor %}
     </form>
 </div>
-
-<!--
-<script>
-    $(function () {
-        template_title = $('#template_title')
-        template_title.html(template_title.html()+
-            "<h5 style='font-weight:bold;color:red'>{% trans '說明4：配對檔案裡文字的上下關係，例如：gmail 屬於 google、服務生屬於外場人員等' %}</h5>")        
-        template_title.html(template_title.html()+
-            "<h5 style='font-weight:bold;color:red'>{% trans '說明5：以下拉式選單選擇處理該欄位的方式' %}</h5>")
-        {% if advanced_settings %}
-            template_title.html(template_title.html()+
-                "<h5>{% trans '進階設定' %}</h5>")
-            template_title.html(template_title.html()+
-                "<h5 style='font-weight:bold;color:red'>{% trans '說明6：請選擇數字欄位的資料類型' %}</h5>")
-            template_title.html(template_title.html()+
-                "<h5 style='font-weight:bold;color:red'>{% trans '說明7：數值型資料，當數字為數學意義上的數字時，選擇該選項' %}</h5>")
-            template_title.html(template_title.html()+
-                "<h5 style='font-weight:bold;color:red'>{% trans '說明8：資料只有唯一值，當欄位內容的值全部相同時，選擇該選項' %}</h5>")
-            template_title.html(template_title.html()+
-                "<h5 style='font-weight:bold;color:red'>{% trans '說明9：類別型資料，當欄位的數字不該作為數字解讀時，選擇該選項，如電池型號、班級編號' %}</h5>")
-            template_title.html(template_title.html()+
-                "<h5 style='font-weight:bold;color:red'>{% trans '說明10：數值型資料，生成的分區間隔可手動輸入調整' %}</h5>")
-        {% endif %}
-    })
-</script>
--->

@@ -7,7 +7,7 @@
             <div id="{{ column_title }}_interval_display" style="display:none">
                 <label id="{{ column_title }}_interval_text" style="display:none">{% trans '間隔區間(每個區間皆包含最小值不包含最大值)：' %}</label><br>
                 <table id="{{ column_title }}_interval">
-                    <tbody id="{{ column_title }}_interval_tbody" class="form-row">
+                    <tbody id="{{ column_title }}_interval_tbody" class="form-row" style="width:100%;">
                     </tbody>
                 </table>
             </div>
@@ -15,7 +15,7 @@
     </div>
 {% endfor %}
 
-<script>
+<script type="application/javascript">
     $(function () {
         var number_title_list = {{ number_title_list|safe }};
         for (number_title of number_title_list) {
@@ -81,6 +81,7 @@
             now_element = document.getElementsByClassName(number_title+'_interval_'+i);
             next_element = document.getElementsByClassName(number_title+'_interval_'+(i+1))[0];
             for (var j=0; j<now_element.length; j++) {
+                now_element[j].defaultValue = next_element.value;
                 now_element[j].value = next_element.value;
             }
         }
