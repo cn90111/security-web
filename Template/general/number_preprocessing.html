@@ -13,9 +13,9 @@
                 <div class="form-check col-md-6" style="padding-top:15px;">
                     <select class="form-control" id="{{ column_title }}_relationship_select_pair" onclick="relationship_set('{{ column_title }}')">
                         <option selected></option>
-                        <option id="{{ column_title }}_is_number" value="number">{% trans '資料為數值型資料' %}</option>
-                        <option id="{{ column_title }}_is_single" value="single">{% trans '資料只有唯一值' %}</option>
-                        <option id="{{ column_title }}_is_category" value="category">{% trans '資料為類別型資料' %}</option>
+                        <option id="{{ column_title }}_is_number" value="number" data-toggle="tooltip" title="{% trans '欄位為數學意義上的數字，例如身高、分數，進階設定時可以自行設定區間' %}">{% trans '資料為數值型資料' %}</option>
+                        <option id="{{ column_title }}_is_single" value="single" data-toggle="tooltip" title="{% trans '欄位的所有數值都相同' %}">{% trans '資料只有唯一值' %}</option>
+                        <option id="{{ column_title }}_is_category" value="category" data-toggle="tooltip" title="{% trans '欄位的數字是文字意義上的數字，例如電池型號、班級編號' %}">{% trans '資料為類別型資料' %}</option>
                     </select>
                 </div>
             </div>

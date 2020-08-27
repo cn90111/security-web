@@ -151,6 +151,7 @@ class AdvancedSettingsView(CustomView):
         request_dict['string_element_dict'] = string_element_dict
         request_dict['file_name'] = file_name
         request_dict['custom_mode'] = 'json_parser'
+        request_dict['caller'] = caller
         request_dict['advanced_settings'] = True
         request_dict['number_title_list'] = number_title_list
         request_dict['max_value_dict'] = max_value_dict
