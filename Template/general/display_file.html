@@ -1,20 +1,20 @@
 {% load i18n %}
 <cell cell_title="{{ title }}{% trans '(前200筆)' %}">
     <div class="modal-body" style="padding:0px">
-        <div id={{ id }} aligh="center" style = "height:250px; overflow:scroll; border:2px black solid; " >
+        <div id={{ id }} aligh="center" style="height:250px; overflow:scroll; border:2px black solid;">
         </div>
     </div>
 </cell>
 
-<script>
- $(function () {
-    var display_table = $('#{{ id }}');
-    var url = '{{ display_url }}'
-    $.getJSON(url, {
-            'File' : '{{ file_name }}',
-        }, function (table) {
-            display_table.html(table)
-        }
-    )
- })
+<script type="application/javascript">
+    $(function () {
+        var display_table = $('#{{ id }}');
+        var url = '{{ display_url }}'
+        $.getJSON(url, {
+                'File' : '{{ file_name }}',
+            }, function (table) {
+                display_table.html(table);
+            }
+        )
+    })
 </script>

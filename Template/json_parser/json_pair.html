@@ -15,7 +15,8 @@
                                 {% trans '對應' %}
                             </td>
                             <td class="col-md-4">
-                                <input list="{{ column_title }}_select_pair_{{ forloop.counter0 }}" id="{{ column_title }}_pair_label_{{ forloop.counter0 }}" required="required" class="custom-select custom-select-sm" style="width:100%">
+                                <input list="{{ column_title }}_select_pair_{{ forloop.counter0 }}" id="{{ column_title }}_pair_label_{{ forloop.counter0 }}" required="required" class="custom-select-sm" style="width:100%">
+                                <span class="custom-select-myarrow">
                                 <datalist id="{{ column_title }}_select_pair_{{ forloop.counter0 }}">
                                     {% for element in element_list %}
                                         <option value="{{ element }}">{{ element }}</option>
@@ -37,7 +38,7 @@
     </div>       
 {% endfor %}
 
-<script>
+<script type="application/javascript">
     function add_field(column_title, element_list) {
         var table = document.getElementById(column_title+'_table');
         var checkbox_address = document.getElementById(column_title+'_is_address');
@@ -56,7 +57,8 @@
         td.className = 'col-md-1';
         td.style = "padding:0px;padding-top:13px;"
         td = tr.insertCell(-1);
-        td.innerHTML = '<input list="'+column_title+'_select_pair_'+count_id+'" id="'+column_title+'_pair_label_'+count_id+'" required="required" class="custom-select custom-select-sm" style="width:100%">'
+        td.innerHTML = '<input list="'+column_title+'_select_pair_'+count_id+'" id="'+column_title+'_pair_label_'+count_id+'" required="required" class="custom-select-sm" style="width:100%">'
+        td.innerHTML += '<span class="custom-select-myarrow">'
         td.className = 'col-md-4';
         if (checkbox_address.checked || checkbox_unrelated.checked) {
             var label = document.getElementById(column_title+'_pair_label_'+count_id)
