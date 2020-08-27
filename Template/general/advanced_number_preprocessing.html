@@ -3,9 +3,9 @@
 {% for column_title in number_title_list %}    
     <div id="{{ column_title }}_container" class="form-group col-md-6" style="display:none">        
         <cell cell_title="{{ column_title }}">
-            <h4 id="{{ column_title }}_introduction"></h4>
+            <p id="{{ column_title }}_introduction"></p>
             <div id="{{ column_title }}_interval_display" style="display:none">
-                <label id="{{ column_title }}_interval_text" style="display:none">{% trans '間隔區間(每個區間皆包含最小值不包含最大值)：' %}</label><br>
+                <p id="{{ column_title }}_interval_text" style="display:none">{% trans '間隔區間(每個區間皆包含最小值不包含最大值)：' %}</p><br>
                 <table id="{{ column_title }}_interval">
                     <tbody id="{{ column_title }}_interval_tbody" class="form-row" style="width:100%;">
                     </tbody>
