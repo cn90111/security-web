@@ -3,7 +3,7 @@
 {% for column_title, element_list in string_element_dict.items %}
     <div id="{{ column_title }}_container" class="form-group col-md-6" style="display:none">
         <cell cell_title="{{ column_title }}">
-            <h4 id="{{ column_title }}_introduction"></h4>
+            <p id="{{ column_title }}_introduction"></p>
             <table class="table table-striped" id="{{ column_title }}_table">
                 <tbody id="{{ column_title }}_tbody">
                     {% for element in element_list %}
