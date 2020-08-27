@@ -3,14 +3,14 @@
     <form>
         {% csrf_token %}
         {% if not string_element_dict.items and not number_title_list %}
-            <h2>{% trans '無需預先設定的參數' %}</h2>
+            <p>{% trans '無需預先設定的參數' %}</p>
         {% endif %}
         {% for column_title, element_list in string_element_dict.items %}
             <div class="form-row justify-content-center">
-                <div class="form-check col-md-6">
-                    <h2 id="{{ column_title }}_title">{{ column_title }}</h2>
+                <div class="form-check col-md-6" style="padding-top:10px">
+                    <p id="{{ column_title }}_title">{{ column_title }}</p>
                 </div>
-                <div class="form-check col-md-6" style="padding-top:15px;">
+                <div class="form-check col-md-6">
                     <select class="form-control" id="{{ column_title }}_relationship_select_pair" onclick="relationship_set('{{ column_title }}')">
                         <option selected></option>
                         <option id="custom_{{ column_title }}" value="custom" data-toggle="tooltip" title="{% trans '配對檔案裡文字的上下關係，例如：gmail 屬於 google、服務生屬於外場人員等' %}">{% trans '自行設定資料關係' %}</option>

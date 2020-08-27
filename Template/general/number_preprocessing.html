@@ -3,14 +3,14 @@
     <form>
         {% csrf_token %}
         {% if not number_title_list %}
-            <h2>{% trans '無需預先設定的參數' %}</h2>
+            <p>{% trans '無需預先設定的參數' %}</p>
         {% endif %}
         {% for column_title in number_title_list %}
             <div class="form-row justify-content-center">
-                <div class="form-check col-md-6">
-                    <h2 id="{{ column_title }}_title">{{ column_title }}</h2>
+                <div class="form-check col-md-6" style="padding-top:10px">
+                    <p id="{{ column_title }}_title">{{ column_title }}</p>
                 </div>
-                <div class="form-check col-md-6" style="padding-top:15px;">
+                <div class="form-check col-md-6">
                     <select class="form-control" id="{{ column_title }}_relationship_select_pair" onclick="relationship_set('{{ column_title }}')">
                         <option selected></option>
                         <option id="{{ column_title }}_is_number" value="number" data-toggle="tooltip" title="{% trans '欄位為數學意義上的數字，例如身高、分數，進階設定時可以自行設定區間' %}">{% trans '資料為數值型資料' %}</option>
