@@ -109,6 +109,10 @@ class CustomView(View):
         file_name = kwargs.get('csv_name')
         if not file_name:
             return redirect('home')
+        title_id_pair = kwargs.get('title_id_pair')
+        if title_id_pair:
+            title_id_pair = json.loads(title_id_pair)
+            
         caller = path.get_caller(request)
         file_path = path.get_upload_path(request, file_name)
         string_element_dict = parser.get_file_string_element(file_path)
@@ -117,13 +121,14 @@ class CustomView(View):
         request_dict = self.set_url_path(request_dict, caller, file_name)        
         request_dict['string_element_dict'] = string_element_dict
         request_dict['caller'] = caller
+        request_dict['title_id_pair'] = title_id_pair
         request_dict['file_name'] = file_name
         request_dict['custom_mode'] = 'json_parser'
         return render(request, 'general/parameter_custom.html', request_dict)
         
     def set_url_path(self, request_dict, caller, file_name):
         request_dict['advanced_settings_url'] = reverse(caller+':advanced_settings', args=[file_name])
-        request_dict['base_settings_url'] = reverse(caller+':custom')+file_name        
+        request_dict['base_settings_url'] = reverse(caller+':custom')+file_name+'/'
         request_dict['previous_page_url'] = reverse(caller+':home')
         request_dict['execute_url'] = reverse(caller+':execute_page', args=[file_name])
         request_dict['upload_display_url'] = reverse('display', args=['upload'])
@@ -140,6 +145,9 @@ class AdvancedSettingsView(CustomView):
         username = request.user.get_username()
         caller = path.get_caller(request)
         file_name = kwargs.get('csv_name')
+        title_id_pair = kwargs.get('title_id_pair')
+        if title_id_pair:
+            title_id_pair = json.loads(title_id_pair)
         
         file_path = path.get_upload_path(request, file_name)
         string_element_dict = parser.get_file_string_element(file_path)
@@ -152,6 +160,7 @@ class AdvancedSettingsView(CustomView):
         request_dict['file_name'] = file_name
         request_dict['custom_mode'] = 'json_parser'
         request_dict['caller'] = caller
+        request_dict['title_id_pair'] = title_id_pair
         request_dict['advanced_settings'] = True
         request_dict['number_title_list'] = number_title_list
         request_dict['max_value_dict'] = max_value_dict

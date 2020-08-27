@@ -12,6 +12,7 @@
     {% if advanced_settings %}
         <cell cell_title="{% trans '進階設定' %}">
             <p>{% trans '1：進階設定時，選擇「資料為數值型資料」可進行手動設定區間大小' %}</p>
+            <p>{% trans '1：若在基礎設定時，已選擇了「資料為數值型資料」，只需要再次點擊下拉式選單即可開始設定區間大小頁面' %}</p>
         </cell>
     {% endif %}
 {% endblock hint %}
@@ -94,12 +95,37 @@
             {% endif %}
         }
         
+        function get_select() {
+            var title_id_pair = {};
+            {% if custom_mode == 'json_parser' %}
+                var string_element_dict = {{ string_element_dict|safe }};
+                for (var column_title in string_element_dict) {
+                    title_id_pair[column_title] = document.getElementById(column_title+'_relationship_select_pair').selectedIndex;
+                }
+            {% endif %}
+            {% if advanced_settings or custom_mode == 'DPView' %}
+                var number_title_list = {{ number_title_list|safe }};
+                for (var column_title of number_title_list) {
+                    title_id_pair[column_title] = document.getElementById(column_title+'_relationship_select_pair').selectedIndex;
+                }
+            {% endif %}
+            return title_id_pair;
+        }
+        
         function base_settings() {
-        {{ base_settings_url }}
+            var url = "{{ base_settings_url }}";
+            console.log(url);
+            var title_id_pair = get_select();
+            console.log(title_id_pair);
+            window.location = url + JSON.stringify(title_id_pair) + '/';
         }
         
         function advanced_settings() {
-        {{ advanced_settings_url }}
+            var url = "{{ advanced_settings_url }}";
+            console.log(url);
+            var title_id_pair = get_select();
+            console.log(title_id_pair);
+            window.location = url + JSON.stringify(title_id_pair) + '/';        
         }
     
         function relationship_set(column_title) {
