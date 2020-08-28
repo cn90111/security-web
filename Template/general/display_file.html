@@ -12,6 +12,7 @@
         var url = '{{ display_url }}'
         $.getJSON(url, {
                 'File' : '{{ file_name }}',
+                'caller' : '{{ caller }}',
             }, function (table) {
                 display_table.html(table);
             }

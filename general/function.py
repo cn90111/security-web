@@ -14,35 +14,37 @@ class Path():
             caller = referer.split('/')[4] # url like http://127.0.0.1:8000/language/[caller]/
             return caller
         
-    def get_output_path(self, request, file_name):
+    def get_output_path(self, request, file_name, caller=None):
         directory_name = file_name.split(".")[-2]
-        return self.get_output_directory()+directory_name+'_output.csv'
+        return self.get_output_directory(request, file_name, caller=caller)\
+                +directory_name+'_output.csv'
         
-    def get_output_directory(self, request, file_name):
-        file_root = self.get_output_root(request)
-        directory_name = file_name.split(".")[-2]
-        return file_root+directory_name+'/'
-        
-    def get_upload_path(self, request, file_name):
-        return self.get_upload_directory(request, file_name)+file_name
-        
-    def get_upload_directory(self, request, file_name):
-        file_root = self.get_upload_root(request)
+    def get_output_directory(self, request, file_name, caller=None):
+        file_root = self.get_output_root(request, caller)
         directory_name = file_name.split(".")[-2]
         return file_root+directory_name+'/'
         
-    def get_output_root(self, request):
-        return self._get_root('output', request)
+    def get_upload_path(self, request, file_name, caller=None):
+        return self.get_upload_directory(request, file_name, caller=caller)+file_name
+        
+    def get_upload_directory(self, request, file_name, caller=None):
+        file_root = self.get_upload_root(request, caller)
+        directory_name = file_name.split(".")[-2]
+        return file_root+directory_name+'/'
+        
+    def get_output_root(self, request, caller=None):
+        return self._get_root('output', request, caller=caller)
     
-    def get_upload_root(self, request):
-        return self._get_root('upload', request)
+    def get_upload_root(self, request, caller=None):
+        return self._get_root('upload', request, caller=caller)
         
-    def _get_root(self, mode, request):
+    def _get_root(self, mode, request, caller=None):
         if mode == 'upload':
             root = settings.UPLOAD_ROOT
         elif mode == 'output':
             root = settings.OUTPUT_ROOT
-        caller = self.get_caller(request)
+        if not caller:
+            caller = self.get_caller(request)
         username = request.user.get_username()
         return root+caller+'/'+username+'/'
 

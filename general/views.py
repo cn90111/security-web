@@ -169,9 +169,6 @@ class CheckFileStatus(View):
             caller = file.caller
             request_dict = {}
             request_dict['finish'] = file.finish
-            print(username)
-            print(file.file_name)
-            print(caller)
             if file.finish:
                 request_dict['url'] = reverse(caller+':finish', args=[file.file_name])
             if not file.finish:
@@ -206,11 +203,12 @@ class DisplayCsvView(View):
         
         method = kwargs.get('method').lower()
         file_name = request.GET.get('File', None)
+        caller = request.GET.get('caller', None)
         
         if method == 'output':
-            file_path = path.get_output_path(request, file_name)
+            file_path = path.get_output_path(request, file_name, caller=caller)
         elif method == 'upload':
-            file_path = path.get_upload_path(request, file_name)
+            file_path = path.get_upload_path(request, file_name, caller=caller)
         else:
             raise AttributeError(gettext('無此method：') + method)
         df = pd.read_csv(file_path, keep_default_na=False)
@@ -322,7 +320,8 @@ class TitleCheckView(View):
         path = Path()
         
         file_name = request.GET.get('csv_name', None)
-        file_path = path.get_upload_path(request, file_name)
+        caller = request.GET.get('caller', None)
+        file_path = path.get_upload_path(request, file_name,caller=caller)
         
         try:
             df = pd.read_csv(file_path)
