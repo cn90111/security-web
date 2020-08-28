@@ -15,25 +15,33 @@ class JsonParser():
         if not item_list:
             return False
         for item in item_list:
-            if type(item) is not str and type(item) is not chr and item:
+            if not item:
+                continue                
+            try:
+                float(item)
                 return False
-        return True
+            except ValueError:
+                return True
         
     def is_number(self, item_list):
         if not item_list:
             return False
         for item in item_list:
-            if type(item) is not int and type(item) is not float and item:
+            if not item:
+                continue                
+            try:
+                float(item)
+                return True
+            except ValueError:
                 return False
-        return True
     
     def is_float(self, item_list):
         if not self.is_number(item_list):
             return False
         for item in item_list:
-            if type(item) is float or not item:
+            if type(item) is float or item.find('.') or not item:
                 return True
-        return False
+            return False
     
     def get_interval(self, number_list):
         if not self.is_number(number_list):
@@ -104,7 +112,7 @@ class JsonParser():
             return None
         
     def get_file_string_element(self, file_path):
-        dataframe = pd.read_csv(file_path)
+        dataframe = pd.read_csv(file_path, keep_default_na=False)
         column_element = {}
         for column_title in dataframe:
             element = self.get_column_element(dataframe.loc[:, column_title].values.tolist())

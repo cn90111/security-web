@@ -37,12 +37,11 @@ class FileView(View):
             try:
                 for file in files:
                     if mode == 'DPView':
-                        check_result = self.dpsyn_check_file_limit(file)
+                        check_result = self.dpsyn_check_file_limit(request, file)
                     if mode == 'json':
-                        check_result = self.json_check_file_limit(file)
+                        check_result = self.json_check_file_limit(request, file)
                     if check_result:
                         return check_result
-                    self.handle_upload_file(request, file)
             except Exception as e:
                 print(e)
                 return JsonResponse({'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
@@ -52,37 +51,41 @@ class FileView(View):
         else:
             return JsonResponse({'message':gettext('檔案格式錯誤')}, status=415)
 
-    def json_check_file_limit(self, file):
+    def json_check_file_limit(self, request, file):
         upload_form = FileModel()
         upload_form.file = file
-        df = pd.read_csv(upload_form.file)
+        df = pd.read_csv(upload_form.file, encoding='utf-8')
         if(df.shape[1] <= 4 and df.shape[0] <= 200):
-            return None
+            self.handle_upload_file(request, file, df)
         else:
             cln = str(df.shape[1])
             row = str(df.shape[0])
             return JsonResponse({'message':gettext('欄數限制最多為4、列數限制最多為200，文件欄數：'+ cln +'、列數：'+ row + ', 不符合標準')}, status=400)
     
-    def dpsyn_check_file_limit(self, file):
+    def dpsyn_check_file_limit(self, request, file):
         upload_form = FileModel()
         upload_form.file = file
-        df = pd.read_csv(upload_form.file)
+        df = pd.read_csv(upload_form.file, encoding='utf-8')
         if(df.shape[1] >= 3):
-            return None
+            self.handle_upload_file(request, file, df)
         else:
             cln = str(df.shape[1])
             return JsonResponse({"status":gettext("錯誤"),\
                 "message":gettext("欄數限制最少為3，當前文件欄數為"+ cln +"，不符合標準")},\
                 status=400)
             
-    def handle_upload_file(self, request, f):
+    def handle_upload_file(self, request, file, dataframe):
         path = Path()
         fs = FileSystemStorage()
         
-        file_path = path.get_upload_path(request, f.name)
+        file_path = path.get_upload_path(request, file.name)
+        directory_path = path.get_upload_directory(request, file.name)
+        
         if fs.exists(file_path):
             fs.delete(file_path)
-        fs.save(file_path, f)
+        if not os.path.isdir(directory_path):
+            os.makedirs(directory_path)
+        dataframe.to_csv(file_path, index=False)
         
     def more_than_file_size_limit(self, file, byte):
         if file.size > byte:
@@ -210,7 +213,7 @@ class DisplayCsvView(View):
             file_path = path.get_upload_path(request, file_name)
         else:
             raise AttributeError(gettext('無此method：') + method)
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, keep_default_na=False)
         tables = df.head(200).to_html()
         return JsonResponse(tables, safe=False)
 
