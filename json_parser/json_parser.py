@@ -39,9 +39,10 @@ class JsonParser():
         if not self.is_number(item_list):
             return False
         for item in item_list:
-            if type(item) is float or item.find('.') or not item:
+            if not item:
+                continue
+            if type(item) is float:
                 return True
-            return False
     
     def get_interval(self, number_list):
         if not self.is_number(number_list):
@@ -107,7 +108,7 @@ class JsonParser():
     
     def get_column_element(self, column):
         if self.is_string(column):
-            return list(set(column))
+            return list(filter(None, list(set(column))))
         else:
             return None
         
@@ -122,7 +123,7 @@ class JsonParser():
                 
     def parser_to_json(self, file_path, structure, **kwargs):
         json_dict = {}
-        dataframe = pd.read_csv(file_path)
+        dataframe = pd.read_csv(file_path, keep_default_na=False)
         number_title_pair_dict = None
         interval_dict = None
         if 'number_title_pair_dict' in kwargs:
@@ -157,7 +158,7 @@ class JsonParser():
     
     def parser_to_DPView_json(self, file_path, pair_dict, **kwargs):
         json_dict = {}
-        dataframe = pd.read_csv(file_path)
+        dataframe = pd.read_csv(file_path, keep_default_na=False)
         interval_dict = None
         if 'interval_dict' in kwargs:
             interval_dict = kwargs.get('interval_dict')

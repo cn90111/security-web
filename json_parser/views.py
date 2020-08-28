@@ -31,14 +31,13 @@ class ParserView(View):
             for key in structure_mode:
                 if structure_mode[key] == 'custom':
                     structure_dict[key] = self.pair_check(structure_dict[key])
-            
             if number_title_pair_dict:
                 number_title_pair_dict = json.loads(number_title_pair_dict)
-                interval_dict = json.loads(interval_dict)
+                interval_dict = json.loads(interval_dict)                
                 parser.create_json_file(file_path, file_name,
                     structure_mode, structure_dict,
                     number_title_pair_dict=number_title_pair_dict,
-                    interval_dict=interval_dict)
+                    interval_dict=interval_dict)                
             else:
                 parser.create_json_file(file_path, file_name,
                     structure_mode, structure_dict)
