@@ -18,19 +18,23 @@
 {% endblock hint %}
 
 {% block left_container %}
-    <div class="form-group col-md-6">
-        <cell cell_title="{% trans '參數設定' %}">
-            {% if custom_mode == 'DPView' %}
+    <div class="form-group col-md-6">    
+        {% if custom_mode == 'DPView' %}
+            <cell cell_title="{% trans '數字參數設定' %}">
                 {% include 'DPView/DPView_number_preprocessing.html' %}
-            {% elif custom_mode == 'json_parser' %}
+            </cell>
+        {% elif custom_mode == 'json_parser' %}
+            <cell cell_title="{% trans '文字參數設定' %}">
                 {% include 'json_parser/json_title.html' %}
-                {% if advanced_settings %}
+            </cell>
+            {% if advanced_settings %}
+                <cell cell_title="{% trans '數字參數設定' %}">
                     {% include 'general/number_preprocessing.html' %}
-                {% endif %}
-            {% else %}
-                <h2>{% trans 'custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員' %}</h2>
+                </cell>
             {% endif %}
-        </cell>
+        {% else %}
+            <h2>{% trans 'custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員' %}</h2>
+        {% endif %}
     </div>
 {% endblock left_container %}
 
@@ -77,6 +81,26 @@
     </script> 
     
     <script>
+        {% if custom_mode == 'json_parser' %}
+            $("#all_string_relationship_select_pair").on("change", function() {
+                var string_element_dict = {{ string_element_dict|safe }};        
+                for (var column_title in string_element_dict) {
+                    document.getElementById(column_title+'_relationship_select_pair').selectedIndex  = $(this)[0].selectedIndex;
+                    relationship_set(column_title);
+                }
+            });
+        {% endif %}
+        
+        {% if advanced_settings or custom_mode == 'DPView' %}
+            $("#all_number_relationship_select_pair").on("change", function() {
+                var number_title_list = {{ number_title_list|safe }};
+                for (var column_title of number_title_list) {
+                    document.getElementById(column_title+'_relationship_select_pair').selectedIndex  = $(this)[0].selectedIndex;
+                    relationship_set(column_title);
+                }
+            });
+        {% endif %}
+        
         function initize() {
             document.getElementById('preview_file').style.display = 'none';    
             {% if custom_mode == 'json_parser' %}
