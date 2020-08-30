@@ -5,6 +5,12 @@
 {% block content %}
     {% block hint %}{% endblock hint %}
     <cell cell_title="{% trans '檔案上傳區' %}">
+        <div id="loading" class="row" style="display:none">            
+            <div class="col-md-1">
+                <div class="spinner-border"></div>
+            </div>
+            <p id="loading_text" class="col-md-11">{% trans '檔案上傳中請稍後' %}</p>
+        </div>
         <form id="form_file" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="custom-file center" style="height:80px">
@@ -59,9 +65,7 @@
                     alert("{% trans 'home.html finish不符合預期，請通知開發人員，finish = ' %}"+request.finish);
                 }
             })
-        })
-        
-        loading_jquery = $('#loading');
+        })        
         
         function isValidFile(file) {
             var type = "." + file.value.split(".")[1];
@@ -74,10 +78,16 @@
         function reset() {
             $("#customFile_csv").val('');
         }
+        
+        function upload_long() {
+            $("#loading_text").text("{% trans '檔案較為龐大，需要較多上傳時間，請稍候' %}");
+        }
     
         $("#customFile_csv").on("change", function() {
             var csv_name = $(this).val().split("\\").pop();
+            var loading_jquery = $('#loading');
             loading_jquery.show();
+            setTimeout(upload_long(), 10000);
             close_alert();
             $(this).siblings(".custom-file-label").addClass("selected").html(csv_name);
             

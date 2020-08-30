@@ -12,6 +12,7 @@
         <link href="{% static 'plugins/bootstrap/customfile.css' %}" rel="stylesheet" />
         <link href="{% static 'plugins/bootstrap/typesetting.css' %}" rel="stylesheet" />
         <link href="{% static 'plugins/bootstrap/customselect.css' %}" rel="stylesheet" />
+        <link href="{% static 'plugins/bootstrap/spinner.css' %}" rel="stylesheet" />
         <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
         <link href="{% static 'css/style.css' %}" rel="stylesheet" />
         <link href="{% static 'css/main-style.css' %}" rel="stylesheet" />
