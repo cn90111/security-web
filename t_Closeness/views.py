@@ -13,7 +13,7 @@ from general.views import AbstractBreakProgramView
 @login_required
 def index(request):
     request_dict = {}
-    file_upload_url = reverse('file_upload', args=['DPView'])
+    file_upload_url = reverse('file_upload', args=['t_Closeness'])
     custom_url = reverse('t_Closeness:custom')
     request_dict['file_upload_url'] = file_upload_url
     request_dict['custom_url'] = custom_url
