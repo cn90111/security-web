@@ -4,6 +4,21 @@
         {% csrf_token %}
         {% if not string_element_dict.items and not number_title_list %}
             <p>{% trans '無需預先設定的參數' %}</p>
+        {% else %}
+            <div class="form-row justify-content-center" style="border-bottom-style:dashed; border-width:1px; padding-bottom:10px;">
+                <div class="form-check col-md-6" style="padding-top:10px">
+                    <p id="all_string_title">{% trans '將全部欄位皆設定為' %}</p>
+                </div>
+                <div class="form-check col-md-6">
+                    <select class="form-control" id="all_string_relationship_select_pair">
+                        <option selected></option>
+                        <option value="custom" data-toggle="tooltip" title="{% trans '配對檔案裡文字的上下關係，例如：gmail 屬於 google、服務生屬於外場人員等' %}">{% trans '自行設定資料關係' %}</option>
+                        <option value="address" data-toggle="tooltip" title="{% trans '限於台灣地址，將會以縣市鄉鎮等自動劃分層級' %}">{% trans '資料為地址' %}</option>
+                        <option value="unrelated" data-toggle="tooltip" title="{% trans '欄位內容互相無上下關係，例如「鉛筆、彩色筆、水彩」或「電腦、電視、冰箱」' %}">{% trans '資料間無關聯' %}</option>
+                    </select>
+                </div>
+            </div>
+            <br>
         {% endif %}
         {% for column_title, element_list in string_element_dict.items %}
             <div class="form-row justify-content-center">
@@ -13,9 +28,9 @@
                 <div class="form-check col-md-6">
                     <select class="form-control" id="{{ column_title }}_relationship_select_pair" onclick="relationship_set('{{ column_title }}')">
                         <option selected></option>
-                        <option id="custom_{{ column_title }}" value="custom" data-toggle="tooltip" title="{% trans '配對檔案裡文字的上下關係，例如：gmail 屬於 google、服務生屬於外場人員等' %}">{% trans '自行設定資料關係' %}</option>
-                        <option id="{{ column_title }}_is_address" value="address" data-toggle="tooltip" title="{% trans '限於台灣地址，將會以縣市鄉鎮等自動劃分層級' %}">{% trans '資料為地址' %}</option>
-                        <option id="{{ column_title }}_is_unrelated" value="unrelated" data-toggle="tooltip" title="{% trans '欄位內容互相無上下關係，例如「鉛筆、彩色筆、水彩」或「電腦、電視、冰箱」' %}">{% trans '資料間無關聯' %}</option>
+                        <option value="custom" data-toggle="tooltip" title="{% trans '配對檔案裡文字的上下關係，例如：gmail 屬於 google、服務生屬於外場人員等' %}">{% trans '自行設定資料關係' %}</option>
+                        <option value="address" data-toggle="tooltip" title="{% trans '限於台灣地址，將會以縣市鄉鎮等自動劃分層級' %}">{% trans '資料為地址' %}</option>
+                        <option value="unrelated" data-toggle="tooltip" title="{% trans '欄位內容互相無上下關係，例如「鉛筆、彩色筆、水彩」或「電腦、電視、冰箱」' %}">{% trans '資料間無關聯' %}</option>
                     </select>
                 </div>
             </div>
@@ -30,6 +45,9 @@
         var title_id_pair = {{ title_id_pair|safe }};
         for (var column_title in string_element_dict) {
             document.getElementById(column_title+'_relationship_select_pair').selectedIndex = title_id_pair[column_title];
+            relationship_set(column_title);
         }
-    })
+        initize()
+        document.getElementById('preview_file').style.display = 'block'; 
+    })    
 </script>

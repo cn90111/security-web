@@ -15,25 +15,34 @@ class JsonParser():
         if not item_list:
             return False
         for item in item_list:
-            if type(item) is not str and type(item) is not chr and item:
+            if not item:
+                continue                
+            try:
+                float(item)
                 return False
-        return True
+            except ValueError:
+                return True
         
     def is_number(self, item_list):
         if not item_list:
             return False
         for item in item_list:
-            if type(item) is not int and type(item) is not float and item:
+            if not item:
+                continue                
+            try:
+                float(item)
+                return True
+            except ValueError:
                 return False
-        return True
     
     def is_float(self, item_list):
         if not self.is_number(item_list):
             return False
         for item in item_list:
-            if type(item) is float or not item:
+            if not item:
+                continue
+            if type(item) is float:
                 return True
-        return False
     
     def get_interval(self, number_list):
         if not self.is_number(number_list):
@@ -99,12 +108,12 @@ class JsonParser():
     
     def get_column_element(self, column):
         if self.is_string(column):
-            return list(set(column))
+            return list(filter(None, list(set(column))))
         else:
             return None
         
     def get_file_string_element(self, file_path):
-        dataframe = pd.read_csv(file_path)
+        dataframe = pd.read_csv(file_path, keep_default_na=False)
         column_element = {}
         for column_title in dataframe:
             element = self.get_column_element(dataframe.loc[:, column_title].values.tolist())
@@ -114,7 +123,7 @@ class JsonParser():
                 
     def parser_to_json(self, file_path, structure, **kwargs):
         json_dict = {}
-        dataframe = pd.read_csv(file_path)
+        dataframe = pd.read_csv(file_path, keep_default_na=False)
         number_title_pair_dict = None
         interval_dict = None
         if 'number_title_pair_dict' in kwargs:
@@ -142,14 +151,15 @@ class JsonParser():
                     for i in range(len(value_list)-1):
                         interval.append([value_list[i], value_list[i+1]])
                     temp['interval'] = interval
-                else:
-                    temp['interval'] = self.get_interval(column)
+            else:
+                temp['type'] = 'categorical'
+                temp['structure'] = {'':''}
             json_dict[column_title] = temp
         return json_dict
     
     def parser_to_DPView_json(self, file_path, pair_dict, **kwargs):
         json_dict = {}
-        dataframe = pd.read_csv(file_path)
+        dataframe = pd.read_csv(file_path, keep_default_na=False)
         interval_dict = None
         if 'interval_dict' in kwargs:
             interval_dict = kwargs.get('interval_dict')
@@ -173,6 +183,8 @@ class JsonParser():
                     temp['bucket'] = interval
                 else:
                     temp['bucket'] = self.get_interval(column)
+            else:
+                temp['type'] = 'single'
             json_dict[column_title] = temp
         return json_dict
         

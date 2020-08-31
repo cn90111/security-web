@@ -37,12 +37,13 @@ class FileView(View):
             try:
                 for file in files:
                     if mode == 'DPView':
-                        check_result = self.dpsyn_check_file_limit(file)
-                    if mode == 'json':
-                        check_result = self.json_check_file_limit(file)
+                        check_result = self.dpsyn_check_file_limit(request, file)
+                    elif mode == 'json':
+                        check_result = self.json_check_file_limit(request, file)
+                    elif mode == 't_Closeness':
+                        check_result = self.t_Closeness_check_file_limit(request, file)
                     if check_result:
                         return check_result
-                    self.handle_upload_file(request, file)
             except Exception as e:
                 print(e)
                 return JsonResponse({'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
@@ -52,37 +53,66 @@ class FileView(View):
         else:
             return JsonResponse({'message':gettext('檔案格式錯誤')}, status=415)
 
-    def json_check_file_limit(self, file):
+    def json_check_file_limit(self, request, file):
         upload_form = FileModel()
         upload_form.file = file
-        df = pd.read_csv(upload_form.file)
+        try:
+            df = pd.read_csv(upload_form.file)
+            if df.isnull().values.any():
+                return JsonResponse({'message':gettext('此方法檔案中不能有空欄，請改為使用 DPView 進行去識別化')}, status=400)
+        except UnicodeDecodeError as e:
+            return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] <= 4 and df.shape[0] <= 200):
-            return None
+            self.handle_upload_file(request, file, df)
         else:
             cln = str(df.shape[1])
             row = str(df.shape[0])
             return JsonResponse({'message':gettext('欄數限制最多為4、列數限制最多為200，文件欄數：'+ cln +'、列數：'+ row + ', 不符合標準')}, status=400)
     
-    def dpsyn_check_file_limit(self, file):
+    def t_Closeness_check_file_limit(self, request, file):
         upload_form = FileModel()
         upload_form.file = file
-        df = pd.read_csv(upload_form.file)
+        try:
+            df = pd.read_csv(upload_form.file)
+            if df.isnull().values.any():
+                return JsonResponse({'message':gettext('此方法檔案中不能有空欄，請改為使用 DPView 進行去識別化')}, status=400)
+        except UnicodeDecodeError as e:
+            return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] >= 3):
-            return None
+            self.handle_upload_file(request, file, df)
+        else:
+            cln = str(df.shape[1])
+            return JsonResponse({"status":gettext("錯誤"),\
+                "message":gettext("欄數限制最少為3，當前文件欄數為"+ cln +"，不符合標準")},\
+                status=400)
+                
+    def dpsyn_check_file_limit(self, request, file):
+        upload_form = FileModel()
+        upload_form.file = file
+        try:
+            df = pd.read_csv(upload_form.file)
+        except UnicodeDecodeError as e:
+            return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
+        if(df.shape[1] >= 3):
+            self.handle_upload_file(request, file, df)
         else:
             cln = str(df.shape[1])
             return JsonResponse({"status":gettext("錯誤"),\
                 "message":gettext("欄數限制最少為3，當前文件欄數為"+ cln +"，不符合標準")},\
                 status=400)
             
-    def handle_upload_file(self, request, f):
+    def handle_upload_file(self, request, file, dataframe):
         path = Path()
         fs = FileSystemStorage()
         
-        file_path = path.get_upload_path(request, f.name)
+        file_path = path.get_upload_path(request, file.name)
+        directory_path = path.get_upload_directory(request, file.name)
+        
         if fs.exists(file_path):
             fs.delete(file_path)
-        fs.save(file_path, f)
+        if not os.path.isdir(directory_path):
+            os.makedirs(directory_path)
+        dataframe.to_csv(file_path, index=False)
         
     def more_than_file_size_limit(self, file, byte):
         if file.size > byte:
@@ -166,9 +196,6 @@ class CheckFileStatus(View):
             caller = file.caller
             request_dict = {}
             request_dict['finish'] = file.finish
-            print(username)
-            print(file.file_name)
-            print(caller)
             if file.finish:
                 request_dict['url'] = reverse(caller+':finish', args=[file.file_name])
             if not file.finish:
@@ -203,14 +230,15 @@ class DisplayCsvView(View):
         
         method = kwargs.get('method').lower()
         file_name = request.GET.get('File', None)
+        caller = request.GET.get('caller', None)
         
         if method == 'output':
-            file_path = path.get_output_path(request, file_name)
+            file_path = path.get_output_path(request, file_name, caller=caller)
         elif method == 'upload':
-            file_path = path.get_upload_path(request, file_name)
+            file_path = path.get_upload_path(request, file_name, caller=caller)
         else:
             raise AttributeError(gettext('無此method：') + method)
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, keep_default_na=False)
         tables = df.head(200).to_html()
         return JsonResponse(tables, safe=False)
 
@@ -224,7 +252,7 @@ class DownloadView(View):
         username = request.user.get_username()
         caller = path.get_caller(request)
         file_path = path.get_output_path(request, file_name)
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, keep_default_na=False)
         
         if caller == 't_Closeness':
             caller = 'k_Anonymity'
@@ -285,6 +313,7 @@ class CheckUtilityView(View):
         
         caller = path.get_caller(request)
         machine_learning_method = request.GET.get('machine_learning_method', None)
+        machine_learning_mode = request.GET.get('machine_learning_mode', None)
         train_file_path = request.GET.get('train_file_path', None)
         test_file_path = request.GET.get('test_file_path', None)
         file_name = request.GET.get('csv_name', None)
@@ -294,9 +323,15 @@ class CheckUtilityView(View):
         
         accuracy = 0
         try:
-            ml = MachineLearning(machine_learning_method, train_file_path, test_file_path);
+            ml = MachineLearning(machine_learning_method, machine_learning_mode, train_file_path, test_file_path);
             ml.fit()
-            accuracy = ml.score() * 100
+            if machine_learning_mode == 'classification': 
+                accuracy = ml.score() * 100
+            elif machine_learning_mode == 'regression': 
+                accuracy = ml.score()
+        except ValueError as e:
+            print(e)
+            return JsonResponse({'accuracy':accuracy, 'message':gettext('程式執行失敗，請嘗試切換模型預測目標，若仍然失敗，請聯絡服務人員為您服務')}, status=404)
         except Exception as e:
             print(e)
             return JsonResponse({'accuracy':accuracy, 'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
@@ -319,7 +354,8 @@ class TitleCheckView(View):
         path = Path()
         
         file_name = request.GET.get('csv_name', None)
-        file_path = path.get_upload_path(request, file_name)
+        caller = request.GET.get('caller', None)
+        file_path = path.get_upload_path(request, file_name,caller=caller)
         
         try:
             df = pd.read_csv(file_path)

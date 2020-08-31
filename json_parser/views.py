@@ -31,14 +31,13 @@ class ParserView(View):
             for key in structure_mode:
                 if structure_mode[key] == 'custom':
                     structure_dict[key] = self.pair_check(structure_dict[key])
-            
             if number_title_pair_dict:
                 number_title_pair_dict = json.loads(number_title_pair_dict)
-                interval_dict = json.loads(interval_dict)
+                interval_dict = json.loads(interval_dict)                
                 parser.create_json_file(file_path, file_name,
                     structure_mode, structure_dict,
                     number_title_pair_dict=number_title_pair_dict,
-                    interval_dict=interval_dict)
+                    interval_dict=interval_dict)                
             else:
                 parser.create_json_file(file_path, file_name,
                     structure_mode, structure_dict)
@@ -113,8 +112,11 @@ class CustomView(View):
         if title_id_pair:
             title_id_pair = json.loads(title_id_pair)
             
-        caller = path.get_caller(request)
-        file_path = path.get_upload_path(request, file_name)
+        caller = kwargs.get('caller')
+        if not caller:            
+            caller = path.get_caller(request)
+            
+        file_path = path.get_upload_path(request, file_name, caller=caller)
         string_element_dict = parser.get_file_string_element(file_path)
               
         request_dict = {}  
@@ -143,13 +145,16 @@ class AdvancedSettingsView(CustomView):
         
         string_element_dict = {} # column_title - element
         username = request.user.get_username()
-        caller = path.get_caller(request)
         file_name = kwargs.get('csv_name')
         title_id_pair = kwargs.get('title_id_pair')
         if title_id_pair:
             title_id_pair = json.loads(title_id_pair)
+            
+        caller = kwargs.get('caller')
+        if not caller:            
+            caller = path.get_caller(request)
         
-        file_path = path.get_upload_path(request, file_name)
+        file_path = path.get_upload_path(request, file_name, caller=caller)
         string_element_dict = parser.get_file_string_element(file_path)
         number_title_list = number_data_frame.get_number_title(file_path)
         max_value_dict, min_value_dict = number_data_frame.get_number_limit(file_path, number_title_list)
