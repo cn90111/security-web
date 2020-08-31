@@ -8,7 +8,7 @@
     {% trans '去識別化檔案' as de_identification_file %}
     {% trans '可用度檢測檔案' as utility_file %}
     <cell cell_title="{% trans '說明' %}">
-        <p>{% trans '1：請選擇用以量測的機器學習方法，選擇後請按下確定' %}</p>
+        <p>{% trans '1：請選擇用以量測的機器學習方法，以及預測目標是分類問題或是回歸問題，選擇後請按下確定' %}</p>
         <p>{% trans '2：將會以資料集最後一欄做為量測目標(Label)' %}</p>
         <p>{% trans '3：上方為以80%原始檔案訓練，20%原始檔案驗證的準確度' %}</p>
         <p>{% trans '4：中間為以80%去識別化檔案訓練，20%去識別化檔案驗證的準確度' %}</p>
@@ -16,8 +16,19 @@
     </cell>
     <cell cell_title="{% trans '可用性檢測' %}">
         <form id="parameter_form">
-            <div class="form-row">
-                {% csrf_token %}
+            {% csrf_token %}            
+            <div class="form-row">                
+                <label for="machine_learning_mode_select">{% trans '模型預測目標：' %}</label>
+                <div class="form-group col-md-11">
+                    <select class="form-control" id="machine_learning_mode_select">
+                        <option value="classification">{% trans '分類預測' %}</option>
+                        <option value="regression">{% trans '回歸預測' %}</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                </div>
+            </div>
+            <div class="form-row">                
                 <label for="machine_learning_select">{% trans '用以量測的機器學習：' %}</label>
                 <div class="form-group col-md-11">
                     <select class="form-control" id="machine_learning_select">
@@ -74,24 +85,48 @@
         var bottom_accuracy = $('#bottom_accuracy');
         var loading_text = $('#loading');
         var selecter = $('#machine_learning_select');
+        var mode = $('#machine_learning_mode_select');
+        
+        mode.on('change', function() {
+            if ($(this).val() === 'classification') {
+                left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}")
+                right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}")
+                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}")
+            }                
+            else if ($(this).val() === 'regression') {            
+                left_accuracy.text("{% trans '原始檔案決定係數(coefficient of determination)：' %}")
+                right_accuracy.text("{% trans '去識別化檔案決定係數(coefficient of determination)：' %}")
+                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案決定係數(coefficient of determination)：' %}")
+            }
+        });
         
         function finish(text_element, finish_message) {
             finish_text = finish_message+' '+finish_text;
             text_element.text(finish_text);
         }
+        
         function reset() {
             finish_text = '{{ finish }}';
             unlock_count = 0;
             
-            left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}")
-            right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}")
-            bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}")
+            if (mode.val() === 'classification') {
+                left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}")
+                right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}")
+                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}")
+            }                
+            else if (mode.val() === 'regression') {            
+                left_accuracy.text("{% trans '原始檔案決定係數(coefficient of determination)：' %}")
+                right_accuracy.text("{% trans '去識別化檔案決定係數(coefficient of determination)：' %}")
+                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案決定係數(coefficient of determination)：' %}")
+            }
         }
+        
         function utility_check(train_file_path, test_file_path, text_element, file_kind) {
             var url = '{{ check_utility_url }}'
             var data = {
                 csv_name : '{{file_name}}',
                 machine_learning_method : selecter.val(),
+                machine_learning_mode : mode.val(),
                 train_file_path : train_file_path,
                 test_file_path : test_file_path,
             };
@@ -100,11 +135,17 @@
                 type: 'GET',
                 data: data,
                 success: function (result) {
-                    text_element.text(text_element.text() + result.accuracy + '%')
+                    if (mode.val() === 'classification') {
+                        text_element.text(text_element.text() + result.accuracy + '%')
+                    }
+                    else if (mode.val() === 'regression') {
+                        text_element.text(text_element.text() + result.accuracy)
+                    }
                     finish(loading_text, file_kind)
                     unlock_count++;
                     if (unlock_count>=3) {
                         selecter.removeAttr('disabled');
+                        mode.removeAttr('disabled');
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
@@ -114,18 +155,17 @@
                     unlock_count++;
                     if (unlock_count>=3) {
                         selecter.removeAttr('disabled');
+                        mode.removeAttr('disabled');
                     }
                 }
             });
         }
+        
         function check_start() {
             reset();
-            
-            if (!selecter.val()) {
-                return
-            }
-            
+                        
             selecter.attr('disabled', 'disabled');
+            mode.attr('disabled', 'disabled');
             loading_text.show();
             
             utility_check('upload', 'upload', left_accuracy, '{{ origin_file }}')

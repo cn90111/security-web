@@ -286,6 +286,7 @@ class CheckUtilityView(View):
         
         caller = path.get_caller(request)
         machine_learning_method = request.GET.get('machine_learning_method', None)
+        machine_learning_mode = request.GET.get('machine_learning_mode', None)
         train_file_path = request.GET.get('train_file_path', None)
         test_file_path = request.GET.get('test_file_path', None)
         file_name = request.GET.get('csv_name', None)
@@ -295,9 +296,15 @@ class CheckUtilityView(View):
         
         accuracy = 0
         try:
-            ml = MachineLearning(machine_learning_method, train_file_path, test_file_path);
+            ml = MachineLearning(machine_learning_method, machine_learning_mode, train_file_path, test_file_path);
             ml.fit()
-            accuracy = ml.score() * 100
+            if machine_learning_mode == 'classification': 
+                accuracy = ml.score() * 100
+            elif machine_learning_mode == 'regression': 
+                accuracy = ml.score()
+        except ValueError as e:
+            print(e)
+            return JsonResponse({'accuracy':accuracy, 'message':gettext('程式執行失敗，請嘗試切換模型預測目標，若仍然失敗，請聯絡服務人員為您服務')}, status=404)
         except Exception as e:
             print(e)
             return JsonResponse({'accuracy':accuracy, 'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)

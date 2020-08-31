@@ -182,6 +182,8 @@ class JsonParser():
                     temp['bucket'] = interval
                 else:
                     temp['bucket'] = self.get_interval(column)
+            else:
+                temp['type'] = 'single'
             json_dict[column_title] = temp
         return json_dict
         
