@@ -78,16 +78,16 @@
         function reset() {
             $("#customFile_csv").val('');
         }
-        
-        function upload_long() {
-            $("#loading_text").text("{% trans '檔案較為龐大，需要較多上傳時間，請稍候' %}");
-        }
-    
+            
         $("#customFile_csv").on("change", function() {
             var csv_name = $(this).val().split("\\").pop();
             var loading_jquery = $('#loading');
             loading_jquery.show();
-            setTimeout(upload_long(), 10000);
+            
+            window.setTimeout(function() {
+                $("#loading_text").text("{% trans '檔案較為龐大，需要較多上傳時間，請稍候' %}");
+            }, 5000);
+            
             close_alert();
             $(this).siblings(".custom-file-label").addClass("selected").html(csv_name);
             

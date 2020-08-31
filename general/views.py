@@ -38,8 +38,10 @@ class FileView(View):
                 for file in files:
                     if mode == 'DPView':
                         check_result = self.dpsyn_check_file_limit(request, file)
-                    if mode == 'json':
+                    elif mode == 'json':
                         check_result = self.json_check_file_limit(request, file)
+                    elif mode == 't_Closeness':
+                        check_result = self.t_Closeness_check_file_limit(request, file)
                     if check_result:
                         return check_result
             except Exception as e:
@@ -54,7 +56,12 @@ class FileView(View):
     def json_check_file_limit(self, request, file):
         upload_form = FileModel()
         upload_form.file = file
-        df = pd.read_csv(upload_form.file, encoding='utf-8')
+        try:
+            df = pd.read_csv(upload_form.file)
+            if df.isnull().values.any():
+                return JsonResponse({'message':gettext('此方法檔案中不能有空欄，請改為使用 DPView 進行去識別化')}, status=400)
+        except UnicodeDecodeError as e:
+            return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] <= 4 and df.shape[0] <= 200):
             self.handle_upload_file(request, file, df)
         else:
@@ -62,10 +69,30 @@ class FileView(View):
             row = str(df.shape[0])
             return JsonResponse({'message':gettext('欄數限制最多為4、列數限制最多為200，文件欄數：'+ cln +'、列數：'+ row + ', 不符合標準')}, status=400)
     
+    def t_Closeness_check_file_limit(self, request, file):
+        upload_form = FileModel()
+        upload_form.file = file
+        try:
+            df = pd.read_csv(upload_form.file)
+            if df.isnull().values.any():
+                return JsonResponse({'message':gettext('此方法檔案中不能有空欄，請改為使用 DPView 進行去識別化')}, status=400)
+        except UnicodeDecodeError as e:
+            return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
+        if(df.shape[1] >= 3):
+            self.handle_upload_file(request, file, df)
+        else:
+            cln = str(df.shape[1])
+            return JsonResponse({"status":gettext("錯誤"),\
+                "message":gettext("欄數限制最少為3，當前文件欄數為"+ cln +"，不符合標準")},\
+                status=400)
+                
     def dpsyn_check_file_limit(self, request, file):
         upload_form = FileModel()
         upload_form.file = file
-        df = pd.read_csv(upload_form.file, encoding='utf-8')
+        try:
+            df = pd.read_csv(upload_form.file)
+        except UnicodeDecodeError as e:
+            return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] >= 3):
             self.handle_upload_file(request, file, df)
         else:
@@ -225,7 +252,7 @@ class DownloadView(View):
         username = request.user.get_username()
         caller = path.get_caller(request)
         file_path = path.get_output_path(request, file_name)
-        df = pd.read_csv(file_path)
+        df = pd.read_csv(file_path, keep_default_na=False)
         
         if caller == 't_Closeness':
             caller = 'k_Anonymity'

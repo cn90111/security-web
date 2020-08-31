@@ -17,6 +17,12 @@ from django.utils.translation import gettext
 from general.exception import BreakProgramException
 from general.models import ExecuteModel
 
+import datetime
+from datetime import date 
+today = date.today()
+import logging
+logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(message)s',datefmt='%Y-%m-%d %H:%M:%S',filename= str(today) +'_log.txt')
+
 def show_progress(request):
     username = request.user.get_username()
     file = ExecuteModel.objects.get(user_name=username)
@@ -41,6 +47,7 @@ def run(request):
     progress_count = 0
     file.num_progress = 5
     file.log = 'Building data information...'
+    logging.info('Building data information...')
     file.save()
     if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
@@ -50,7 +57,7 @@ def run(request):
     #t = 0.01
     k = int(request.GET.get('k', None))
     t = float(request.GET.get('t', 100000))
-    df_data = pd.read_csv(settings.UPLOAD_ROOT + 't_Closeness/' + username + '/' + directory_name + '/' + file_name)
+    df_data = pd.read_csv(settings.UPLOAD_ROOT + 't_Closeness/' + username + '/' + directory_name + '/' + file_name, keep_default_na=False)
     record_num = df_data.shape[0]
     attr_num = df_data.shape[1]
     column_name = list(df_data.columns)
@@ -106,14 +113,12 @@ def run(request):
                         current_category = data_dict[column_name[attr_id]]['structure'][current_category]
             data_dict[column_name[attr_id]]['category_distance'] = category_distance_dict
             data_dict[column_name[attr_id]]['category_generalize'] = category_generalize_dict
-        
     original_data = []
     for row in range(record_num):
         data_buffer = []
         for col in range(attr_num):
             data_buffer.append(df_data.iloc[row, col])
         original_data.append(data_buffer)
-    
     # In[ ]:
     def KLD(P, Q):
         if file.skip:
@@ -169,9 +174,9 @@ def run(request):
     
     
     # In[ ]:
-    
     file.num_progress = 10
     file.log = 'Building data information...'
+    logging.info('t-Closeness 10%')
     file.save()
     if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
@@ -196,7 +201,7 @@ def run(request):
                 candidates.append((target_id, 0))
         else:
             candidates = [(-1, 0) for i in range(k - 1)] # (id, distance)
-            for target_id in range(id_ + 1, record_num):                
+            for target_id in range(id_ + 1, record_num): 
                 if target_id in used_id:
                     continue
                 d = person_distance(original_data[id_], original_data[target_id])
@@ -244,6 +249,7 @@ def run(request):
     # In[ ]:
     file.num_progress = 60
     file.log = 'Building data information...'
+    logging.info('t-Closeness 60%')
     file.save()
     if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
@@ -348,7 +354,8 @@ def run(request):
                     k_anony_data[cluster_index][attr_id] = (lower_bound, upper_bound)
     
     file.num_progress = 99
-    file.log = 'Building data information...'
+    file.log = 'Save file...'
+    logging.info('Save file...')
     file.save()
     if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
@@ -381,4 +388,5 @@ def run(request):
     
     file.num_progress = 100
     file.log = 'OVER'
+    logging.info('OVER')
     file.save()
