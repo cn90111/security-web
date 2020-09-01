@@ -3,7 +3,11 @@
 {% block title %}update log{% endblock title %}
 
 {% block content %}
-    <cell cell_title="{% trans '最新更新 8/31 ver 1.4' %}">
+    <cell cell_title="{% trans '最新更新 9/1 ver 1.4.1' %}">
+        <h4 style="font-weight:bold;color:red">{% trans '調整項目：' %}</h5>
+        <h5 style="font-weight:bold;color:red">{% trans '1. 修復選擇數值型資料時，如果欄位有空值，將導致 json 生成錯誤的 bug' %}</h5>
+    </cell>
+    <cell cell_title="8/31 ver 1.4">
         <h4 style="font-weight:bold;color:green">{% trans '新增項目：' %}</h5>
         <h5 style="font-weight:bold;color:green">{% trans '1. 加入載入圓圈，提示檔案上傳或載入中' %}</h5>
         <h5 style="font-weight:bold;color:green">{% trans '2. 加入全填入用的下拉式選單，目前不需逐項填入' %}</h5>

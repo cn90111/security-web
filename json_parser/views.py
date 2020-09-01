@@ -11,7 +11,6 @@ from general.function import NumberDataframe
 from general.function import Path
 from general.exception import PairLoopException
 
-from .forms import UploadFileForm
 from json_parser.json_parser import JsonParser
 import json
 
@@ -26,7 +25,10 @@ class ParserView(View):
         structure_dict = json.loads(request.GET.get('structure_dict', None))
         number_title_pair_dict = request.GET.get('number_title_pair_dict', None)
         interval_dict = request.GET.get('interval_dict', None)
-        file_path = path.get_upload_root(request)
+        caller = path.get_caller(request)
+        
+        file_path = path.get_upload_root(request, caller=caller)
+        
         try:
             for key in structure_mode:
                 if structure_mode[key] == 'custom':
@@ -81,7 +83,9 @@ class DPViewParserView(View):
         file_name = str(request.GET.get('csv_name',None))
         pair_dict = json.loads(request.GET.get('number_title_pair_dict', None))
         interval_dict = request.GET.get('interval_dict', None)
-        file_path = path.get_upload_root(request)
+        caller = path.get_caller(request)
+        
+        file_path = path.get_upload_root(request, caller=caller)
         
         try:
             if interval_dict:
@@ -112,9 +116,7 @@ class CustomView(View):
         if title_id_pair:
             title_id_pair = json.loads(title_id_pair)
             
-        caller = kwargs.get('caller')
-        if not caller:            
-            caller = path.get_caller(request)
+        caller = path.get_caller(request)
             
         file_path = path.get_upload_path(request, file_name, caller=caller)
         string_element_dict = parser.get_file_string_element(file_path)
@@ -129,11 +131,13 @@ class CustomView(View):
         return render(request, 'general/parameter_custom.html', request_dict)
         
     def set_url_path(self, request_dict, caller, file_name):
+        request_dict['create_json'] = reverse(caller+':create_json')
+        request_dict['title_check'] = reverse(caller+':title_check')
         request_dict['advanced_settings_url'] = reverse(caller+':advanced_settings', args=[file_name])
         request_dict['base_settings_url'] = reverse(caller+':custom')+file_name+'/'
         request_dict['previous_page_url'] = reverse(caller+':home')
         request_dict['execute_url'] = reverse(caller+':execute_page', args=[file_name])
-        request_dict['upload_display_url'] = reverse('display', args=['upload'])
+        request_dict['upload_display_url'] = reverse(caller+':display', args=['upload'])
         return request_dict
 
 class AdvancedSettingsView(CustomView):
@@ -150,9 +154,7 @@ class AdvancedSettingsView(CustomView):
         if title_id_pair:
             title_id_pair = json.loads(title_id_pair)
             
-        caller = kwargs.get('caller')
-        if not caller:            
-            caller = path.get_caller(request)
+        caller = path.get_caller(request)
         
         file_path = path.get_upload_path(request, file_name, caller=caller)
         string_element_dict = parser.get_file_string_element(file_path)

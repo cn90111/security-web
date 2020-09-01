@@ -13,10 +13,8 @@ from general.views import AbstractBreakProgramView
 @login_required
 def index(request):
     request_dict = {}
-    file_upload_url = reverse('file_upload', args=['t_Closeness'])
-    custom_url = reverse('t_Closeness:custom')
-    request_dict['file_upload_url'] = file_upload_url
-    request_dict['custom_url'] = custom_url
+    request_dict['file_upload_url'] = reverse('t_Closeness:file_upload', args=['t_Closeness'])
+    request_dict['custom_url'] = reverse('t_Closeness:custom')
     request_dict['caller'] = 't_Closeness'
     return render(request, 't_Closeness/t_Closeness_home.html', request_dict)
 

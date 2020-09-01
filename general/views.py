@@ -123,7 +123,6 @@ class AbstractExecuteView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         path = Path()
-        
         caller = path.get_caller(request)
         file_name = kwargs.get('csv_name')
         form = self.get_empty_form()
@@ -149,7 +148,6 @@ class AbstractMethodView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         path = Path()
-        
         caller = path.get_caller(request)
         username = request.user.get_username()
         file_name = str(request.GET.get('csv_name',None))
@@ -230,7 +228,7 @@ class DisplayCsvView(View):
         
         method = kwargs.get('method').lower()
         file_name = request.GET.get('File', None)
-        caller = request.GET.get('caller', None)
+        caller = path.get_caller(request)
         
         if method == 'output':
             file_path = path.get_output_path(request, file_name, caller=caller)
@@ -279,11 +277,11 @@ class FinishView(View):
         return render(request, 'general/execute_finish.html', request_dict)
         
     def set_url_path(self, request_dict, caller, file_name):
-        request_dict['download_output_url'] = reverse('download_output', args=[file_name])
+        request_dict['download_output_url'] = reverse(caller+':download_output', args=[file_name])
         request_dict['utility_page_url'] = reverse(caller+':utility_page', args=[file_name])
         request_dict['execute_page_url'] = reverse(caller+':execute_page', args=[file_name])
-        request_dict['upload_display_url'] = reverse('display', args=['upload'])
-        request_dict['output_display_url'] = reverse('display', args=['output'])
+        request_dict['upload_display_url'] = reverse(caller+':display', args=['upload'])
+        request_dict['output_display_url'] = reverse(caller+':display', args=['output'])
         return request_dict
         
 class UtilityPageView(View):        
@@ -302,8 +300,8 @@ class UtilityPageView(View):
         return render(request, 'general/utility.html', request_dict)
          
     def set_url_path(self, request_dict, caller, file_name):
-        request_dict['download_output_url'] = reverse('download_output', args=[file_name])
-        request_dict['check_utility_url'] = reverse('check_utility')
+        request_dict['download_output_url'] = reverse(caller+':download_output', args=[file_name])
+        request_dict['check_utility_url'] = reverse(caller+':check_utility')
         return request_dict
         
 class CheckUtilityView(View):        
@@ -354,7 +352,7 @@ class TitleCheckView(View):
         path = Path()
         
         file_name = request.GET.get('csv_name', None)
-        caller = request.GET.get('caller', None)
+        caller = path.get_caller(request)
         file_path = path.get_upload_path(request, file_name,caller=caller)
         
         try:

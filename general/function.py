@@ -10,8 +10,8 @@ class Path():
             file = ExecuteModel.objects.get(user_name=username)
             return file.caller
         except Exception as e:
-            referer = request.META.get('HTTP_REFERER')
-            caller = referer.split('/')[4] # url like http://127.0.0.1:8000/language/[caller]/
+            if request.resolver_match.app_names:
+                caller = request.resolver_match.app_names[0] # get app_names
             return caller
         
     def get_output_path(self, request, file_name, caller=None):
