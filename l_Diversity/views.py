@@ -13,10 +13,8 @@ from general.views import AbstractBreakProgramView
 @login_required
 def index(request):
     request_dict = {}
-    file_upload_url = reverse('file_upload', args=['json'])
-    custom_url = reverse('l_Diversity:custom')
-    request_dict['file_upload_url'] = file_upload_url
-    request_dict['custom_url'] = custom_url
+    request_dict['file_upload_url'] = reverse('l_Diversity:file_upload', args=['json'])
+    request_dict['custom_url'] = reverse('l_Diversity:custom')
     request_dict['caller'] = 'l_Diversity'
     return render(request, 'l_Diversity/l_Diversity_home.html', request_dict)
     

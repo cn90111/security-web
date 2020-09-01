@@ -13,10 +13,8 @@ from general.views import AbstractBreakProgramView
 @login_required
 def index(request):
     request_dict = {}
-    file_upload_url = reverse('file_upload', args=['json'])
-    custom_url = reverse('k_Anonymity:custom')
-    request_dict['file_upload_url'] = file_upload_url
-    request_dict['custom_url'] = custom_url
+    request_dict['file_upload_url'] = reverse('k_Anonymity:file_upload', args=['json'])
+    request_dict['custom_url'] = reverse('k_Anonymity:custom')
     request_dict['caller'] = 'k_Anonymity'
     return render(request, 'k_Anonymity/k_Anonymity_home.html', request_dict)
     
