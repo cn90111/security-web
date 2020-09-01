@@ -7,12 +7,14 @@
         <p>{% trans '1：請確認左邊的參數設定，進行下一步的調整' %}</p>
         <p>{% trans '2：請確認右邊的檔案預覽，是否為您想要去識別化的檔案' %}</p>
         <p>{% trans '3：將滑鼠懸停於選項之上可看到選項說明' %}</p>
-        <p>{% trans '4：設定完成後，將頁面滾動至最下方，並按下繼續執行' %}</p>        
+        <p>{% trans '4：設定完成後，將頁面滾動至最下方，並按下繼續執行' %}</p>
+        <p>{% trans '5：使用統一填入功能時，如果選擇選項為「自行設定資料關係」，請記得點選各欄位的下拉式選單，以開啟設定資料關係介面' %}</p>
     </cell>
     {% if advanced_settings %}
         <cell cell_title="{% trans '進階設定' %}">
             <p>{% trans '1：進階設定時，選擇「資料為數值型資料」可進行手動設定區間大小' %}</p>
-            <p>{% trans '2：若在基礎設定時，已選擇了「資料為數值型資料」，只需要再次點擊下拉式選單即可開始設定區間大小頁面' %}</p>
+            <p>{% trans '2：若在基礎設定時，已選擇了「資料為數值型資料」，請記得點選各欄位的下拉式選單，以開啟手動設定區間大小介面' %}</p>
+            <p>{% trans '3：使用統一填入功能時，若選擇了「資料為數值型資料」，請記得點選各欄位的下拉式選單，以開啟手動設定區間大小介面' %}</p>
         </cell>
     {% endif %}
 {% endblock hint %}
@@ -143,15 +145,13 @@
         function base_settings() {
             var url = "{{ base_settings_url }}";
             var title_id_pair = get_select();
-            window.location = url
-                + '{{ caller }}/' + JSON.stringify(title_id_pair) + '/';
+            window.location = url + JSON.stringify(title_id_pair) + '/';
         }
         
         function advanced_settings() {
             var url = "{{ advanced_settings_url }}";
             var title_id_pair = get_select();
-            window.location = url
-                + '{{ caller }}/' + JSON.stringify(title_id_pair) + '/';
+            window.location = url + JSON.stringify(title_id_pair) + '/';
         }
     
         function relationship_set(column_title) {
@@ -205,10 +205,9 @@
         }
         
         $(function () {
-            var url = "{% url 'title_check' %}";
+            var url = "{{ title_check }}";
             var data = {
                 'csv_name' : '{{ file_name }}',
-                'caller' : '{{ caller }}',
             }
             $.ajax({
                 url: url,
@@ -243,10 +242,9 @@
                         number_title_pair_dict[number_title] = type
                     }
                     
-                    var url = "{% url 'create_DPView_json' %}";
+                    var url = "{{ create_json }}";
                     var data = {
                         'csv_name' : '{{ file_name }}',
-                        'caller' : '{{ caller }}',
                         'number_title_pair_dict' : JSON.stringify(number_title_pair_dict),
                     }
                     
@@ -343,10 +341,9 @@
                         danger_alert("{% trans '尚有對應關係還沒填寫，未填寫的欄位已由紅色標出' %}");
                     }
                     else {
-                        var url = "{% url 'create_json' %}";
+                        var url = "{{ create_json }}";
                         data = {
                             'csv_name' : '{{ file_name }}',
-                            'caller' : '{{ caller }}',
                             'structure_mode' : JSON.stringify(structure_mode),
                             'structure_dict' : JSON.stringify(structure_dict),
                         }

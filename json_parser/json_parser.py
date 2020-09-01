@@ -43,12 +43,21 @@ class JsonParser():
                 continue
             if type(item) is float:
                 return True
+            if type(item) is str and item.find('.'):
+                return True            
     
     def get_interval(self, number_list):
         if not self.is_number(number_list):
             raise TypeError(number_list + 'is not number list')
-        min_value = min(number_list)
-        max_value = max(number_list)
+        number_list = list(filter(None, number_list))
+        
+        if(self.is_float(number_list)):
+            min_value = float(min(number_list))
+            max_value = float(max(number_list))
+        else:
+            min_value = int(min(number_list))
+            max_value = int(max(number_list))
+            
         interval = []
         if(self.is_float(number_list)):
             gap = (max_value - min_value) / self.__n_parts
@@ -174,7 +183,7 @@ class JsonParser():
                 elif pair_dict[column_title] == 'single':
                     temp['type'] = 'single'
                 elif pair_dict[column_title] == 'category':
-                    temp['type'] = 'num2cat'    
+                    temp['type'] = 'num2cat'
                 if interval_dict and pair_dict[column_title] == 'number':
                     interval = []
                     value_list = interval_dict[column_title]
