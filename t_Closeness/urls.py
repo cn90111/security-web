@@ -13,10 +13,9 @@ urlpatterns = [
     path('execute_page/<str:csv_name>/', views.ExecuteView.as_view(), name = 'execute_page'),
     path('custom/', json_parser_views.CustomView.as_view(), name = 'custom'),
     path('custom/<str:csv_name>/', json_parser_views.CustomView.as_view()),
-    path('custom/<str:csv_name>/<str:title_id_pair>/', json_parser_views.CustomView.as_view()),
+    path('custom/<str:csv_name>/<str:alert_message>/', json_parser_views.CustomView.as_view()),
     path('create_json/', json_parser_views.ParserView.as_view(), name = 'create_json'),
     path('advanced_settings/<str:csv_name>/', json_parser_views.AdvancedSettingsView.as_view(), name = 'advanced_settings'),
-    path('advanced_settings/<str:csv_name>/<str:title_id_pair>/', json_parser_views.AdvancedSettingsView.as_view()),
 ]
 
 general_patterns = [
