@@ -14,17 +14,17 @@ from general.exception import PairLoopException
 from json_parser.json_parser import JsonParser
 import json
 
-class ParserView(View):
+class ParserView(View):        
     @method_decorator(login_required)
-    def get(self, request, *arg, **kwargs):
+    def post(self, request, *arg, **kwargs):
         parser = JsonParser()
         path = Path()
         
-        file_name = request.GET.get('csv_name', None)
-        structure_mode = json.loads(request.GET.get('structure_mode', None))
-        structure_dict = json.loads(request.GET.get('structure_dict', None))
-        number_title_pair_dict = request.GET.get('number_title_pair_dict', None)
-        interval_dict = request.GET.get('interval_dict', None)
+        file_name = request.POST.get('csv_name', None)
+        structure_mode = json.loads(request.POST.get('structure_mode', None))
+        structure_dict = json.loads(request.POST.get('structure_dict', None))
+        number_title_pair_dict = request.POST.get('number_title_pair_dict', None)
+        interval_dict = request.POST.get('interval_dict', None)
         caller = path.get_caller(request)
         
         file_path = path.get_upload_root(request, caller=caller)
@@ -45,13 +45,13 @@ class ParserView(View):
                     structure_mode, structure_dict)
         except PairLoopException as e:
             print(e)
-            return JsonResponse({"message":str(e)}, status=400)
+            return redirect(reverse(caller+':custom')+file_name+'/'+str(e))
         except Exception as e:
             print(e)
-            return JsonResponse({"message":gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務")}, status=404)
+            return redirect(reverse(caller+':custom')+file_name+'/'+gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"))
         else:
-            return HttpResponse(status=204)
-        return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
+            return redirect(reverse(caller+':execute_page', args=[file_name]))
+        return redirect(reverse(caller+':custom')+file_name+'/'+gettext("有尚未捕捉到的例外，請回報服務人員，謝謝"))
     
     def pair_check(self, pair_dict):
         for key in list(pair_dict.keys()):
@@ -75,14 +75,14 @@ class ParserView(View):
 
 class DPViewParserView(View):
     @method_decorator(login_required)
-    def get(self, request, *arg, **kwargs):
+    def post(self, request, *arg, **kwargs):
         parser = JsonParser()
         path = Path()
         
-        file_path = str(request.GET.get('path', None))
-        file_name = str(request.GET.get('csv_name',None))
-        pair_dict = json.loads(request.GET.get('number_title_pair_dict', None))
-        interval_dict = request.GET.get('interval_dict', None)
+        file_path = str(request.POST.get('path', None))
+        file_name = str(request.POST.get('csv_name',None))
+        pair_dict = json.loads(request.POST.get('number_title_pair_dict', None))
+        interval_dict = request.POST.get('interval_dict', None)
         caller = path.get_caller(request)
         
         file_path = path.get_upload_root(request, caller=caller)
@@ -96,10 +96,10 @@ class DPViewParserView(View):
                 parser.create_DPView_json_file(file_path, file_name, pair_dict)
         except Exception as e:
             print(e)
-            return JsonResponse({"message":gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務")}, status=404)
+            return redirect(reverse(caller+':custom')+file_name+'/'+gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"))
         else:
-            return HttpResponse(status=204)
-        return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
+            return redirect(reverse(caller+':execute_page', args=[file_name]))
+        return redirect(reverse(caller+':custom')+file_name+'/'+gettext("有尚未捕捉到的例外，請回報服務人員，謝謝"))
         
 class CustomView(View):
     @method_decorator(login_required)
@@ -112,9 +112,33 @@ class CustomView(View):
         file_name = kwargs.get('csv_name')
         if not file_name:
             return redirect('home')
-        title_id_pair = kwargs.get('title_id_pair')
-        if title_id_pair:
-            title_id_pair = json.loads(title_id_pair)
+        alert_message = kwargs.get('alert_message')
+            
+        caller = path.get_caller(request)
+            
+        file_path = path.get_upload_path(request, file_name, caller=caller)
+        string_element_dict = parser.get_file_string_element(file_path)
+              
+        request_dict = {}  
+        request_dict = self.set_url_path(request_dict, caller, file_name)
+        request_dict['alert_message'] = alert_message
+        request_dict['string_element_dict'] = string_element_dict
+        request_dict['caller'] = caller
+        request_dict['file_name'] = file_name
+        request_dict['custom_mode'] = 'json_parser'
+        return render(request, 'general/parameter_custom.html', request_dict)
+        
+    @method_decorator(login_required)
+    def post(self, request, *arg, **kwargs):
+        parser = JsonParser()
+        path = Path()
+        
+        string_element_dict = {} # column_title - element
+        
+        file_name = kwargs.get('csv_name')
+        if not file_name:
+            return redirect('home')
+        title_id_pair = request.POST.get('title_id_pair', None)
             
         caller = path.get_caller(request)
             
@@ -136,7 +160,6 @@ class CustomView(View):
         request_dict['advanced_settings_url'] = reverse(caller+':advanced_settings', args=[file_name])
         request_dict['base_settings_url'] = reverse(caller+':custom')+file_name+'/'
         request_dict['previous_page_url'] = reverse(caller+':home')
-        request_dict['execute_url'] = reverse(caller+':execute_page', args=[file_name])
         request_dict['upload_display_url'] = reverse(caller+':display', args=['upload'])
         return request_dict
 
@@ -150,9 +173,38 @@ class AdvancedSettingsView(CustomView):
         string_element_dict = {} # column_title - element
         username = request.user.get_username()
         file_name = kwargs.get('csv_name')
-        title_id_pair = kwargs.get('title_id_pair')
-        if title_id_pair:
-            title_id_pair = json.loads(title_id_pair)
+        alert_message = kwargs.get('alert_message')
+            
+        caller = path.get_caller(request)
+        
+        file_path = path.get_upload_path(request, file_name, caller=caller)
+        string_element_dict = parser.get_file_string_element(file_path)
+        number_title_list = number_data_frame.get_number_title(file_path)
+        max_value_dict, min_value_dict = number_data_frame.get_number_limit(file_path, number_title_list)
+           
+        request_dict = {}
+        request_dict = self.set_url_path(request_dict, caller, file_name)
+        request_dict['alert_message'] = alert_message
+        request_dict['string_element_dict'] = string_element_dict
+        request_dict['file_name'] = file_name
+        request_dict['custom_mode'] = 'json_parser'
+        request_dict['caller'] = caller
+        request_dict['advanced_settings'] = True
+        request_dict['number_title_list'] = number_title_list
+        request_dict['max_value_dict'] = max_value_dict
+        request_dict['min_value_dict'] = min_value_dict
+        return render(request, 'general/parameter_custom.html', request_dict)
+    
+    @method_decorator(login_required)
+    def post(self, request, *arg, **kwargs):
+        parser = JsonParser()
+        path = Path()
+        number_data_frame = NumberDataframe()
+        
+        string_element_dict = {} # column_title - element
+        username = request.user.get_username()
+        file_name = kwargs.get('csv_name')
+        title_id_pair = request.POST.get('title_id_pair', None)
             
         caller = path.get_caller(request)
         

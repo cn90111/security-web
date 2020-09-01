@@ -144,14 +144,18 @@
         
         function base_settings() {
             var url = "{{ base_settings_url }}";
-            var title_id_pair = get_select();
-            window.location = url + JSON.stringify(title_id_pair) + '/';
+            var data = {
+                'title_id_pair' : JSON.stringify(get_select()),
+            }
+            post_to_url(url, data);
         }
         
         function advanced_settings() {
             var url = "{{ advanced_settings_url }}";
-            var title_id_pair = get_select();
-            window.location = url + JSON.stringify(title_id_pair) + '/';
+            var data = {
+                'title_id_pair' : JSON.stringify(get_select()),
+            }
+            post_to_url(url, data);
         }
     
         function relationship_set(column_title) {
@@ -203,6 +207,12 @@
         function removeRed(classList) {
             classList.remove('text-danger')
         }
+        
+        {% if alert_message %}
+            $(function () {
+                danger_alert('{{alert_message}}');
+            });
+        {% endif %}
         
         $(function () {
             var url = "{{ title_check }}";
@@ -272,18 +282,7 @@
                         data['interval_dict'] = JSON.stringify(interval_dict);
                     {% endif %}
                     
-                    $.ajax({
-                        url: url,
-                        type: 'GET',
-                        data: data,
-                        success: function () {
-                            window.location = '{{ execute_url }}';
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            var jsonObj = JSON.parse(xhr.responseText);
-                            danger_alert(jsonObj.message);
-                        }
-                    });
+                    post_to_url(url, data);
                 })
             })
         </script>
@@ -338,7 +337,7 @@
                     }
                     
                     if (lose_required) {
-                        danger_alert("{% trans '尚有對應關係還沒填寫，未填寫的欄位已由紅色標出' %}");
+                        danger_alert("{% trans '尚有對應關係還沒填寫，未填寫的欄位已由紅色標出，請點擊下拉式選單，以開啟自訂介面' %}");
                     }
                     else {
                         var url = "{{ create_json }}";
@@ -382,18 +381,8 @@
                             }
                             data['interval_dict'] = JSON.stringify(interval_dict);                            
                         {% endif %}
-                        $.ajax({
-                            url: url,
-                            type: 'GET',
-                            data: data,
-                            success: function () {
-                                window.location = '{{ execute_url }}';
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                var jsonObj = JSON.parse(xhr.responseText);
-                                danger_alert(jsonObj.message);
-                            }
-                        });
+                        
+                        post_to_url(url, data);
                     }
                 })
             })
