@@ -160,6 +160,8 @@ class JsonParser():
                     for i in range(len(value_list)-1):
                         interval.append([value_list[i], value_list[i+1]])
                     temp['interval'] = interval
+                else:
+                    temp['interval'] = self.get_interval(column)
             else:
                 temp['type'] = 'categorical'
                 temp['structure'] = {'':''}

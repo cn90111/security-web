@@ -79,4 +79,32 @@
         },
     });
 </script>
+
+<script>
+    // https://blog.xuite.net/dizzy03/murmur/60259945-%5BJavascript%5D%5B%E8%BD%89%5D+%E7%94%A8JavaScript%E7%99%BC%E5%87%BAPost+Request
+    function post_to_url(path, params) {
+        // The rest of this code assumes you are not using a library.
+        // It can be made less wordy if you use one.
+        var form = document.createElement("form");
+        form.setAttribute("method", "POST");
+        form.setAttribute("action", path);
+
+        var hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", "csrfmiddlewaretoken");
+        hiddenField.setAttribute("value", "{{ csrf_token }}");
+        form.appendChild(hiddenField);
+        
+        for(var key in params) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+            form.appendChild(hiddenField);
+        }
+
+        document.body.appendChild(form);    // Not entirely sure if this is necessary
+        form.submit();
+    }
+</script>
 {% block script %}{% endblock script %}

@@ -1,7 +1,6 @@
 {% load i18n %}
 <div class="container" style="width:inherit;">
     <form>
-        {% csrf_token %}
         {% if not string_element_dict.items and not number_title_list %}
             <p>{% trans '無需預先設定的參數' %}</p>
         {% else %}
