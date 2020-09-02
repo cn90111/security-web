@@ -3,7 +3,12 @@
 {% block title %}update log{% endblock title %}
 
 {% block content %}
-    <cell cell_title="{% trans '最新更新 9/1 ver 1.4.2' %}">
+    <cell cell_title="{% trans '最新更新 9/2 ver 1.4.3' %}">
+        <h4 style="font-weight:bold;color:red">{% trans '調整項目：' %}</h5>
+        <h5 style="font-weight:bold;color:red">{% trans '1. 修復非地址的欄位，在選擇欄位關係為地址後，沒有出現警告的問題' %}</h5>
+        <h5 style="font-weight:bold;color:red">{% trans '2. 修復連續觸發 alert 時，淡出效果不會重置的問題' %}</h5>
+    </cell>
+    <cell cell_title="{9/1 ver 1.4.2">
         <h4 style="font-weight:bold;color:red">{% trans '調整項目：' %}</h5>
         <h5 style="font-weight:bold;color:red">{% trans '1. 修復 DPView 選擇進階設定後，再選擇數值型資料，會出現 URL 過長的 bug' %}</h5>
         <h5 style="font-weight:bold;color:red">{% trans '2. 修復 k_Anonymity 選擇基礎設定執行後，json 沒有生成區間的 bug' %}</h5>

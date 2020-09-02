@@ -4,6 +4,8 @@ import json
 import math
 import re
 import pandas as pd
+from django.utils.translation import gettext
+from general.exception import NotAddressException
 
 class JsonParser():
     
@@ -205,12 +207,18 @@ class JsonParser():
             if mode == 'tw_address':
                 structure_dict[key] = \
                     self.get_tw_address_structure(structure_dict[key].keys())
+                if not structure_dict[key]:
+                    raise NotAddressException(key + gettext("欄位所存資料並非地址，請重新填寫"))
             elif mode == 'us_address':
                 structure_dict[key] = \
                     self.get_us_address_structure(structure_dict[key].keys())
+                if not structure_dict[key]:
+                    raise NotAddressException(key + gettext("欄位所存資料並非地址，請重新填寫"))
             elif mode == 'unrelated':
                 structure_dict[key] = \
-                    self.get_unrelated_structure(structure_dict[key].keys(), key)
+                    self.get_unrelated_structure(structure_dict[key].keys(), key)            
+            if not structure_dict[key]:
+                raise Exception(key + gettext("欄位所生成的配對資料為空"))
         directory_name = file_name.split(".")[-2]
         file_path = file_path + directory_name + '/'
         json_path = file_path + directory_name + '_dict.json'
