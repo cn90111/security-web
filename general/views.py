@@ -57,7 +57,7 @@ class FileView(View):
         upload_form = FileModel()
         upload_form.file = file
         try:
-            df = pd.read_csv(upload_form.file)
+            df = pd.read_csv(upload_form.file, dtype=str)
             if df.isnull().values.any():
                 return JsonResponse({'message':gettext('此方法檔案中不能有空欄，請改為使用 DPView 進行去識別化')}, status=400)
         except UnicodeDecodeError as e:
@@ -73,7 +73,7 @@ class FileView(View):
         upload_form = FileModel()
         upload_form.file = file
         try:
-            df = pd.read_csv(upload_form.file)
+            df = pd.read_csv(upload_form.file, dtype=str)
             if df.isnull().values.any():
                 return JsonResponse({'message':gettext('此方法檔案中不能有空欄，請改為使用 DPView 進行去識別化')}, status=400)
         except UnicodeDecodeError as e:
@@ -90,7 +90,7 @@ class FileView(View):
         upload_form = FileModel()
         upload_form.file = file
         try:
-            df = pd.read_csv(upload_form.file)
+            df = pd.read_csv(upload_form.file, dtype=str)
         except UnicodeDecodeError as e:
             return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] >= 3):
