@@ -60,6 +60,8 @@ class ContentDetection():
 
     def is_string(self, item_list):
         item = self.get_item(item_list)
+        if not item:
+            return False
         try:
             float(item)
             return False
@@ -68,6 +70,8 @@ class ContentDetection():
         
     def is_number(self, item_list):
         item = self.get_item(item_list)
+        if not item:
+            return False
         try:
             float(item)
             return True
