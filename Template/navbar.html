@@ -53,6 +53,8 @@
     function initial_alert(text) {
         alert_jquery.removeClass();
         alert_jquery.addClass('alert row');
+        alert_jquery.finish();
+        alert_jquery.css('opacity','0.9');
         alert_text_jquery.text(text);
         alert_jquery.show();
         window.scrollTo(0, 0);

@@ -10,6 +10,7 @@ from django.views import View
 from general.function import NumberDataframe
 from general.function import Path
 from general.exception import PairLoopException
+from general.exception import NotAddressException
 
 from json_parser.json_parser import JsonParser
 import json
@@ -43,6 +44,9 @@ class ParserView(View):
             else:
                 parser.create_json_file(file_path, file_name,
                     structure_mode, structure_dict)
+        except NotAddressException as e:
+            print(e)
+            return redirect(reverse(caller+':custom')+file_name+'/'+str(e))
         except PairLoopException as e:
             print(e)
             return redirect(reverse(caller+':custom')+file_name+'/'+str(e))
@@ -67,7 +71,7 @@ class ParserView(View):
                     temp = ""
                     for element in ancestor_set:
                         temp = temp + element + ', '
-                    raise PairLoopException(gettext("配對關係出現循環，將導致程式無限執行，請重新配對：") + temp)
+                    raise PairLoopException(gettext("配對關係出現循環，將導致程式無限執行，請重新配對下列欄位：") + temp)
                 previous_value = value
                 ancestor_set.add(value)
             pair_dict[value] = value
