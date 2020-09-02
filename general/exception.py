@@ -3,3 +3,6 @@ class BreakProgramException(Exception):
     
 class PairLoopException(Exception):
     pass
+    
+class NotAddressException(Exception):
+    pass

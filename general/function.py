@@ -48,29 +48,85 @@ class Path():
         username = request.user.get_username()
         return root+caller+'/'+username+'/'
 
+class ContentDetection():
+    def get_item(self, item_list):
+        if not item_list:
+            return False
+        for item in item_list:
+            if not item:
+                continue
+            return item
+        return False
+
+    def is_string(self, item_list):
+        item = self.get_item(item_list)
+        try:
+            float(item)
+            return False
+        except ValueError:
+            return True
+        
+    def is_number(self, item_list):
+        item = self.get_item(item_list)
+        try:
+            float(item)
+            return True
+        except ValueError:
+            return False
+    
+    def is_float(self, item_list):
+        if not self.is_number(item_list):
+            return False
+        item = self.get_item(item_list)
+        if type(item) is float:
+            return True
+        if type(item) is str and item.find('.') != -1:
+            return True
+        return False
+
 class NumberDataframe():
-    def get_number_title(self, file_path):
-        dataframe = pd.read_csv(file_path, keep_default_na=False)
+    def __init__(self, file_path):
+        self.dataframe = pd.read_csv(file_path, keep_default_na=False)
+        self.detection = ContentDetection()
+    
+    def get_number_title(self):
         number_title_list = []
-        for column_title in dataframe:
-            data = None
-            i = 0
-            while not data and i < dataframe.shape[0]:
-                data = dataframe.loc[i, column_title]
-                i = i + 1
-            try:
-                float(data)
+        for column_title in self.dataframe:
+            if self.detection.is_number(self.dataframe.loc[:, column_title].values.tolist()):
                 number_title_list.append(column_title)
-            except ValueError:
-                pass
         return number_title_list
         
-    def get_number_limit(self, file_path, number_title_list):
+    def get_number_limit(self, number_title_list, number_type_pair=None):
         max_value_dict = {}
         min_value_dict = {}
-        dataframe = pd.read_csv(file_path, keep_default_na=False)
         for number_title in number_title_list:
-            data = dataframe.loc[:, number_title].values.tolist()
-            max_value_dict[number_title] = max(data)
-            min_value_dict[number_title] = min(data)
+            data = self.dataframe.loc[:, number_title].values.tolist()
+            data = list(filter(None, data))
+            if number_type_pair:
+                if(number_type_pair[number_title] == 'float'):
+                    max_value_dict[number_title] = float(max(data))
+                    min_value_dict[number_title] = float(min(data))
+                elif(number_type_pair[number_title] == 'int'):
+                    max_value_dict[number_title] = int(max(data))
+                    min_value_dict[number_title] = int(min(data))
+                else:
+                    raise Exception('number_type_pair error')
+            else:
+                if self.detection.is_float(self.dataframe.loc[:, number_title].values.tolist()):
+                    max_value_dict[number_title] = float(max(data))
+                    min_value_dict[number_title] = float(min(data))
+                else:
+                    max_value_dict[number_title] = int(max(data))
+                    min_value_dict[number_title] = int(min(data))
         return max_value_dict, min_value_dict
+        
+    def get_number_type_pair(self, number_title_list):
+        number_type_pair = {}
+        for number_title in number_title_list:
+            data = self.dataframe.loc[:, number_title].values.tolist()
+            data = list(filter(None, data))
+            if self.detection.is_float(self.dataframe.loc[:, number_title].values.tolist()):
+                number_type_pair[number_title] = 'float'
+            else:
+                number_type_pair[number_title] = 'int'
+        return number_type_pair

@@ -38,36 +38,15 @@ class TestParser(unittest.TestCase):
         else:
             print("Test file is deleted successfully")
     
-    def test_is_string(self):
-        self.assertTrue(self.json_parser.is_string(self.categorical))
-        self.assertFalse(self.json_parser.is_string(self.number_int))
-        self.assertFalse(self.json_parser.is_string(self.number_float))
-        self.assertFalse(self.json_parser.is_string(self.mixing))
-        self.assertFalse(self.json_parser.is_string(self.empty))
-
-    def test_is_number(self):
-        self.assertFalse(self.json_parser.is_number(self.categorical))
-        self.assertTrue(self.json_parser.is_number(self.number_int))
-        self.assertTrue(self.json_parser.is_number(self.number_float))
-        self.assertFalse(self.json_parser.is_number(self.mixing))
-        self.assertFalse(self.json_parser.is_number(self.empty))
-        
-    def test_is_float(self):
-        self.assertFalse(self.json_parser.is_float(self.categorical))
-        self.assertFalse(self.json_parser.is_float(self.number_int))
-        self.assertTrue(self.json_parser.is_float(self.number_float))
-        self.assertFalse(self.json_parser.is_float(self.mixing))
-        self.assertFalse(self.json_parser.is_float(self.empty))
-    
     def test_calculate_interval(self):
         number_int_interval = self.json_parser.get_interval(self.number_int)
         number_float_interval = self.json_parser.get_interval(self.number_float)
         
-        test_int_interval = [[1,35],[35,69],\
-                            [69,103],[103,137],\
-                            [137,171],[171,205],\
-                            [205,239],[239,273],\
-                            [273,307],[307,341]]
+        test_int_interval = [[1,34],[34,67],\
+                            [67,101],[101,134],\
+                            [134,167],[167,200],\
+                            [200,233],[233,267],\
+                            [267,300],[300,333]]
         
         test_float_interval = [[1.1,34.3233],[34.3233,67.5466],\
                                 [67.5466,100.7699],[100.7699,133.9932],\
@@ -204,11 +183,11 @@ class TestParser(unittest.TestCase):
                             'min':1, 
                             'max':333, 
                             'num_type':'int',
-                            'interval':[[1,35],[35,69],\
-                            [69,103],[103,137],\
-                            [137,171],[171,205],\
-                            [205,239],[239,273],\
-                            [273,307],[307,341]]
+                            'interval':[[1,34],[34,67],\
+                            [67,101],[101,134],\
+                            [134,167],[167,200],\
+                            [200,233],[233,267],\
+                            [267,300],[300,333]]
                         },
                         'String2':{
                             'type':'categorical',

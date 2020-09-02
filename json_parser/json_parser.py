@@ -4,54 +4,23 @@ import json
 import math
 import re
 import pandas as pd
+from django.utils.translation import gettext
+from general.exception import NotAddressException
+from general.function import ContentDetection
 
 class JsonParser():
-    
+
     __n_parts = 10
     __float_accuracy = 4
     __tw_address_accuracy_pattern = '縣市鄉鎮市區街路村里巷弄號樓室'
-
-    def is_string(self, item_list):
-        if not item_list:
-            return False
-        for item in item_list:
-            if not item:
-                continue                
-            try:
-                float(item)
-                return False
-            except ValueError:
-                return True
-        
-    def is_number(self, item_list):
-        if not item_list:
-            return False
-        for item in item_list:
-            if not item:
-                continue                
-            try:
-                float(item)
-                return True
-            except ValueError:
-                return False
-    
-    def is_float(self, item_list):
-        if not self.is_number(item_list):
-            return False
-        for item in item_list:
-            if not item:
-                continue
-            if type(item) is float:
-                return True
-            if type(item) is str and item.find('.'):
-                return True            
     
     def get_interval(self, number_list):
-        if not self.is_number(number_list):
+        detection = ContentDetection()
+        if not detection.is_number(number_list):
             raise TypeError(number_list + 'is not number list')
         number_list = list(filter(None, number_list))
-        
-        if(self.is_float(number_list)):
+        number_list_is_float = detection.is_float(number_list)
+        if number_list_is_float:
             min_value = float(min(number_list))
             max_value = float(max(number_list))
         else:
@@ -59,14 +28,17 @@ class JsonParser():
             max_value = int(max(number_list))
             
         interval = []
-        if(self.is_float(number_list)):
-            gap = (max_value - min_value) / self.__n_parts
+        gap = (max_value - min_value) / self.__n_parts
+        if number_list_is_float:
+            for i in range(self.__n_parts):
+                upper_limit = round(min_value + gap*(i+1), self.__float_accuracy)
+                lower_limit = round(min_value + gap*i, self.__float_accuracy)
+                interval.append([lower_limit, upper_limit])
         else:
-            gap = math.ceil((max_value - min_value) / self.__n_parts)
-        for i in range(self.__n_parts):
-            upper_limit = round(min_value + gap*(i+1), self.__float_accuracy)
-            lower_limit = round(min_value + gap*i, self.__float_accuracy)
-            interval.append([lower_limit, upper_limit])
+            for i in range(self.__n_parts):
+                upper_limit = round(min_value + gap*(i+1))
+                lower_limit = round(min_value + gap*i)
+                interval.append([lower_limit, upper_limit])
         return interval
         
     def get_unrelated_structure(self, string_list, ancestor):
@@ -116,7 +88,8 @@ class JsonParser():
         return genealogy
     
     def get_column_element(self, column):
-        if self.is_string(column):
+        detection = ContentDetection()
+        if detection.is_string(column):
             return list(filter(None, list(set(column))))
         else:
             return None
@@ -132,7 +105,9 @@ class JsonParser():
                 
     def parser_to_json(self, file_path, structure, **kwargs):
         json_dict = {}
+        detection = ContentDetection()
         dataframe = pd.read_csv(file_path, keep_default_na=False)
+        print(dataframe)
         number_title_pair_dict = None
         interval_dict = None
         if 'number_title_pair_dict' in kwargs:
@@ -141,15 +116,15 @@ class JsonParser():
         for column_title in dataframe:
             temp = {}
             column = dataframe.loc[:, column_title].values.tolist()
-            if self.is_string(column):
+            if detection.is_string(column):
                 temp['type'] = 'categorical'
                 temp['structure'] = structure[column_title]
-            elif self.is_number(column):
+            elif detection.is_number(column):
                 temp['type'] = 'numerical'
                 temp['min'] = min(column)
                 temp['max'] = max(column)
                 
-                if self.is_float(column):
+                if detection.is_float(column):
                     temp['num_type'] = 'float'
                 else:
                     temp['num_type'] = 'int'
@@ -170,6 +145,7 @@ class JsonParser():
     
     def parser_to_DPView_json(self, file_path, pair_dict, **kwargs):
         json_dict = {}
+        detection = ContentDetection()
         dataframe = pd.read_csv(file_path, keep_default_na=False)
         interval_dict = None
         if 'interval_dict' in kwargs:
@@ -177,9 +153,9 @@ class JsonParser():
         for column_title in dataframe:
             temp = {}
             column = dataframe.loc[:, column_title].values.tolist()
-            if self.is_string(column):
+            if detection.is_string(column):
                 temp['type'] = 'cat'
-            elif self.is_number(column):
+            elif detection.is_number(column):
                 if pair_dict[column_title] == 'number':
                     temp['type'] = 'num'
                 elif pair_dict[column_title] == 'single':
@@ -205,12 +181,18 @@ class JsonParser():
             if mode == 'tw_address':
                 structure_dict[key] = \
                     self.get_tw_address_structure(structure_dict[key].keys())
+                if not structure_dict[key]:
+                    raise NotAddressException(key + gettext("欄位所存資料並非地址，請重新填寫"))
             elif mode == 'us_address':
                 structure_dict[key] = \
                     self.get_us_address_structure(structure_dict[key].keys())
+                if not structure_dict[key]:
+                    raise NotAddressException(key + gettext("欄位所存資料並非地址，請重新填寫"))
             elif mode == 'unrelated':
                 structure_dict[key] = \
-                    self.get_unrelated_structure(structure_dict[key].keys(), key)
+                    self.get_unrelated_structure(structure_dict[key].keys(), key)            
+            if not structure_dict[key]:
+                raise Exception(key + gettext("欄位所生成的配對資料為空"))
         directory_name = file_name.split(".")[-2]
         file_path = file_path + directory_name + '/'
         json_path = file_path + directory_name + '_dict.json'
