@@ -49,55 +49,60 @@ class Path():
         return root+caller+'/'+username+'/'
 
 class ContentDetection():
-    def get_item(self, item_list):
+    def is_string(self, item_list):
         if not item_list:
             return False
         for item in item_list:
             if not item:
                 continue
-            return item
+            try:
+                float(item)
+            except ValueError:
+                return True
         return False
-
-    def is_string(self, item_list):
-        item = self.get_item(item_list)
-        if not item:
-            return False
-        try:
-            float(item)
-            return False
-        except ValueError:
-            return True
         
     def is_number(self, item_list):
-        item = self.get_item(item_list)
-        if not item:
+        if not item_list:
             return False
-        try:
-            float(item)
-            return True
-        except ValueError:
+        is_empty = True
+        for item in item_list:
+            if not item:
+                continue
+            try:
+                float(item)
+                is_empty = False
+            except ValueError:
+                return False
+        if is_empty:
             return False
+        return True
     
     def is_float(self, item_list):
         if not self.is_number(item_list):
             return False
-        item = self.get_item(item_list)
-        if type(item) is float:
-            return True
-        if type(item) is str and item.find('.') != -1:
-            return True
+        for item in item_list:
+            if not item:
+                continue
+            if type(item) is float:
+                return True
+            if type(item) is str and item.find('.') != -1:
+                return True
         return False
 
-class NumberDataframe():
+class DataframeDetection():
     def __init__(self, file_path):
         self.dataframe = pd.read_csv(file_path, keep_default_na=False)
         self.detection = ContentDetection()
     
-    def get_number_title(self):
+    def get_number_title(self, type_pair=None):
         number_title_list = []
         for column_title in self.dataframe:
-            if self.detection.is_number(self.dataframe.loc[:, column_title].values.tolist()):
-                number_title_list.append(column_title)
+            if type_pair:
+                if type_pair[column_title] == 'float' or type_pair[column_title] == 'int':
+                    number_title_list.append(column_title)
+            else:
+                if self.detection.is_number(self.dataframe.loc[:, column_title].values.tolist()):
+                    number_title_list.append(column_title)
         return number_title_list
         
     def get_number_limit(self, number_title_list, number_type_pair=None):
@@ -124,13 +129,41 @@ class NumberDataframe():
                     min_value_dict[number_title] = int(min(data))
         return max_value_dict, min_value_dict
         
-    def get_number_type_pair(self, number_title_list):
+    def get_number_type_pair(self, number_title_list, type_pair=None):
         number_type_pair = {}
         for number_title in number_title_list:
-            data = self.dataframe.loc[:, number_title].values.tolist()
-            data = list(filter(None, data))
-            if self.detection.is_float(self.dataframe.loc[:, number_title].values.tolist()):
-                number_type_pair[number_title] = 'float'
+            if type_pair:
+                number_type_pair[number_title] = type_pair[number_title]
             else:
-                number_type_pair[number_title] = 'int'
+                data = self.dataframe.loc[:, number_title].values.tolist()
+                data = list(filter(None, data))
+                if self.detection.is_float(self.dataframe.loc[:, number_title].values.tolist()):
+                    number_type_pair[number_title] = 'float'
+                else:
+                    number_type_pair[number_title] = 'int'
         return number_type_pair
+        
+    def get_type_pair(self):
+        type_pair = {}
+        for column_title in self.dataframe:
+            column = self.dataframe.loc[:, column_title].values.tolist()
+            
+            is_empty = True
+            for item in column:
+                if not item:
+                    continue
+                is_empty = False
+                break
+                
+            if is_empty:
+                type_pair[column_title] = 'empty'
+                continue
+                
+            if self.detection.is_string(column):
+                type_pair[column_title] = 'str'
+            else:
+                if self.detection.is_float(column):
+                    type_pair[column_title] = 'float'
+                else:
+                    type_pair[column_title] = 'int'
+        return type_pair

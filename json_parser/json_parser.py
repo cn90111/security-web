@@ -7,6 +7,7 @@ import pandas as pd
 from django.utils.translation import gettext
 from general.exception import NotAddressException
 from general.function import ContentDetection
+from general.function import DataframeDetection
 
 class JsonParser():
 
@@ -14,12 +15,20 @@ class JsonParser():
     __float_accuracy = 4
     __tw_address_accuracy_pattern = '縣市鄉鎮市區街路村里巷弄號樓室'
     
-    def get_interval(self, number_list):
+    def get_interval(self, number_list, column_type=None):
         detection = ContentDetection()
-        if not detection.is_number(number_list):
+        
+        if column_type == 'str' or not detection.is_number(number_list):
             raise TypeError(number_list + 'is not number list')
+            
         number_list = list(filter(None, number_list))
-        number_list_is_float = detection.is_float(number_list)
+        if column_type == 'float':
+            number_list_is_float = True
+        elif column_type == 'int':
+            number_list_is_float = False
+        else:
+            number_list_is_float = detection.is_float(number_list)
+            
         if number_list_is_float:
             min_value = float(min(number_list))
             max_value = float(max(number_list))
@@ -87,95 +96,102 @@ class JsonParser():
                 key = ', ' + key
         return genealogy
     
-    def get_column_element(self, column):
+    def get_column_element(self, column, column_type=None):
         detection = ContentDetection()
-        if detection.is_string(column):
+        if column_type == 'str' or detection.is_string(column):
             return list(filter(None, list(set(column))))
         else:
             return None
         
-    def get_file_string_element(self, file_path):
+    def get_file_string_element(self, file_path, type_pair=None):
         dataframe = pd.read_csv(file_path, keep_default_na=False)
         column_element = {}
         for column_title in dataframe:
-            element = self.get_column_element(dataframe.loc[:, column_title].values.tolist())
+            column = dataframe.loc[:, column_title].values.tolist()
+            if type_pair:
+                element = self.get_column_element(column, column_type=type_pair[column_title])
+            else:
+                element = self.get_column_element(column)
             if element:
                 column_element[column_title] = element
         return column_element
                 
-    def parser_to_json(self, file_path, structure, **kwargs):
+    def parser_to_json(self, file_path, structure, type_pair=None, interval_dict=None):
         json_dict = {}
         detection = ContentDetection()
         dataframe = pd.read_csv(file_path, keep_default_na=False)
-        print(dataframe)
-        number_title_pair_dict = None
-        interval_dict = None
-        if 'number_title_pair_dict' in kwargs:
-            number_title_pair_dict = kwargs.get('number_title_pair_dict')
-            interval_dict = kwargs.get('interval_dict')
+        if not type_pair:
+            data_frame = DataframeDetection(file_path)
+            type_pair = data_frame.get_type_pair()
         for column_title in dataframe:
             temp = {}
             column = dataframe.loc[:, column_title].values.tolist()
-            if detection.is_string(column):
+            if type_pair == 'str' or detection.is_string(column):
                 temp['type'] = 'categorical'
                 temp['structure'] = structure[column_title]
-            elif detection.is_number(column):
+            elif (type_pair == 'float' or type_pair == 'int') or detection.is_number(column):
                 temp['type'] = 'numerical'
                 temp['min'] = min(column)
                 temp['max'] = max(column)
                 
-                if detection.is_float(column):
+                if type_pair == 'float' or detection.is_float(column):
                     temp['num_type'] = 'float'
                 else:
                     temp['num_type'] = 'int'
-                    
-                if number_title_pair_dict and number_title_pair_dict[column_title] == 'number':
+                
+                if interval_dict and column_title in interval_dict:
                     interval = []
                     value_list = interval_dict[column_title]
                     for i in range(len(value_list)-1):
                         interval.append([value_list[i], value_list[i+1]])
                     temp['interval'] = interval
                 else:
-                    temp['interval'] = self.get_interval(column)
+                    if type_pair:
+                        temp['interval'] = self.get_interval(column, column_type=type_pair[column_title])
+                    else:
+                        temp['interval'] = self.get_interval(column)
             else:
                 temp['type'] = 'categorical'
                 temp['structure'] = {'':''}
             json_dict[column_title] = temp
         return json_dict
     
-    def parser_to_DPView_json(self, file_path, pair_dict, **kwargs):
+    def parser_to_DPView_json(self, file_path, pair_dict, type_pair=None, interval_dict=None):
         json_dict = {}
         detection = ContentDetection()
         dataframe = pd.read_csv(file_path, keep_default_na=False)
-        interval_dict = None
-        if 'interval_dict' in kwargs:
-            interval_dict = kwargs.get('interval_dict')
+        if not type_pair:
+            data_frame = DataframeDetection(file_path)
+            type_pair = data_frame.get_type_pair()
         for column_title in dataframe:
             temp = {}
             column = dataframe.loc[:, column_title].values.tolist()
-            if detection.is_string(column):
+            if type_pair == 'str' or detection.is_string(column):
                 temp['type'] = 'cat'
-            elif detection.is_number(column):
+            elif (type_pair == 'float' or type_pair == 'int') or detection.is_number(column):
                 if pair_dict[column_title] == 'number':
                     temp['type'] = 'num'
                 elif pair_dict[column_title] == 'single':
                     temp['type'] = 'single'
                 elif pair_dict[column_title] == 'category':
                     temp['type'] = 'num2cat'
-                if interval_dict and pair_dict[column_title] == 'number':
+                if  interval_dict and column_title in interval_dict:
                     interval = []
                     value_list = interval_dict[column_title]
                     for i in range(len(value_list)-1):
                         interval.append([value_list[i], value_list[i+1]])
                     temp['bucket'] = interval
                 else:
-                    temp['bucket'] = self.get_interval(column)
+                    if type_pair:
+                        temp['bucket'] = self.get_interval(column, column_type=type_pair[column_title])
+                    else:
+                        temp['bucket'] = self.get_interval(column)
             else:
                 temp['type'] = 'single'
             json_dict[column_title] = temp
         return json_dict
         
-    def create_json_file(self, file_path, file_name, structure_mode, structure_dict, **kwargs):
+    def create_json_file(self, file_path, file_name, structure_mode, structure_dict, type_pair=None, interval_dict=None):
         for key in structure_mode:
             mode = structure_mode[key]
             if mode == 'tw_address':
@@ -192,31 +208,24 @@ class JsonParser():
                 structure_dict[key] = \
                     self.get_unrelated_structure(structure_dict[key].keys(), key)            
             if not structure_dict[key]:
-                raise Exception(key + gettext("欄位所生成的配對資料為空"))
+                raise Exception(key + gettext("欄位所生成的配對資料為空，請聯絡開發人員排除問題"))
         directory_name = file_name.split(".")[-2]
         file_path = file_path + directory_name + '/'
         json_path = file_path + directory_name + '_dict.json'
-        if 'number_title_pair_dict' in kwargs:
-            json_object = json.dumps(self.parser_to_json\
+        json_object = json.dumps(self.parser_to_json\
                 (file_path+file_name, structure_dict,
-                number_title_pair_dict=kwargs.get('number_title_pair_dict'),
-                interval_dict=kwargs.get('interval_dict')))
-        else:
-            json_object = json.dumps(self.parser_to_json\
-                                (file_path+file_name, structure_dict))
+                type_pair=type_pair,
+                interval_dict=interval_dict))
         with open(json_path, 'w') as file:
             file.write(json_object)
             
-    def create_DPView_json_file(self, file_path, file_name, pair_dict, **kwargs):
+    def create_DPView_json_file(self, file_path, file_name, pair_dict, type_pair=None, interval_dict=None):
         directory_name = file_name.split(".")[-2]
         file_path = file_path + directory_name + '/'
         json_path = file_path + directory_name + '_dict.json'
-        if 'interval_dict' in kwargs:
-            json_object = json.dumps(self.parser_to_DPView_json\
+        json_object = json.dumps(self.parser_to_DPView_json\
                 (file_path+file_name, pair_dict,
-                interval_dict=kwargs.get('interval_dict')))
-        else:
-            json_object = json.dumps(self.parser_to_DPView_json\
-                (file_path+file_name, pair_dict))
+                type_pair=type_pair,
+                interval_dict=interval_dict))
         with open(json_path, 'w') as file:
             file.write(json_object)
