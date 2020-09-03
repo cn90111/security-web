@@ -24,13 +24,20 @@ import logging
 logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(message)s',datefmt='%Y-%m-%d %H:%M:%S',filename= str(today) +'_log.txt')
 
 def show_progress(request):
-    username = request.user.get_username()
-    file = ExecuteModel.objects.get(user_name=username)
-    data = {
-        'log':file.log,
-        'num_progress':file.num_progress,
-    }
-    return JsonResponse(data, safe=False)
+    try:
+        username = request.user.get_username()
+        file = ExecuteModel.objects.get(user_name=username)
+        data = {
+            'log':file.log,
+            'num_progress':file.num_progress,
+        }
+        return JsonResponse(data, safe=False)
+    except:
+        data = {
+            'log':gettext('程式已被取消執行，請重新嘗試執行'),
+            'num_progress':0,
+        }
+        return JsonResponse(data, safe=False)
     
 def break_program(file):
     file.skip = True
