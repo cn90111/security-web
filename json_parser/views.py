@@ -7,7 +7,7 @@ from django.utils.translation import gettext
 from django.urls import reverse
 from django.views import View
 
-from general.function import NumberDataframe
+from general.function import DataframeDetection
 from general.function import Path
 from general.exception import PairLoopException
 from general.exception import NotAddressException
@@ -24,26 +24,24 @@ class ParserView(View):
         file_name = request.POST.get('csv_name', None)
         structure_mode = json.loads(request.POST.get('structure_mode', None))
         structure_dict = json.loads(request.POST.get('structure_dict', None))
-        number_title_pair_dict = request.POST.get('number_title_pair_dict', None)
         interval_dict = request.POST.get('interval_dict', None)
-        caller = path.get_caller(request)
+        type_pair = request.POST.get('type_pair', None)
         
+        if type_pair:
+            type_pair = json.loads(type_pair)
+        caller = path.get_caller(request)
         file_path = path.get_upload_root(request, caller=caller)
         
         try:
             for key in structure_mode:
                 if structure_mode[key] == 'custom':
                     structure_dict[key] = self.pair_check(structure_dict[key])
-            if number_title_pair_dict:
-                number_title_pair_dict = json.loads(number_title_pair_dict)
-                interval_dict = json.loads(interval_dict)                
-                parser.create_json_file(file_path, file_name,
-                    structure_mode, structure_dict,
-                    number_title_pair_dict=number_title_pair_dict,
-                    interval_dict=interval_dict)                
-            else:
-                parser.create_json_file(file_path, file_name,
-                    structure_mode, structure_dict)
+            if interval_dict:
+                interval_dict = json.loads(interval_dict)
+            parser.create_json_file(file_path, file_name,
+                structure_mode, structure_dict,
+                type_pair=type_pair,
+                interval_dict=interval_dict)
         except NotAddressException as e:
             print(e)
             return redirect(reverse(caller+':custom')+file_name+'/'+str(e))
@@ -87,17 +85,18 @@ class DPViewParserView(View):
         file_name = str(request.POST.get('csv_name',None))
         pair_dict = json.loads(request.POST.get('number_title_pair_dict', None))
         interval_dict = request.POST.get('interval_dict', None)
-        caller = path.get_caller(request)
+        type_pair = request.POST.get('type_pair', None)
         
+        if type_pair:
+            type_pair = json.loads(type_pair)            
+        caller = path.get_caller(request)        
         file_path = path.get_upload_root(request, caller=caller)
         
         try:
             if interval_dict:
                 interval_dict = json.loads(interval_dict)
-                parser.create_DPView_json_file(file_path, file_name,
-                    pair_dict, interval_dict=interval_dict)
-            else:
-                parser.create_DPView_json_file(file_path, file_name, pair_dict)
+            parser.create_DPView_json_file(file_path, file_name,
+                pair_dict, type_pair=type_pair, interval_dict=interval_dict)
         except Exception as e:
             print(e)
             return redirect(reverse(caller+':custom')+file_name+'/'+gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"))
@@ -185,13 +184,15 @@ class AdvancedSettingsView(CustomView):
         file_name = kwargs.get('csv_name')            
         caller = path.get_caller(request) 
         
-        file_path = path.get_upload_path(request, file_name, caller=caller)        
-        number_data_frame = NumberDataframe(file_path)
-        number_title_list = number_data_frame.get_number_title()
-        number_type_pair = number_data_frame.get_number_type_pair(number_title_list)
-        max_value_dict, min_value_dict = number_data_frame.get_number_limit(number_title_list, number_type_pair=number_type_pair)
+        file_path = path.get_upload_path(request, file_name, caller=caller)
+        data_frame = DataframeDetection(file_path)
+        type_pair = data_frame.get_type_pair()
+        number_title_list = data_frame.get_number_title(type_pair=type_pair)
+        number_type_pair = data_frame.get_number_type_pair(number_title_list, type_pair=type_pair)
+        max_value_dict, min_value_dict = data_frame.get_number_limit(number_title_list, number_type_pair=number_type_pair)
            
         request_dict = super().get_request_dict(request, *arg, **kwargs)
+        request_dict['type_pair'] = type_pair
         request_dict['advanced_settings'] = True
         request_dict['number_title_list'] = number_title_list
         request_dict['number_type_pair'] = number_type_pair
