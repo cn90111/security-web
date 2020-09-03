@@ -242,7 +242,6 @@
                 $('#execute').on('click', function () {
                     var number_title_list = {{ number_title_list|safe }};
                     var number_title_pair_dict = {};
-                    
                     for (var number_title of number_title_list) {
                         var type = get_select_result(number_title);
                         if(!type) {
@@ -251,7 +250,6 @@
                         }
                         number_title_pair_dict[number_title] = type
                     }
-                    
                     var url = "{{ create_json }}";
                     var data = {
                         'csv_name' : '{{ file_name }}',
@@ -262,7 +260,6 @@
                         var interval_dict = {};
                         for (var number_title of number_title_list) {
                             var type = get_select_result(number_title);
-                            
                             if (type == 'number') {
                                 var i = 0;
                                 interval_value_list = [];
@@ -280,8 +277,8 @@
                             }
                         }
                         data['interval_dict'] = JSON.stringify(interval_dict);
+                        data['type_pair'] = JSON.stringify({{ type_pair|safe }});
                     {% endif %}
-                    
                     post_to_url(url, data);
                 })
             })
@@ -379,7 +376,8 @@
                                     interval_dict[number_title] = interval_value_list;
                                 }
                             }
-                            data['interval_dict'] = JSON.stringify(interval_dict);                            
+                            data['interval_dict'] = JSON.stringify(interval_dict);
+                            data['type_pair'] = JSON.stringify({{ type_pair|safe }});
                         {% endif %}
                         
                         post_to_url(url, data);

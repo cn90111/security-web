@@ -109,6 +109,7 @@
             finish_text = '{{ finish }}';
             unlock_count = 0;
             
+            loading_text.text("{% trans '量測中請稍後' %}")
             if (mode.val() === 'classification') {
                 left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}")
                 right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}")
