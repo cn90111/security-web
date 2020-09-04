@@ -40,7 +40,7 @@ class FileView(View):
                     return JsonResponse({'message':gettext("檔案過大，不能超過 4 MB")}, status=415)
             mode = kwargs.get('mode')
             try:
-                for file in files:                
+                for file in files:
                     if mode == 'DPView':
                         check_result = self.dpsyn_check_file_limit(request, file)
                     elif mode == 'json':
