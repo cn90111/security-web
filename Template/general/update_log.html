@@ -3,7 +3,12 @@
 {% block title %}update log{% endblock title %}
 
 {% block content %}
-    <cell cell_title="{% trans '最新更新 9/3 ver 1.4.4' %}">
+    <cell cell_title="{% trans '最新更新 9/4 ver 1.5' %}">
+        <h4 style="font-weight:bold;color:red">{% trans '調整項目：' %}</h5>
+        <h5 style="font-weight:bold;color:red">{% trans '1. 新增檔名檢查，檔名最後面有空白時將會跳出提示阻攔上傳' %}</h5>
+        <h5 style="font-weight:bold;color:red">{% trans '2. 修正檔名為非英文語系時，下載時的檔名不會正常顯示的問題' %}</h5>
+    </cell>
+    <cell cell_title="9/3 ver 1.4.4">
         <h4 style="font-weight:bold;color:red">{% trans '調整項目：' %}</h5>
         <h5 style="font-weight:bold;color:red">{% trans '1. 更改欄位類型判斷機制，從只檢查第一筆資料改為全欄位都檢查類型' %}</h5>
         <h5 style="font-weight:bold;color:red">{% trans '2. 修正當整數欄位有空值時，DPView 生成的檔案會變成浮點數' %}</h5>

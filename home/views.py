@@ -16,7 +16,6 @@ def index(request):
 class InitializeView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
-        referer = request.META.get('HTTP_REFERER')
         username = request.user.get_username()
         finish = False
         for path in ['upload', 'output']:

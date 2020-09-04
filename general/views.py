@@ -17,6 +17,8 @@ from .models import FileModel
 from .forms import UploadFileForm
 from datetime import date, datetime
 
+import urllib.parse
+
 import os
 import logging
 import pandas as pd
@@ -31,11 +33,14 @@ class FileView(View):
         files = request.FILES.getlist('file')
         if form.is_valid():
             for file in files:
+                if file.name.find(' ') != -1:
+                    if file.name.split(' ')[-1] == '.csv':
+                        return JsonResponse({'message':gettext("檔名不能以空白結尾")}, status=415)
                 if self.more_than_file_size_limit(file, 4194304):
                     return JsonResponse({'message':gettext("檔案過大，不能超過 4 MB")}, status=415)
             mode = kwargs.get('mode')
             try:
-                for file in files:
+                for file in files:                
                     if mode == 'DPView':
                         check_result = self.dpsyn_check_file_limit(request, file)
                     elif mode == 'json':
@@ -254,10 +259,12 @@ class DownloadView(View):
         
         if caller == 't_Closeness':
             caller = 'k_Anonymity'
-        
+            
+        download_name = caller+'_'+directory_name+'_output.csv'
+        download_name = urllib.parse.quote(download_name)
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=%s' %caller+'_'+directory_name+'_output.csv'
-        df.to_csv(path_or_buf=response,index=False,decimal=',')
+        response['Content-Disposition'] = "attachment; filename=\"%s\"; filename*=utf-8''%s" %(download_name, download_name)
+        df.to_csv(path_or_buf=response, index=False, decimal=',')
         return response
         
 class FinishView(View):
