@@ -1,0 +1,23 @@
+{% load i18n %}
+{% load static %}
+{% for column_title, element_list in almost_number_dict.items %}
+    <div id="{{ column_title }}_container" class="form-group col-md-6" style="display:none">        
+        <cell cell_title="{{ column_title }}">
+            <p id="{{ column_title }}_introduction"></p>
+            <table id="{{ column_title }}_table">
+                <tbody id="{{ column_title }}_tbody">
+                    {% for element in element_list %}
+                        <tr class="row">
+                            <td class="col-md-11">
+                                <p style="padding-top:10px" for="{{ column_title }}_{{ element }}_is_empty">" {{ element }} "</p>
+                            </td>
+                            <td class="col-md-1">
+                                <input type="checkbox" id="{{ column_title }}_{{ element }}_is_empty">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </cell>
+    </div>
+{% endfor %}

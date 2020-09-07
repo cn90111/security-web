@@ -1,25 +1,24 @@
 {% load i18n %}
 <div class="container" style="width:inherit;">
     <form>
-        {% if not number_title_list %}
+        {% if not almost_number_dict %}
             <p>{% trans '無需預先設定的參數' %}</p>
         {% else %}
             <div class="form-row justify-content-center" style="border-bottom-style:dashed; border-width:1px; padding-bottom:10px;">
                 <div class="form-check col-md-6" style="padding-top:10px">
-                    <p id="all_number_title">{% trans '將全部欄位皆設定為' %}</p>
+                    <p id="all_almost_number_title">{% trans '將全部欄位皆設定為' %}</p>
                 </div>
                 <div class="form-check col-md-6">
-                    <select class="form-control" id="all_number_relationship_select_pair">
+                    <select class="form-control" id="all_almost_number_select_pair">
                         <option selected></option>
-                        <option value="number" data-toggle="tooltip" title="{% trans '欄位為數學意義上的數字，例如身高、分數，進階設定時可以自行設定區間' %}">{% trans '資料為數值型資料' %}</option>
-                        <option value="single" data-toggle="tooltip" title="{% trans '欄位的所有數值都相同' %}">{% trans '資料只有唯一值' %}</option>
-                        <option value="category" data-toggle="tooltip" title="{% trans '欄位的數字是文字意義上的數字，例如電池型號、班級編號' %}">{% trans '資料為類別型資料' %}</option>
+                        <option value="have_empty" data-toggle="tooltip" title="{% trans '欄位以字串表示空值' %}">{% trans '資料中含有空值' %}</option>
+                        <option value="have_not_empty" data-toggle="tooltip" title="{% trans '欄位中的字串有實際意義' %}">{% trans '資料中無空值' %}</option>
                     </select>
                 </div>
             </div>
             <br>
         {% endif %}
-        {% for column_title in number_title_list %}
+        {% for column_title in almost_number_dict %}
             <div class="form-row justify-content-center">
                 <div class="form-check col-md-6" style="padding-top:10px">
                     <p id="{{ column_title }}_title">{{ column_title }}</p>
@@ -27,9 +26,8 @@
                 <div class="form-check col-md-6">
                     <select class="form-control" id="{{ column_title }}_relationship_select_pair" onclick="relationship_set('{{ column_title }}')">
                         <option selected></option>
-                        <option value="number" data-toggle="tooltip" title="{% trans '欄位為數學意義上的數字，例如身高、分數，進階設定時可以自行設定區間' %}">{% trans '資料為數值型資料' %}</option>
-                        <option value="single" data-toggle="tooltip" title="{% trans '欄位的所有數值都相同' %}">{% trans '資料只有唯一值' %}</option>
-                        <option value="category" data-toggle="tooltip" title="{% trans '欄位的數字是文字意義上的數字，例如電池型號、班級編號' %}">{% trans '資料為類別型資料' %}</option>
+                        <option value="have_empty" data-toggle="tooltip" title="{% trans '欄位以字串表示空值' %}">{% trans '資料中含有空值' %}</option>
+                        <option value="have_not_empty" data-toggle="tooltip" title="{% trans '欄位中的字串有實際意義' %}">{% trans '資料中無空值' %}</option>
                     </select>
                 </div>
             </div>
@@ -41,9 +39,9 @@
 <script type="application/javascript">
     $(function () {
         {% if title_id_pair %}
-            var number_title_list = {{ number_title_list|safe }};
+            var almost_number_dict = {{ almost_number_dict|safe }};
             var title_id_pair = {{ title_id_pair|safe }};
-            for (var column_title of number_title_list) {
+            for (var column_title of almost_number_dict) {
                 document.getElementById(column_title+'_relationship_select_pair').selectedIndex = title_id_pair[column_title];
                 relationship_set(column_title);
             }
