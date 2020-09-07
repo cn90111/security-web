@@ -84,18 +84,20 @@ class DPViewParserView(View):
         file_path = str(request.POST.get('path', None))
         file_name = str(request.POST.get('csv_name',None))
         pair_dict = request.POST.get('number_title_pair_dict', None)
+        almost_number_dict = request.POST.get('almost_number_dict', None)
         almost_number_is_empty_dict = request.POST.get('almost_number_is_empty_dict', None)
         interval_dict = request.POST.get('interval_dict', None)
         type_pair = request.POST.get('type_pair', None)
         
         if pair_dict:
-            pair_dict = json.loads(pair_dict)
-            
+            pair_dict = json.loads(pair_dict)            
+        if almost_number_dict:
+            almost_number_dict = json.loads(almost_number_dict)            
         if almost_number_is_empty_dict:
-            almost_number_is_empty_dict = json.loads(almost_number_is_empty_dict)
-        
+            almost_number_is_empty_dict = json.loads(almost_number_is_empty_dict)        
         if type_pair:
             type_pair = json.loads(type_pair)
+            
         caller = path.get_caller(request)        
         file_path = path.get_upload_root(request, caller=caller)
         
@@ -105,6 +107,7 @@ class DPViewParserView(View):
             parser.create_DPView_json_file(file_path, file_name,pair_dict,
                 type_pair=type_pair,
                 interval_dict=interval_dict,
+                almost_number_dict=almost_number_dict,
                 almost_number_is_empty_dict=almost_number_is_empty_dict,)
         except Exception as e:
             print(e)

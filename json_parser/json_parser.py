@@ -132,7 +132,7 @@ class JsonParser():
             json_dict[column_title] = temp
         return json_dict
     
-    def parser_to_DPView_json(self, file_path, pair_dict, type_pair=None, interval_dict=None, almost_number_is_empty_dict=None):
+    def parser_to_DPView_json(self, file_path, pair_dict, type_pair=None, interval_dict=None, almost_number_dict=None, almost_number_is_empty_dict=None):
         json_dict = {}
         detection = ContentDetection()
         dataframe = pd.read_csv(file_path, keep_default_na=False)
@@ -165,9 +165,13 @@ class JsonParser():
             elif type_pair[column_title] == 'almost_number' or detection.almost_is_number(column):
                 if almost_number_is_empty_dict and column_title in almost_number_is_empty_dict:
                     dataframe.loc[:, column_title] = dataframe.loc[:, column_title].replace(almost_number_is_empty_dict[column_title], '')
-                    column = dataframe.loc[:, column_title].values.tolist()
-                    temp['type'] = 'num'
-                    temp['bucket'] = self.get_interval(column)
+                    if almost_number_is_empty_dict[column_title] == almost_number_dict[column_title]:
+                        column = dataframe.loc[:, column_title].values.tolist()
+                        temp['type'] = 'num'
+                        temp['bucket'] = self.get_interval(column)
+                    else:
+                        temp['type'] = 'cat'
+                    print(temp['type'])
                 else:
                     temp['type'] = 'cat'
             else:
@@ -204,7 +208,7 @@ class JsonParser():
         with open(json_path, 'w') as file:
             file.write(json_object)
             
-    def create_DPView_json_file(self, file_path, file_name, pair_dict, type_pair=None, interval_dict=None, almost_number_is_empty_dict=None):
+    def create_DPView_json_file(self, file_path, file_name, pair_dict, type_pair=None, interval_dict=None, almost_number_dict=None, almost_number_is_empty_dict=None):
         directory_name = file_name.split(".")[-2]
         file_path = file_path + directory_name + '/'
         json_path = file_path + directory_name + '_dict.json'
@@ -212,6 +216,7 @@ class JsonParser():
                 (file_path+file_name, pair_dict,
                 type_pair=type_pair,
                 interval_dict=interval_dict,
+                almost_number_dict=almost_number_dict,
                 almost_number_is_empty_dict=almost_number_is_empty_dict,))
         with open(json_path, 'w') as file:
             file.write(json_object)
