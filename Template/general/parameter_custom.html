@@ -171,7 +171,7 @@
             {% endif %}
             {% if almost_number_dict %}
                 var almost_number_dict = {{ almost_number_dict|safe }};
-                for (var column_title of almost_number_dict) {
+                for (var column_title in almost_number_dict) {
                     title_id_pair[column_title] = document.getElementById(column_title+'_relationship_select_pair').selectedIndex;
                 }
             {% endif %}

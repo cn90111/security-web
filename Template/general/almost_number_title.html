@@ -41,7 +41,7 @@
         {% if title_id_pair %}
             var almost_number_dict = {{ almost_number_dict|safe }};
             var title_id_pair = {{ title_id_pair|safe }};
-            for (var column_title of almost_number_dict) {
+            for (var column_title in almost_number_dict) {
                 document.getElementById(column_title+'_relationship_select_pair').selectedIndex = title_id_pair[column_title];
                 relationship_set(column_title);
             }
