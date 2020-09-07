@@ -77,6 +77,24 @@ class ContentDetection():
             return False
         return True
     
+    def almost_is_number(self, item_list):
+        if not item_list:
+            return False
+        str_set = set()
+        have_number = False
+        for item in item_list:
+            if not item:
+                continue
+            try:
+                float(item)
+                have_number = True
+            except ValueError:
+                str_set.add(item)
+        if have_number:
+            if len(str_set) <= 3 and len(str_set) != 0:
+                return True
+        return False
+        
     def is_float(self, item_list):
         if not self.is_number(item_list):
             return False
@@ -160,10 +178,60 @@ class DataframeDetection():
                 continue
                 
             if self.detection.is_string(column):
-                type_pair[column_title] = 'str'
+                if self.detection.almost_is_number(column):
+                    type_pair[column_title] = 'almost_number'
+                else:
+                    type_pair[column_title] = 'str'
             else:
                 if self.detection.is_float(column):
                     type_pair[column_title] = 'float'
                 else:
                     type_pair[column_title] = 'int'
         return type_pair
+        
+    def get_file_string_element(self, almost_number_filter=True, type_pair=None):
+        if almost_number_filter:
+            if type_pair:
+                column_element = self.get_column_element(target='str', type_pair=type_pair)
+            else:
+                column_element = self.get_column_element(target='str')
+        else:
+            if type_pair:
+                column_element = self.get_column_element(target='all_str', type_pair=type_pair)
+            else:
+                column_element = self.get_column_element(target='all_str')
+        return column_element
+    
+    def get_almost_number_element(self, type_pair=None):
+        if type_pair:
+            column_element = self.get_column_element(target='almost_number', type_pair=type_pair)
+        else:
+            column_element = self.get_column_element(target='almost_number')
+        return column_element
+                
+    def get_column_element(self, target, type_pair=None):
+        column_element = {}
+        for column_title in self.dataframe:
+            column = self.dataframe.loc[:, column_title].values.tolist()
+            
+            if target == 'all_str':
+                if type_pair and (type_pair[column_title] == 'str' or type_pair[column_title] == 'almost_number'):
+                    column_element[column_title] = list(filter(None, list(set(column))))
+                if(self.detection.is_string(column)):
+                    column_element[column_title] = list(filter(None, list(set(column))))
+            elif target == 'str':
+                if type_pair and type_pair[column_title] == 'str':
+                    column_element[column_title] = list(filter(None, list(set(column))))
+                if(self.detection.is_string(column) and not self.detection.almost_is_number(column)):
+                    column_element[column_title] = list(filter(None, list(set(column))))
+            elif target == 'almost_number':
+                if type_pair and type_pair[column_title] == 'almost_number' or self.detection.almost_is_number(column):
+                    remove_empty = list(filter(None, list(set(column))))
+                    temp = set()
+                    for item in remove_empty:
+                        try:
+                            float(item)
+                        except ValueError:
+                            temp.add(item)
+                    column_element[column_title] = list(temp)
+        return column_element

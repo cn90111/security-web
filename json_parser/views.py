@@ -41,7 +41,7 @@ class ParserView(View):
             parser.create_json_file(file_path, file_name,
                 structure_mode, structure_dict,
                 type_pair=type_pair,
-                interval_dict=interval_dict)
+                interval_dict=interval_dict,)
         except NotAddressException as e:
             print(e)
             return redirect(reverse(caller+':custom')+file_name+'/'+str(e))
@@ -83,20 +83,29 @@ class DPViewParserView(View):
         
         file_path = str(request.POST.get('path', None))
         file_name = str(request.POST.get('csv_name',None))
-        pair_dict = json.loads(request.POST.get('number_title_pair_dict', None))
+        pair_dict = request.POST.get('number_title_pair_dict', None)
+        almost_number_is_empty_dict = request.POST.get('almost_number_is_empty_dict', None)
         interval_dict = request.POST.get('interval_dict', None)
         type_pair = request.POST.get('type_pair', None)
         
+        if pair_dict:
+            pair_dict = json.loads(pair_dict)
+            
+        if almost_number_is_empty_dict:
+            almost_number_is_empty_dict = json.loads(almost_number_is_empty_dict)
+        
         if type_pair:
-            type_pair = json.loads(type_pair)            
+            type_pair = json.loads(type_pair)
         caller = path.get_caller(request)        
         file_path = path.get_upload_root(request, caller=caller)
         
         try:
             if interval_dict:
                 interval_dict = json.loads(interval_dict)
-            parser.create_DPView_json_file(file_path, file_name,
-                pair_dict, type_pair=type_pair, interval_dict=interval_dict)
+            parser.create_DPView_json_file(file_path, file_name,pair_dict,
+                type_pair=type_pair,
+                interval_dict=interval_dict,
+                almost_number_is_empty_dict=almost_number_is_empty_dict,)
         except Exception as e:
             print(e)
             return redirect(reverse(caller+':custom')+file_name+'/'+gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"))
@@ -136,7 +145,8 @@ class CustomView(View):
         caller = path.get_caller(request)
             
         file_path = path.get_upload_path(request, file_name, caller=caller)
-        string_element_dict = parser.get_file_string_element(file_path)
+        data_frame = DataframeDetection(file_path)
+        string_element_dict = data_frame.get_file_string_element(almost_number_filter=False)
               
         request_dict = {}  
         request_dict = self.set_url_path(request_dict, caller, file_name)
