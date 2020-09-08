@@ -50,7 +50,7 @@
                 <a href="{% url 'update_log' %}"><i class="fa fa-flask fa-fw"></i>{% trans '更新日誌' %}</a>
             </li>
             <li>
-                <a href="javascript:void(0)"><i class="fa fa-list fa-fw"></i>{% trans '語言切換' %}<span class="fa arrow"></span></a>
+                <a href="javascript:void(0)" onclick="display_level('language_item')"><i class="fa fa-list fa-fw"></i>{% trans '語言切換' %}<span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <form id="i18n" action="{% url 'set_language' %}" method="post">
                         {% csrf_token %}
@@ -59,7 +59,7 @@
                     </form>
                     {% for code, name in LANGUAGES %}
                         <li>
-                            <a href="javascript:void(0)" onclick="switch_language('{{ code }}')">{{ name }}</a>
+                            <a href="javascript:void(0)" name="language_item" style="display:none;" onclick="switch_language('{{ code }}')">{{ name }}</a>
                         </li>
                     {% endfor %}
                 </ul>
@@ -81,5 +81,9 @@
     function sidebar_highlight(title) {
         $('li[name]').removeClass('selected');
         $('#'+title).addClass('selected');
+    }
+    
+    function display_level(title) {
+        $("[name="+title+"]").toggle();
     }
 </script>
