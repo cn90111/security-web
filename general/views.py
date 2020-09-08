@@ -10,6 +10,7 @@ from django.urls import reverse
 
 from general.machine_learning import MachineLearning
 from general.function import Path
+from general.function import ContentDetection
 from general.exception import BreakProgramException
 from general.models import ExecuteModel
 
@@ -26,7 +27,7 @@ import pandas as pd
 today = date.today()
 logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(message)s',datefmt='%Y-%m-%d %H:%M:%S',filename= str(today) +'_log.txt')
 
-class FileView(View):
+class FileView(View):    
     @method_decorator(login_required)
     def post(self, request, *arg, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
@@ -57,7 +58,15 @@ class FileView(View):
             return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)
         else:
             return JsonResponse({'message':gettext('檔案格式錯誤')}, status=415)
-
+    
+    def domain_check(self, dataframe):
+        detection = ContentDetection()
+        for column_title in dataframe:
+            column = dataframe.loc[:, column_title].values.tolist()
+            if detection.is_string(column):
+                if len(list(filter(None, list(set(column))))) > 50:
+                    return JsonResponse({'message':column_title + gettext(' 欄位 domain 過大，domain 大小限制在 50 以下')}, status=400)
+                    
     def json_check_file_limit(self, request, file):
         upload_form = FileModel()
         upload_form.file = file
@@ -68,6 +77,9 @@ class FileView(View):
         except UnicodeDecodeError as e:
             return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] <= 4 and df.shape[0] <= 200):
+            check_result = self.domain_check(df)
+            if check_result:
+                return check_result
             self.handle_upload_file(request, file, df)
         else:
             cln = str(df.shape[1])
@@ -84,6 +96,9 @@ class FileView(View):
         except UnicodeDecodeError as e:
             return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] >= 3):
+            check_result = self.domain_check(df)
+            if check_result:
+                return check_result
             self.handle_upload_file(request, file, df)
         else:
             cln = str(df.shape[1])
@@ -99,6 +114,9 @@ class FileView(View):
         except UnicodeDecodeError as e:
             return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] >= 3):
+            check_result = self.domain_check(df)
+            if check_result:
+                return check_result
             self.handle_upload_file(request, file, df)
         else:
             cln = str(df.shape[1])
