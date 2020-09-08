@@ -27,7 +27,7 @@ import pandas as pd
 today = date.today()
 logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(message)s',datefmt='%Y-%m-%d %H:%M:%S',filename= str(today) +'_log.txt')
 
-class FileView(View):    
+class FileView(View):
     @method_decorator(login_required)
     def post(self, request, *arg, **kwargs):
         form = UploadFileForm(request.POST, request.FILES)
