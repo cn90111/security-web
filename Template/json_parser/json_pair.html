@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load static %}
 {% for column_title, element_list in string_element_dict.items %}
-    <div id="{{ column_title }}_container" class="form-group col-md-6" style="display:none; position:fixed; z-index:99; bottom:20%; right:1%; width:40%;">
+    <div id="{{ column_title }}_container" class="form-group col-md-6" style="display:none; position:fixed; z-index:99; bottom:20%; right:1%; width:40%; height:50%;">
         <cell cell_title="{{ column_title }}">
             <div style="width:100%; height:250px; overflow:auto; overflow-x:hidden;">
                 <p id="{{ column_title }}_introduction"></p>
