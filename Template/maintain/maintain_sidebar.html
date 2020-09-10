@@ -1,0 +1,89 @@
+{% load i18n %}
+{% load static %}
+<!-- navbar side -->
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <!-- sidebar-collapse -->
+    <div class="sidebar-collapse">
+        <!-- side-menu -->
+        <ul class="nav" id="side-menu">
+            <li>
+                <!-- user image section-->
+                <div class="user-section">
+                    <div class="user-section-inner">
+                        <img src="{% static 'img/user.jpg' %}" alt="">
+                    </div>
+                    <div class="user-info">
+                        {% if user.is_authenticated %}
+                            <div>{{ user.username }}</div>
+                            <div class="user-text-online">
+                                <span class="user-circle-online btn btn-success btn-circle "></span>&nbsp;Online
+                            </div>
+                        {% else %}
+                            <div>{% trans '尚未登入' %}</div>
+                            <div class="user-text-online">
+                                <span class="user-circle-online btn btn-danger btn-circle "></span>&nbsp;Offline
+                            </div>
+
+                        {% endif %}
+                    </div>
+                </div>
+                <!--end user image section-->
+            </li>
+            <li id="home" name="highlight_item">
+                <a href="javascript:void(0)" onclick="maintain()"><i class="fa fa-dashboard fa-fw"></i>Home</a>
+            </li>
+            <li id="DPView" name="highlight_item">
+                <a href="javascript:void(0)" onclick="maintain()"><i class="fa fa-flask fa-fw"></i>DPView</a>
+            </li>
+            <li id="t_Closeness" name="highlight_item">
+                <a href="javascript:void(0)" onclick="maintain()"><i class="fa fa-flask fa-fw"></i>k-Anonymity</a>
+            </li>
+            {% if false %}
+                <li id="l_Diversity" name="highlight_item">
+                    <a href="javascript:void(0)" onclick="maintain()"><i class="fa fa-flask fa-fw"></i>l-Diversity</a>
+                </li>
+                <li id="k_Anonymity" name="highlight_item">
+                    <a href="javascript:void(0)" onclick="maintain()"><i class="fa fa-flask fa-fw"></i>k-Anonymity</a>
+                </li>
+            {% endif %}
+            <li id="update_log" name="highlight_item">
+                <a href="javascript:void(0)" onclick="maintain()"><i class="fa fa-flask fa-fw"></i>{% trans '更新日誌' %}</a>
+            </li>
+            <li>
+                <a href="javascript:void(0)" onclick="display_level('language_item')"><i class="fa fa-list fa-fw"></i>{% trans '語言切換' %}<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <form id="i18n" action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path|remove_language_code }}"/>
+                        <input name="language" type="hidden" value="{{ LANGUAGE_CODE }}" />
+                    </form>
+                    {% for code, name in LANGUAGES %}
+                        <li>
+                            <a href="javascript:void(0)" name="language_item" style="display:none;" onclick="switch_language('{{ code }}')">{{ name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <!-- second-level-items -->
+            </li>
+        </ul>
+        <!-- end side-menu -->
+    </div>
+    <!-- end sidebar-collapse -->
+</nav>
+<!-- end navbar side -->
+
+<script>
+    function switch_language(language) {
+        $("[name='language']").val(language);
+        $('#i18n').submit();
+    }
+    
+    function sidebar_highlight(title) {
+        $('li[name]').removeClass('selected');
+        $('#'+title).addClass('selected');
+    }
+    
+    function display_level(title) {
+        $("[name="+title+"]").toggle();
+    }
+</script>

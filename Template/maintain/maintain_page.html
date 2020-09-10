@@ -1,4 +1,4 @@
-{% extends "not_sidebar_base.vue" %}
+{% extends "maintain/maintain_base.vue" %}
 {% load i18n %}
 {% block title %}maintain{% endblock title %}
 
@@ -7,7 +7,7 @@
         <p>{% trans '說明： 預計於 X/X X:X 時重新啟動伺服器，感謝您的等候' %}</p>
         <a id="update_log_button" href="javascript:void(0)" onclick="toggle_update_log()" class="btn btn-default btn-block">{% trans '更新預覽' %}</a>
     </cell>
-    <div id="update_log" style="display:none">
+    <div id="update_log_text" style="display:none">
         {% include 'general/update_log_text.html' %}
     </div>
 {% endblock content %}
@@ -15,13 +15,13 @@
 {% block script %}
     <script>
         function toggle_update_log() {
-            update_log = $('#update_log');
+            update_log = $('#update_log_text');
             update_log.toggle();
             if (update_log.css('display') == 'none') {
-                $('#update_log_button').val("{% trans '更新預覽' %}");
+                $('#update_log_button').text("{% trans '更新預覽' %}");
             }
             else {
-                $('#update_log_button').val("{% trans '關閉預覽' %}");                
+                $('#update_log_button').text("{% trans '關閉預覽' %}");                
             }
         }
     </script>
