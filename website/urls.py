@@ -17,10 +17,9 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.i18n import i18n_patterns
 from home import views as home_views
+from django.conf import settings
 
-maintain = False
-
-if maintain:
+if settings.MAINTAIN:
     urlpatterns = [
         path('i18n/', include('django.conf.urls.i18n')),
     ]
