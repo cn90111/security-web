@@ -5,7 +5,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}base{% endblock title %}</title>
+        <title>{% block title %}maintain base{% endblock title %}</title>
         <!-- Core CSS - Include with every page -->
         <link href="{% static 'plugins/vue/vuesax.css' %}" rel="stylesheet" />
         <link href="{% static 'plugins/bootstrap/bootstrap.css' %}" rel="stylesheet" />
@@ -32,8 +32,8 @@
     <body>
         <!--  wrapper -->
         <div id="wrapper">
-            {% include 'navbar.html' %}
-            {% include 'sidebar.html' %}
+            {% include 'maintain/maintain_navbar.html' %}
+            {% include 'maintain/maintain_sidebar.html' %}
             <!--  page-wrapper -->
             <div id="page-wrapper">
                 <div class="row">
@@ -105,6 +105,10 @@
 
         document.body.appendChild(form);    // Not entirely sure if this is necessary
         form.submit();
+    }
+    
+    function maintain() {
+        warning_alert("{% trans '伺服器維護中' %}")
     }
 </script>
 {% block script %}{% endblock script %}

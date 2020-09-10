@@ -16,19 +16,29 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.i18n import i18n_patterns
+from home import views as home_views
+from django.conf import settings
 
-urlpatterns = [
-    path('i18n/', include('django.conf.urls.i18n')),
-    path('general/', include('general.urls')),
-]
+if settings.MAINTAIN:
+    urlpatterns = [
+        path('i18n/', include('django.conf.urls.i18n')),
+    ]
+    urlpatterns += i18n_patterns(
+        path('home/', home_views.MaintainView.as_view()),
+    )
+else:
+    urlpatterns = [
+        path('i18n/', include('django.conf.urls.i18n')),
+        path('general/', include('general.urls')),
+    ]
 
-urlpatterns += i18n_patterns(
-    path('admin/', admin.site.urls),
-    path('home/', include('home.urls')),
-    path('t_Closeness/', include('t_Closeness.urls')),
-    path('DPView/', include('DPView.urls')),
-    path('l_Diversity/', include('l_Diversity.urls')),
-    path('k_Anonymity/', include('k_Anonymity.urls')),
-    path('json_parser/', include('json_parser.urls')),
-    path('accounts/', include('accounts.urls')),
-)
+    urlpatterns += i18n_patterns(
+        path('admin/', admin.site.urls),
+        path('home/', include('home.urls')),
+        path('t_Closeness/', include('t_Closeness.urls')),
+        path('DPView/', include('DPView.urls')),
+        path('l_Diversity/', include('l_Diversity.urls')),
+        path('k_Anonymity/', include('k_Anonymity.urls')),
+        path('json_parser/', include('json_parser.urls')),
+        path('accounts/', include('accounts.urls')),
+    )
