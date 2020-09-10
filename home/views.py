@@ -4,6 +4,7 @@ from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.views import View
 from django.http import JsonResponse
+from general.models import ExecuteModel
 
 import os
 
@@ -15,6 +16,8 @@ def index(request):
     
 class MaintainView(View):
     def get(self, request, *arg, **kwargs):
+        for objects in ExecuteModel.objects.all():
+            objects.delete()
         return render(request, 'maintain/maintain_page.html')
 
 class InitializeView(View):
