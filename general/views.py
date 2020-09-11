@@ -344,15 +344,15 @@ class UtilityPageView(View):
         
 class CheckUtilityView(View):        
     @method_decorator(login_required)
-    def get(self, request, *arg, **kwargs):
+    def post(self, request, *arg, **kwargs):
         path = Path()
         
         caller = path.get_caller(request)
-        machine_learning_method = request.GET.get('machine_learning_method', None)
-        machine_learning_mode = request.GET.get('machine_learning_mode', None)
-        train_file_path = request.GET.get('train_file_path', None)
-        test_file_path = request.GET.get('test_file_path', None)
-        file_name = request.GET.get('csv_name', None)
+        machine_learning_method = request.POST.get('machine_learning_method', None)
+        machine_learning_mode = request.POST.get('machine_learning_mode', None)
+        train_file_path = request.POST.get('train_file_path', None)
+        test_file_path = request.POST.get('test_file_path', None)
+        file_name = request.POST.get('csv_name', None)
         
         train_file_path = self.get_full_path(train_file_path, request, file_name)
         test_file_path = self.get_full_path(test_file_path, request, file_name)
