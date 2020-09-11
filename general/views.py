@@ -12,6 +12,7 @@ from general.machine_learning import MachineLearning
 from general.function import Path
 from general.function import ContentDetection
 from general.exception import BreakProgramException
+from pandas.io.parsers import ParserError
 from general.models import ExecuteModel
 
 from .models import FileModel
@@ -72,8 +73,12 @@ class FileView(View):
         upload_form.file = file
         try:
             df = pd.read_csv(upload_form.file, dtype=str)
+            if df.iloc[0].name != 0:
+                raise ParserError()
             if df.isnull().values.any():
                 return JsonResponse({'message':gettext('此方法檔案中不能有空欄，請改為使用 DPView 進行去識別化')}, status=400)
+        except ParserError as e:
+            return JsonResponse({'message':gettext('檔案讀取錯誤，請確保檔案內容中沒有半形逗號存在')}, status=400)
         except UnicodeDecodeError as e:
             return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] <= 4 and df.shape[0] <= 200):
@@ -91,8 +96,12 @@ class FileView(View):
         upload_form.file = file
         try:
             df = pd.read_csv(upload_form.file, dtype=str)
+            if df.iloc[0].name != 0:
+                raise ParserError()
             if df.isnull().values.any():
                 return JsonResponse({'message':gettext('此方法檔案中不能有空欄，請改為使用 DPView 進行去識別化')}, status=400)
+        except ParserError as e:
+            return JsonResponse({'message':gettext('檔案讀取錯誤，請確保檔案內容中沒有半形逗號存在')}, status=400)
         except UnicodeDecodeError as e:
             return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] >= 3):
@@ -111,6 +120,10 @@ class FileView(View):
         upload_form.file = file
         try:
             df = pd.read_csv(upload_form.file, dtype=str)
+            if df.iloc[0].name != 0:
+                raise ParserError()
+        except ParserError as e:
+            return JsonResponse({'message':gettext('檔案讀取錯誤，請確保檔案內容中沒有半形逗號存在')}, status=400)
         except UnicodeDecodeError as e:
             return JsonResponse({'message':gettext('檔案編碼錯誤，請確保檔案由UTF-8編碼')}, status=400)
         if(df.shape[1] >= 3):

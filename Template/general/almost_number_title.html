@@ -11,7 +11,6 @@
                 <div class="form-check col-md-6">
                     <select class="form-control" id="all_almost_number_select_pair">
                         <option selected></option>
-                        <option value="have_empty" data-toggle="tooltip" title="{% trans '欄位以字串表示空值' %}">{% trans '資料中含有空值' %}</option>
                         <option value="have_not_empty" data-toggle="tooltip" title="{% trans '欄位中的字串有實際意義' %}">{% trans '資料中無空值' %}</option>
                     </select>
                 </div>
@@ -26,8 +25,8 @@
                 <div class="form-check col-md-6">
                     <select class="form-control" id="{{ column_title }}_relationship_select_pair" onclick="relationship_set('{{ column_title }}')">
                         <option selected></option>
-                        <option value="have_empty" data-toggle="tooltip" title="{% trans '欄位以字串表示空值' %}">{% trans '資料中含有空值' %}</option>
                         <option value="have_not_empty" data-toggle="tooltip" title="{% trans '欄位中的字串有實際意義' %}">{% trans '資料中無空值' %}</option>
+                        <option value="have_empty" data-toggle="tooltip" title="{% trans '欄位以字串表示空值' %}">{% trans '資料中含有空值' %}</option>
                     </select>
                 </div>
             </div>
