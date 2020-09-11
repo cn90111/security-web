@@ -90,11 +90,12 @@
         var answer = prompt("{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入密碼' %}", '');
         var url = "{% url 'password_check' %}";
         var data = {
+            'csrfmiddlewaretoken' : '{{ csrf_token }}',
             'password' : answer,
         };
         $.ajax({
             url: url,
-            type: 'GET',
+            type: 'POST',
             data: data,
             success: function () {
                 window.location = "{% url 'delete_account' %}";
@@ -114,11 +115,12 @@
         var answer = prompt("{% trans '請輸入原本的密碼，以繼續進行密碼更改' %}", '');
         var url = "{% url 'password_check' %}";
         var data = {
+            'csrfmiddlewaretoken' : '{{ csrf_token }}',
             'password' : answer,
         };
         $.ajax({
             url: url,
-            type: 'GET',
+            type: 'POST',
             data: data,
             success: function () {
                 window.location = "{% url 'change_password' %}";

@@ -125,15 +125,16 @@
         function utility_check(train_file_path, test_file_path, text_element, file_kind) {
             var url = '{{ check_utility_url }}'
             var data = {
-                csv_name : '{{file_name}}',
-                machine_learning_method : selecter.val(),
-                machine_learning_mode : mode.val(),
-                train_file_path : train_file_path,
-                test_file_path : test_file_path,
+                'csrfmiddlewaretoken' : '{{ csrf_token }}',
+                'csv_name' : '{{file_name}}',
+                'machine_learning_method' : selecter.val(),
+                'machine_learning_mode' : mode.val(),
+                'train_file_path' : train_file_path,
+                'test_file_path' : test_file_path,
             };
             $.ajax({
                 url: url,
-                type: 'GET',
+                type: 'POST',
                 data: data,
                 success: function (result) {
                     if (mode.val() === 'classification') {

@@ -15,7 +15,7 @@ from general.exception import NotAddressException
 from json_parser.json_parser import JsonParser
 import json
 
-class ParserView(View):        
+class ParserView(View):
     @method_decorator(login_required)
     def post(self, request, *arg, **kwargs):
         parser = JsonParser()
@@ -44,16 +44,16 @@ class ParserView(View):
                 interval_dict=interval_dict,)
         except NotAddressException as e:
             print(e)
-            return redirect(reverse(caller+':custom')+file_name+'/'+str(e))
+            return JsonResponse({"message":str(e)}, status=400)
         except PairLoopException as e:
             print(e)
-            return redirect(reverse(caller+':custom')+file_name+'/'+str(e))
+            return JsonResponse({"message":str(e)}, status=400)
         except Exception as e:
             print(e)
-            return redirect(reverse(caller+':custom')+file_name+'/'+gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"))
+            return JsonResponse({"message":gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務")}, status=404)
         else:
-            return redirect(reverse(caller+':execute_page', args=[file_name]))
-        return redirect(reverse(caller+':custom')+file_name+'/'+gettext("有尚未捕捉到的例外，請回報服務人員，謝謝"))
+            return HttpResponse(status=204)
+        return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
     
     def pair_check(self, pair_dict):
         for key in list(pair_dict.keys()):
@@ -111,10 +111,10 @@ class DPViewParserView(View):
                 almost_number_is_empty_dict=almost_number_is_empty_dict,)
         except Exception as e:
             print(e)
-            return redirect(reverse(caller+':custom')+file_name+'/'+gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務"))
+            JsonResponse({"message":gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務")}, status=404)
         else:
-            return redirect(reverse(caller+':execute_page', args=[file_name]))
-        return redirect(reverse(caller+':custom')+file_name+'/'+gettext("有尚未捕捉到的例外，請回報服務人員，謝謝"))
+            return HttpResponse(status=204)
+        return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
         
 class CustomView(View):
     @method_decorator(login_required)
