@@ -24,6 +24,7 @@ if settings.MAINTAIN:
         path('i18n/', include('django.conf.urls.i18n')),
     ]
     urlpatterns += i18n_patterns(
+        path('', home_views.MaintainView.as_view()),
         path('home/', home_views.MaintainView.as_view()),
     )
 else:
@@ -33,6 +34,7 @@ else:
     ]
 
     urlpatterns += i18n_patterns(
+        path('', include('home.urls')),
         path('admin/', admin.site.urls),
         path('home/', include('home.urls')),
         path('t_Closeness/', include('t_Closeness.urls')),
