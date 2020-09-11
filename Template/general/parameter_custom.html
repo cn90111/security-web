@@ -202,7 +202,7 @@
                 initize();
                 if (relationship == 'custom') {
                     document.getElementById(column_title+'_container').style.display = 'block';
-                    introduction.textContent = "{% trans '資料關係可藉由自行輸入或下拉式選單填入' %}";
+                    introduction.textContent = "{% trans '資料關係可自行輸入，使用下拉式選單時，也可以藉由輸入內容來查詢所要的選項，但要選擇其他選項時，需刪除先前所輸入的內容' %}";
                     json_pair_enabled(column_title);
                     return;
                 } else if (relationship == 'address') {
@@ -255,13 +255,7 @@
         function removeRed(classList) {
             classList.remove('text-danger')
         }
-        
-        {% if alert_message %}
-            $(function () {
-                danger_alert('{{alert_message}}');
-            });
-        {% endif %}
-        
+                
         $(function () {
             var url = "{{ title_check }}";
             var data = {
@@ -300,6 +294,7 @@
                     }
                     var url = "{{ create_json }}";
                     var data = {
+                        'csrfmiddlewaretoken' : '{{ csrf_token }}',
                         'csv_name' : '{{ file_name }}',
                         'number_title_pair_dict' : JSON.stringify(number_title_pair_dict),
                     }
@@ -347,7 +342,18 @@
                         data['almost_number_is_empty_dict'] = JSON.stringify(almost_number_is_empty_dict);
                     {% endif %}
                     
-                    post_to_url(url, data);
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: data,
+                        success: function () {
+                            window.location = '{{ execute_url }}';
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            var jsonObj = JSON.parse(xhr.responseText);
+                            danger_alert(jsonObj.message);
+                        }
+                    });
                 })
             })
         </script>
@@ -407,6 +413,7 @@
                     else {
                         var url = "{{ create_json }}";
                         data = {
+                            'csrfmiddlewaretoken' : '{{ csrf_token }}',
                             'csv_name' : '{{ file_name }}',
                             'structure_mode' : JSON.stringify(structure_mode),
                             'structure_dict' : JSON.stringify(structure_dict),
@@ -466,7 +473,18 @@
                             data['almost_number_is_empty_dict'] = JSON.stringify(almost_number_is_empty_dict);
                         {% endif %}
                         
-                        post_to_url(url, data);
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: data,
+                            success: function () {
+                                window.location = '{{ execute_url }}';
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                var jsonObj = JSON.parse(xhr.responseText);
+                                danger_alert(jsonObj.message);
+                            }
+                        });
                     }
                 })
             })

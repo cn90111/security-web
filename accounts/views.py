@@ -83,9 +83,9 @@ class DeleteAccountView(View):
         return redirect('home')
         
 class PasswordCheckView(View):
-    def get(self, request, *arg, **kwargs):
+    def post(self, request, *arg, **kwargs):
         user = request.user
-        password = request.GET.get('password', None)
+        password = request.POST.get('password', None)
         username = user.get_username()
         check = auth.authenticate(username=username, password=password)
         if check is None:
