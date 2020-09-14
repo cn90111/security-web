@@ -173,7 +173,7 @@ class AbstractExecuteView(View):
     def get_empty_form(self):
         raise AttributeError('應藉由子類別實作此方法，return form()')
         
-    def set_url_path(self, request_dict, caller, file_name):
+    def set_url_path(self, request_dict, caller, file_name):        
         request_dict['break_program_url'] = reverse(caller+':break_program')
         request_dict['show_progress_url'] = reverse(caller+':show_progress')
         request_dict['execute_url'] = reverse(caller+':execute')
@@ -416,3 +416,27 @@ class TitleCheckView(View):
 class UpdateLogView(View):
     def get(self, request, *arg, **kwargs):
         return render(request, 'general/update_log.html', {})
+
+class FileFinishView(View):
+    @method_decorator(login_required)
+    def post(self, request, *arg, **kwargs):
+        yes_url = request.POST.get('yes_url')
+    
+        request_dict = {}
+        request_dict['cell_title'] = gettext('先前檔案去識別化完成')
+        request_dict['cell_content'] = gettext('檔案去識別化完成，是否查看執行結果?')
+        request_dict['yes_url'] = yes_url
+        return render(request, 'general/confirm_page.html', request_dict)
+        
+class FileRunningView(View):
+    @method_decorator(login_required)
+    def post(self, request, *arg, **kwargs):
+        yes_url = request.POST.get('yes_url')
+        break_url = request.POST.get('break_url')
+
+        request_dict = {}
+        request_dict['cell_title'] = gettext('已有檔案執行中')
+        request_dict['cell_content'] = gettext('檔案執行中，是否查看執行進度?')
+        request_dict['yes_url'] = yes_url
+        request_dict['break_url'] = break_url
+        return render(request, 'general/confirm_page.html', request_dict)
