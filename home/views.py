@@ -33,5 +33,8 @@ class InitializeView(View):
         path = settings.DPVIEW_TEMP_ROOT+username+'/'
         for directory_path in os.listdir(path):
             shutil.rmtree(path+directory_path)
+        if ExecuteModel.objects.filter(user_name=username).exists():
+            file = ExecuteModel.objects.get(user_name=username)
+            file.delete()
         finish = True
         return JsonResponse(finish, safe=False)

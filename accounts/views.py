@@ -93,6 +93,16 @@ class PasswordCheckView(View):
         if not check.is_active:
             return JsonResponse({'message':gettext('帳戶已被凍結，動作已取消')}, status=401)
         return HttpResponse(status=204)
+        
+class PasswordCheckPageView(View):
+    def post(self, request, *arg, **kwargs):
+        cell_content = request.POST.get('cell_content', None)
+        check_success_action_url = request.POST.get('check_success_action_url', None)        
+        
+        request_dict = {}
+        request_dict['cell_content'] = cell_content
+        request_dict['check_success_action_url'] = check_success_action_url
+        return render(request, 'general/input_password_page.html', request_dict)        
 
 class ChangePasswordView(View):
     def post(self, request, *arg, **kwargs):
