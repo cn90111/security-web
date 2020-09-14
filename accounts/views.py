@@ -82,7 +82,7 @@ class DeleteAccountView(View):
         user.delete()
         return redirect('home')
         
-class PasswordCheckView(View):        
+class PasswordCheckView(View):
     def post(self, request, *arg, **kwargs):
         user = request.user
         password = request.POST.get('password', None)

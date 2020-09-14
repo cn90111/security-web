@@ -173,7 +173,7 @@ class AbstractExecuteView(View):
     def get_empty_form(self):
         raise AttributeError('應藉由子類別實作此方法，return form()')
         
-    def set_url_path(self, request_dict, caller, file_name):        
+    def set_url_path(self, request_dict, caller, file_name):
         request_dict['break_program_url'] = reverse(caller+':break_program')
         request_dict['show_progress_url'] = reverse(caller+':show_progress')
         request_dict['execute_url'] = reverse(caller+':execute')
