@@ -122,10 +122,8 @@ class CustomView(View):
         file_name = kwargs.get('csv_name')
         if not file_name:
             return redirect('home')
-        alert_message = kwargs.get('alert_message')
          
         request_dict = self.get_request_dict(request, *arg, **kwargs)
-        request_dict['alert_message'] = alert_message
         return render(request, 'general/parameter_custom.html', request_dict)
         
     @method_decorator(login_required)
@@ -133,8 +131,8 @@ class CustomView(View):
         file_name = kwargs.get('csv_name')
         if not file_name:
             return redirect('home')
-        title_id_pair = request.POST.get('title_id_pair', None)
-        
+            
+        title_id_pair = request.POST.get('title_id_pair', None)        
         request_dict = self.get_request_dict(request, *arg, **kwargs)
         request_dict['title_id_pair'] = title_id_pair
         return render(request, 'general/parameter_custom.html', request_dict)
@@ -165,6 +163,7 @@ class CustomView(View):
         request_dict['advanced_settings_url'] = reverse(caller+':advanced_settings', args=[file_name])
         request_dict['base_settings_url'] = reverse(caller+':custom')+file_name+'/'
         request_dict['previous_page_url'] = reverse(caller+':home')
+        request_dict['execute_url'] = reverse(caller+':execute_page', args=[file_name])
         request_dict['upload_display_url'] = reverse(caller+':display', args=['upload'])
         return request_dict
 
@@ -175,9 +174,7 @@ class AdvancedSettingsView(CustomView):
         if not file_name:
             return redirect('home')
             
-        alert_message = kwargs.get('alert_message')
         request_dict = self.get_request_dict(request, *arg, **kwargs)
-        request_dict['alert_message'] = alert_message
         return render(request, 'general/parameter_custom.html', request_dict)
     
     @method_decorator(login_required)

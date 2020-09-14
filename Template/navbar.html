@@ -87,24 +87,13 @@
             warning_alert("{% trans '請先登入' %}");
             return;
         {% endif %}
-        var answer = prompt("{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入密碼' %}", '');
-        var url = "{% url 'password_check' %}";
+        var url = "{% url 'password_check_page' %}";
         var data = {
             'csrfmiddlewaretoken' : '{{ csrf_token }}',
-            'password' : answer,
+            'cell_content' : "{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入密碼' %}",
+            'check_success_action_url' : "{% url 'delete_account' %}",
         };
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            success: function () {
-                window.location = "{% url 'delete_account' %}";
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                var jsonObj = JSON.parse(xhr.responseText);
-                danger_alert(jsonObj.message);
-            }
-        });
+        post_to_url(url, data);        
     }
     
     function change_password() {
@@ -112,23 +101,12 @@
             warning_alert("{% trans '請先登入' %}");
             return;
         {% endif %}
-        var answer = prompt("{% trans '請輸入原本的密碼，以繼續進行密碼更改' %}", '');
-        var url = "{% url 'password_check' %}";
+        var url = "{% url 'password_check_page' %}";
         var data = {
             'csrfmiddlewaretoken' : '{{ csrf_token }}',
-            'password' : answer,
+            'cell_content' : "{% trans '請輸入原本的密碼，以繼續進行密碼更改' %}",
+            'check_success_action_url' : "{% url 'change_password' %}",
         };
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: data,
-            success: function () {
-                window.location = "{% url 'change_password' %}";
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                var jsonObj = JSON.parse(xhr.responseText);
-                danger_alert(jsonObj.message);
-            }
-        });
+        post_to_url(url, data);        
     }
 </script>
