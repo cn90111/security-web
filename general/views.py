@@ -38,8 +38,6 @@ class FileView(View):
                 if file.name.find(' ') != -1:
                     if file.name.split(' ')[-1] == '.csv':
                         return JsonResponse({'message':gettext("檔名不能以空白結尾")}, status=415)
-                if self.more_than_file_size_limit(file, 4194304):
-                    return JsonResponse({'message':gettext("檔案過大，不能超過 4 MB")}, status=415)
             mode = kwargs.get('mode')
             try:
                 for file in files:
@@ -149,11 +147,6 @@ class FileView(View):
         if not os.path.isdir(directory_path):
             os.makedirs(directory_path)
         dataframe.to_csv(file_path, index=False)
-        
-    def more_than_file_size_limit(self, file, byte):
-        if file.size > byte:
-            return True
-        return False
 
 class AbstractExecuteView(View):
     @method_decorator(login_required)
