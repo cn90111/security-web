@@ -24,12 +24,15 @@ class InitializeView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         username = request.user.get_username()
+        if not username:
+            raise Exception('username empty')
         finish = False
         for path in [settings.UPLOAD_ROOT, settings.OUTPUT_ROOT]:
             for method in os.listdir(path):
                 temp_path = path+method+'/'+username+'/'
-                for directory_path in os.listdir(temp_path):
-                    shutil.rmtree(temp_path+directory_path)
+                if os.path.exists(temp_path):
+                    for directory_path in os.listdir(temp_path):
+                        shutil.rmtree(temp_path+directory_path)
         path = settings.DPVIEW_TEMP_ROOT+username+'/'
         if os.path.exists(path):
             for directory_path in os.listdir(path):
