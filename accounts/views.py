@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib import auth
 from django.views import View
 from django.conf import settings
@@ -66,6 +68,7 @@ class LogInView(View):
         return render(request, 'registration/login.html', {'form': form})
     
 class LogOutView(View):
+    @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         auth.logout(request)
         return redirect('login')
@@ -101,7 +104,8 @@ class PasswordCheckView(View):
             return JsonResponse({'message':gettext('帳戶已被凍結，動作已取消')}, status=401)
         return HttpResponse(status=204)
         
-class PasswordCheckPageView(View):    
+class PasswordCheckPageView(View):
+    @method_decorator(login_required)
     def post(self, request, *arg, **kwargs):
         cell_content = request.POST.get('cell_content', None)
         check_success_action_url = request.POST.get('check_success_action_url', None)        
@@ -126,6 +130,7 @@ class ChangePasswordView(View):
         else:
             return render(request, 'registration/change_password.html', {'form': form})
             
+    @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         form = ChangePasswordForm()
         return render(request, 'registration/change_password.html', {'form': form})
