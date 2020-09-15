@@ -74,11 +74,13 @@ class DeleteAccountView(View):
     def get(self, request, *arg, **kwargs):
         user = request.user
         username = user.get_username()
-        function_name = ['DPView', 'k_Anonymity', 'l_Diversity', 't_Closeness']
-        for name in function_name:
-            shutil.rmtree(settings.UPLOAD_ROOT+name+'/'+username+'/')
-            shutil.rmtree(settings.OUTPUT_ROOT+name+'/'+username+'/')
-        shutil.rmtree(settings.DPVIEW_TEMP_ROOT+username+'/')
+        for path in [settings.UPLOAD_ROOT, settings.OUTPUT_ROOT]:
+            for method in os.listdir(path):
+                temp_path = path+method+'/'+username+'/'
+                shutil.rmtree(temp_path)
+        path = settings.DPVIEW_TEMP_ROOT+username+'/'
+        if os.path.exists(path):
+            shutil.rmtree(path)
         user.delete()
         return redirect('home')
         
