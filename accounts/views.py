@@ -71,13 +71,17 @@ class LogOutView(View):
         return redirect('login')
         
 class DeleteAccountView(View):
+    @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         user = request.user
         username = user.get_username()
+        if not username:
+            raise Exception('username empty')
         for path in [settings.UPLOAD_ROOT, settings.OUTPUT_ROOT]:
             for method in os.listdir(path):
                 temp_path = path+method+'/'+username+'/'
-                shutil.rmtree(temp_path)
+                if os.path.exists(temp_path):
+                    shutil.rmtree(temp_path)
         path = settings.DPVIEW_TEMP_ROOT+username+'/'
         if os.path.exists(path):
             shutil.rmtree(path)
@@ -85,6 +89,7 @@ class DeleteAccountView(View):
         return redirect('home')
         
 class PasswordCheckView(View):
+    @method_decorator(login_required)
     def post(self, request, *arg, **kwargs):
         user = request.user
         password = request.POST.get('password', None)
@@ -96,7 +101,7 @@ class PasswordCheckView(View):
             return JsonResponse({'message':gettext('帳戶已被凍結，動作已取消')}, status=401)
         return HttpResponse(status=204)
         
-class PasswordCheckPageView(View):
+class PasswordCheckPageView(View):    
     def post(self, request, *arg, **kwargs):
         cell_content = request.POST.get('cell_content', None)
         check_success_action_url = request.POST.get('check_success_action_url', None)        
@@ -107,6 +112,7 @@ class PasswordCheckPageView(View):
         return render(request, 'general/input_password_page.html', request_dict)        
 
 class ChangePasswordView(View):
+    @method_decorator(login_required)
     def post(self, request, *arg, **kwargs):
         user = request.user
         username = user.get_username()
