@@ -1,7 +1,11 @@
 #DPSyn files
 DPView
 
+#Zip
+*.zip
+
 #Data files
+test
 output/*
 upload/*
 data
