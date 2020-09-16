@@ -215,19 +215,12 @@ class AbstractMethodView(View):
 class CheckFileStatus(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
-        path = Path()
-        
+        path = Path()        
         username = request.user.get_username()
         try:
             file = ExecuteModel.objects.get(user_name=username)
-            caller = file.caller
             request_dict = {}
-            request_dict['finish'] = file.finish
-            if file.finish:
-                request_dict['url'] = reverse(caller+':finish', args=[file.file_name])
-            if not file.finish:
-                request_dict['url'] = reverse(caller+':execute_page', args=[file.file_name])
-                request_dict['break_url'] = reverse(caller+':break_program')
+            request_dict['finish'] = file.finish            
             return JsonResponse(request_dict)
         except Exception as e:
             return JsonResponse(None, safe=False)
@@ -236,8 +229,7 @@ class AbstractBreakProgramView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         finish = False
-        username = request.user.get_username()
-        
+        username = request.user.get_username()        
         try:
             file = ExecuteModel.objects.get(user_name=username)
             self.break_program(file)
@@ -412,8 +404,11 @@ class UpdateLogView(View):
 
 class FileFinishView(View):
     @method_decorator(login_required)
-    def post(self, request, *arg, **kwargs):
-        yes_url = request.POST.get('yes_url')
+    def get(self, request, *arg, **kwargs):
+        username = request.user.get_username()
+        file = ExecuteModel.objects.get(user_name=username)
+        caller = file.caller
+        yes_url = reverse(caller+':finish', args=[file.file_name])
     
         request_dict = {}
         request_dict['cell_title'] = gettext('先前檔案去識別化完成')
@@ -423,9 +418,12 @@ class FileFinishView(View):
         
 class FileRunningView(View):
     @method_decorator(login_required)
-    def post(self, request, *arg, **kwargs):
-        yes_url = request.POST.get('yes_url')
-        break_url = request.POST.get('break_url')
+    def get(self, request, *arg, **kwargs):
+        username = request.user.get_username()
+        file = ExecuteModel.objects.get(user_name=username)
+        caller = file.caller
+        yes_url = reverse(caller+':execute_page', args=[file.file_name])
+        break_url = reverse(caller+':break_program')
 
         request_dict = {}
         request_dict['cell_title'] = gettext('已有檔案執行中')

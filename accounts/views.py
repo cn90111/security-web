@@ -8,6 +8,8 @@ from django.contrib import auth
 from django.views import View
 from django.conf import settings
 from django.utils.translation import gettext
+from django.urls import reverse
+
 from accounts.forms import TwUserCreationForm, ChangePasswordForm
 import os
 import shutil
@@ -106,9 +108,17 @@ class PasswordCheckView(View):
         
 class PasswordCheckPageView(View):
     @method_decorator(login_required)
-    def post(self, request, *arg, **kwargs):
-        cell_content = request.POST.get('cell_content', None)
-        check_success_action_url = request.POST.get('check_success_action_url', None)        
+    def get(self, request, *arg, **kwargs):
+        mode = kwargs.get('mode')
+        
+        if mode == 'delete_account':
+            cell_content = gettext('帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入密碼')
+            check_success_action_url = reverse('delete_account')
+        elif mode == 'change_password':
+            cell_content = gettext('請輸入原本的密碼，以繼續進行密碼更改')
+            check_success_action_url = reverse('change_password')
+        else:
+            raise Exception('PasswordCheckPageView mode error mode : '+mode)
         
         request_dict = {}
         request_dict['cell_content'] = cell_content

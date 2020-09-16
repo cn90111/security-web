@@ -122,7 +122,9 @@
                     return;
                 }
                 if (request.finish == true) {
-                    window.location = request.url;
+                    var mm = window.setInterval("check_time()", 1000);
+                    var sitv = window.setInterval("progress_check()", 10000);
+                    success(sitv, mm);
                 } else if (request.finish == false) {
                     reset();
                     execute_jquary.attr('disabled', 'disabled');
