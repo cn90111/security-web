@@ -28,6 +28,7 @@
         $(function () {
             sidebar_highlight('home');
         })
+        
         $(function () {
             var url = "{% url 'check_file_status' %}"
             $.getJSON(url, function (request) {
@@ -35,18 +36,9 @@
                     url = "{% url 'initialize' %}";
                     $.get(url);
                 } else if (request.finish == true) {
-                    url = "{% url 'file_finish' %}";
-                    var data = {
-                        'yes_url' : request.url,
-                    }
-                    post_to_url(url,data);
+                    window.location = "{% url 'file_finish' %}";
                 } else if (request.finish == false) {
-                    url = "{% url 'file_running' %}";
-                    var data = {
-                        'yes_url' : request.url,
-                        'break_url' : request.break_url,
-                    }
-                    post_to_url(url,data);
+                    window.location = "{% url 'file_running' %}";
                 } else {
                     alert("{% trans 'home.html finish不符合預期，請通知開發人員，finish = ' %}"+request.finish);
                 }

@@ -17,11 +17,8 @@
                         <div class="form-row">
                     {% endif %}
                     <div class="form-group col-md-4">
-                        {{ field.label_tag }}<br>
+                        <p data-toggle="tooltip" title="{{ field.help_text }}">{{ field.label_tag }}</p>
                         {{ field }}
-                        {% if field.help_text %}
-                            <small style="color: grey">{{ field.help_text }}</small>
-                        {% endif %}
                         {% for error in field.errors %}
                             <p style="color: red">{{ error }}</p>
                         {% endfor %}
@@ -122,7 +119,9 @@
                     return;
                 }
                 if (request.finish == true) {
-                    window.location = request.url;
+                    var mm = window.setInterval("check_time()", 1000);
+                    var sitv = window.setInterval("progress_check()", 10000);
+                    success(sitv, mm);
                 } else if (request.finish == false) {
                     reset();
                     execute_jquary.attr('disabled', 'disabled');
