@@ -87,13 +87,7 @@
             warning_alert("{% trans '請先登入' %}");
             return;
         {% endif %}
-        var url = "{% url 'password_check_page' %}";
-        var data = {
-            'csrfmiddlewaretoken' : '{{ csrf_token }}',
-            'cell_content' : "{% trans '帳號即將刪除，刪除後資料無法回復，如確定要刪除請輸入密碼' %}",
-            'check_success_action_url' : "{% url 'delete_account' %}",
-        };
-        post_to_url(url, data);        
+        window.location = "{% url 'password_check_page' 'delete_account' %}";
     }
     
     function change_password() {
@@ -101,12 +95,6 @@
             warning_alert("{% trans '請先登入' %}");
             return;
         {% endif %}
-        var url = "{% url 'password_check_page' %}";
-        var data = {
-            'csrfmiddlewaretoken' : '{{ csrf_token }}',
-            'cell_content' : "{% trans '請輸入原本的密碼，以繼續進行密碼更改' %}",
-            'check_success_action_url' : "{% url 'change_password' %}",
-        };
-        post_to_url(url, data);        
+        window.location = "{% url 'password_check_page' 'change_password' %}";
     }
 </script>
