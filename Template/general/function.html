@@ -99,9 +99,8 @@
         }
         
         function progress_check() {
-            var prog_url = '{{ show_progress_url }}'
+            var prog_url = '{{ show_progress_url }}';
             $.getJSON(prog_url, function (data) {
-                {# console.log("come in num_progress="+num_progress)#}
                 $('.progress-div').css('visibility', 'visible');
                 now_progress = data.num_progress;
                 progress_bar_jquary.css('width', data.num_progress + '%');
@@ -113,7 +112,7 @@
         }
         
         $(function () {
-            var url = "{% url 'check_file_status' %}"
+            var url = "{% url 'check_file_status' %}";
             $.getJSON(url, function (request) {
                 if (request == null) {
                     return;
@@ -144,10 +143,10 @@
                 execute_jquary.attr('disabled', 'disabled');
                 var mm = window.setInterval('check_time()', 1000);
                 var sitv = window.setInterval('progress_check()', 10000);
-                var url = '{{ execute_url }}'
-                var data = {csv_name : '{{ file_name }}'}
+                var url = '{{ execute_url }}';
+                var data = {'csv_name' : '{{ file_name }}'};
                 {% for field in form %}
-                    data['{{ field.html_name }}'] = $('#{{ field.auto_id }}').val()
+                    data['{{ field.html_name }}'] = $('#{{ field.auto_id }}').val();
                 {% endfor %}
                 $.ajax({
                     url: url,

@@ -36,7 +36,7 @@
 {% block script %}
     <script>
         function go_to_url() {
-            window.location = "{{ yes_url }}"
+            window.location = "{{ yes_url }}";
         }
         function dobule_check() {
             $('#question').toggle();
@@ -47,7 +47,7 @@
             {% if break_url %}
                 $.get('{{ break_url }}');
             {% endif %}
-            window.location = "{% url 'home' %}"
+            window.location = "{% url 'home' %}";
         }
     </script>
 {% endblock script %}
