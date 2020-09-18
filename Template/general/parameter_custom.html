@@ -34,7 +34,7 @@
         {% endif %}
         {% if custom_mode == 'DPView' %}
             <cell cell_title="{% trans '數字參數設定' %}">
-                {% include 'DPView/DPView_number_preprocessing.html' %}
+                {% include 'general/number_preprocessing.html.html' %}
             </cell>
         {% elif custom_mode == 'json_parser' %}
             <cell cell_title="{% trans '文字參數設定' %}">
@@ -104,7 +104,7 @@
                     document.getElementById(column_title+'_relationship_select_pair').selectedIndex  = $(this)[0].selectedIndex;
                     relationship_set(column_title);
                 }
-                initize()
+                initize();
                 document.getElementById('preview_file').style.display = 'block'; 
             });
         {% endif %}
@@ -116,7 +116,7 @@
                     document.getElementById(column_title+'_relationship_select_pair').selectedIndex  = $(this)[0].selectedIndex;
                     relationship_set(column_title);
                 }
-                initize()
+                initize();
                 document.getElementById('preview_file').style.display = 'block'; 
             });
         {% endif %}
@@ -128,7 +128,7 @@
                     document.getElementById(column_title+'_relationship_select_pair').selectedIndex  = $(this)[0].selectedIndex;
                     relationship_set(column_title);
                 }
-                initize()
+                initize();
                 document.getElementById('preview_file').style.display = 'block'; 
             });
         {% endif %}
@@ -182,7 +182,7 @@
             var url = "{{ base_settings_url }}";
             var data = {
                 'title_id_pair' : JSON.stringify(get_select()),
-            }
+            };
             post_to_url(url, data);
         }
         
@@ -190,7 +190,7 @@
             var url = "{{ advanced_settings_url }}";
             var data = {
                 'title_id_pair' : JSON.stringify(get_select()),
-            }
+            };
             post_to_url(url, data);
         }
     
@@ -198,7 +198,7 @@
             relationship = get_select_result(column_title);
             introduction = document.getElementById(column_title+'_introduction');
             {% if custom_mode == 'json_parser' %}
-                removeRed(document.getElementById(column_title+'_title').classList)
+                removeRed(document.getElementById(column_title+'_title').classList);
                 initize();
                 if (relationship == 'custom') {
                     document.getElementById(column_title+'_container').style.display = 'block';
@@ -222,7 +222,7 @@
                 initize();
                 if (relationship == 'number') {
                     document.getElementById(column_title+'_container').style.display = 'block';
-                    introduction.textContent = "{% trans '可直接輸入數字或使用按鈕調整區間' %}"
+                    introduction.textContent = "{% trans '可直接輸入數字或使用按鈕調整區間' %}";
                     advanced_number_preprocessing_enabled(column_title);
                 } else if (relationship == 'single') {
                     document.getElementById('preview_file').style.display = 'block';
@@ -239,7 +239,7 @@
                 initize();
                 if (relationship == 'have_empty') {
                     document.getElementById(column_title+'_container').style.display = 'block';
-                    introduction.textContent = "{% trans '請勾選代表空值的字串' %}"
+                    introduction.textContent = "{% trans '請勾選代表空值的字串' %}";
                 } else if (relationship == 'have_not_empty') {
                     document.getElementById('preview_file').style.display = 'block';
                 } else {
@@ -253,14 +253,14 @@
         }
         
         function removeRed(classList) {
-            classList.remove('text-danger')
+            classList.remove('text-danger');
         }
                 
         $(function () {
             var url = "{{ title_check }}";
             var data = {
                 'csv_name' : '{{ file_name }}',
-            }
+            };
             $.ajax({
                 url: url,
                 type: 'GET',
@@ -290,14 +290,14 @@
                             danger_alert(number_title+"{% trans '尚未選擇資料類型' %}");
                             return;
                         }
-                        number_title_pair_dict[number_title] = type
+                        number_title_pair_dict[number_title] = type;
                     }
                     var url = "{{ create_json }}";
                     var data = {
                         'csrfmiddlewaretoken' : '{{ csrf_token }}',
                         'csv_name' : '{{ file_name }}',
                         'number_title_pair_dict' : JSON.stringify(number_title_pair_dict),
-                    }
+                    };
                     
                     {% if advanced_settings %}
                         var interval_dict = {};
@@ -417,7 +417,7 @@
                             'csv_name' : '{{ file_name }}',
                             'structure_mode' : JSON.stringify(structure_mode),
                             'structure_dict' : JSON.stringify(structure_dict),
-                        }
+                        };
                         {% if advanced_settings %}
                             var number_title_list = {{ number_title_list|safe }};
                             var number_title_pair_dict = {};
@@ -427,7 +427,7 @@
                                     danger_alert(number_title+"{% trans '尚未選擇資料類型' %}");
                                     return;
                                 }
-                                number_title_pair_dict[number_title] = type
+                                number_title_pair_dict[number_title] = type;
                             }
                             data['number_title_pair_dict'] = JSON.stringify(number_title_pair_dict);  
                             
