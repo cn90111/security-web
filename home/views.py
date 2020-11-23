@@ -6,13 +6,26 @@ from django.views import View
 from django.http import JsonResponse
 from general.models import ExecuteModel
 
+from .models import VisitCountModel
+
 import os
 
 import shutil
 
 @login_required
 def index(request):
-    return render(request, 'home.html')
+    count_model = VisitCountModel.objects.filter(id=1)
+    if count_model:
+        count_model = count_model[0]
+        count_model.count += 1
+    else:
+        count_model = VisitCountModel()
+        count_model.count = 1
+    count_model.save()
+    
+    request_dict = {}
+    request_dict['count'] = count_model.count
+    return render(request, 'home.html', request_dict)
     
 class MaintainView(View):
     def get(self, request, *arg, **kwargs):

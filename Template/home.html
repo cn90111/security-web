@@ -21,7 +21,7 @@
 
 {% block script %}
     <script>
-        page.title = "{% trans '歡迎使用本系統' %}"
+        page.title = "{% trans '歡迎使用本系統，您是第 ' %}" + "{{ count }}" + " 位訪問者"
     </script>
 
     <script>
