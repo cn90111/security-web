@@ -29,10 +29,10 @@
     
     <script>
         $(function () {
-            var url = "{% url 'check_file_status' %}"
+            var url = "{% url 'check_file_status' %}";
             $.getJSON(url, function (request) {
                 if (request == null) {
-                    var url = "{% url 'initialize' %}"
+                    var url = "{% url 'initialize' %}";
                     $.get(url);
                 } else if (request.finish == true) {
                     window.location = "{% url 'file_finish' %}";
@@ -102,7 +102,7 @@
                 contentType: false,
                 processData: false,
                 success: function () {
-                    reset()
+                    reset();
                     window.location = '{{ custom_url }}'+csv_name+'/';
                 },
                 error: function (xhr, ajaxOptions, thrownError) {

@@ -35,8 +35,8 @@
     
     function add_interval(number_title) {
         var checked_result = get_select_result(number_title);
-        document.getElementById(number_title+'_interval_text').style.display = 'block'
-        document.getElementById(number_title+'_interval').style.display = 'block'
+        document.getElementById(number_title+'_interval_text').style.display = 'block';
+        document.getElementById(number_title+'_interval').style.display = 'block';
         var interval_area = document.getElementById(number_title+'_interval_tbody');
         var interval_quantity = interval_area.rows.length+1;
         var number_type_pair = {{ number_type_pair | safe }};
@@ -52,7 +52,7 @@
         var tr;
         var td;
         
-        interval_area.innerHTML = ""
+        interval_area.innerHTML = "";
         
         for (i=0; i<interval_quantity; i++) {
             var now_value = base+(bias*i);
@@ -63,11 +63,11 @@
                 next_value = Math.round(next_value);
             }
         
-            tr = interval_area.insertRow(-1)
+            tr = interval_area.insertRow(-1);
             
             td = tr.insertCell(-1);
             temp = '';
-            temp += '<input type="number" value="'+now_value+'" class="'+number_title+'_interval_'+i+'" required>'
+            temp += '<input type="number" value="'+now_value+'" class="'+number_title+'_interval_'+i+'" required>';
             temp += '--';
             temp += '<input type="number" value="'+next_value+'" class="'+number_title+'_interval_'+(i+1)+'" required>';
             if (i==interval_quantity-1) {
@@ -98,7 +98,7 @@
                 now_element[j].value = next_element.value;
             }
         }
-        interval_area.deleteRow(-1)
+        interval_area.deleteRow(-1);
         var new_last_icon = document.getElementById(number_title+'_icon_'+(interval_area.rows.length-1));
         new_last_icon.src = '{% static "img/plus.png" %}';
         new_last_icon.alt = '{% trans "新增區間" %}';

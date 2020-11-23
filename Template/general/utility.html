@@ -38,7 +38,7 @@
                     </select>
                 </div>
                 <div class="col-md-1">
-                    <button onclick="check_start()" type="button" class="btn btn-primary" style="width:100%">{% trans '確定' %}</button>
+                    <button id="start_botton" onclick="check_start()" type="button" class="btn btn-primary" style="width:100%">{% trans '確定' %}</button>
                 </div>
             </div>
             <p id="loading" style="display:none">{% trans '量測中請稍後' %}</p>
@@ -78,25 +78,26 @@
     </script>
     
     <script>
-        finish_text = '{{ finish }}'
-        unlock_count = 0
+        finish_text = '{{ finish }}';
+        unlock_count = 0;
         var left_accuracy = $('#left_accuracy');
         var right_accuracy = $('#right_accuracy');
         var bottom_accuracy = $('#bottom_accuracy');
         var loading_text = $('#loading');
         var selecter = $('#machine_learning_select');
         var mode = $('#machine_learning_mode_select');
+        var start_botton = $('#start_botton');
         
         mode.on('change', function() {
             if ($(this).val() === 'classification') {
-                left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}")
-                right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}")
-                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}")
+                left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}");
+                right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}");
+                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}");
             }                
             else if ($(this).val() === 'regression') {            
-                left_accuracy.text("{% trans '原始檔案決定係數(coefficient of determination)：' %}")
-                right_accuracy.text("{% trans '去識別化檔案決定係數(coefficient of determination)：' %}")
-                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案決定係數(coefficient of determination)：' %}")
+                left_accuracy.text("{% trans '原始檔案決定係數(coefficient of determination)：' %}");
+                right_accuracy.text("{% trans '去識別化檔案決定係數(coefficient of determination)：' %}");
+                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案決定係數(coefficient of determination)：' %}");
             }
         });
         
@@ -109,21 +110,21 @@
             finish_text = '{{ finish }}';
             unlock_count = 0;
             
-            loading_text.text("{% trans '量測中請稍後' %}")
+            loading_text.text("{% trans '量測中請稍後' %}");
             if (mode.val() === 'classification') {
-                left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}")
-                right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}")
-                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}")
+                left_accuracy.text("{% trans '原始檔案準確度(accuracy)：' %}");
+                right_accuracy.text("{% trans '去識別化檔案準確度(accuracy)：' %}");
+                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}");
             }                
             else if (mode.val() === 'regression') {            
-                left_accuracy.text("{% trans '原始檔案決定係數(coefficient of determination)：' %}")
-                right_accuracy.text("{% trans '去識別化檔案決定係數(coefficient of determination)：' %}")
-                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案決定係數(coefficient of determination)：' %}")
+                left_accuracy.text("{% trans '原始檔案決定係數(coefficient of determination)：' %}");
+                right_accuracy.text("{% trans '去識別化檔案決定係數(coefficient of determination)：' %}");
+                bottom_accuracy.text("{% trans '以去識別化訓練，檢測原始檔案決定係數(coefficient of determination)：' %}");
             }
         }
         
         function utility_check(train_file_path, test_file_path, text_element, file_kind) {
-            var url = '{{ check_utility_url }}'
+            var url = '{{ check_utility_url }}';
             var data = {
                 'csrfmiddlewaretoken' : '{{ csrf_token }}',
                 'csv_name' : '{{file_name}}',
@@ -138,26 +139,28 @@
                 data: data,
                 success: function (result) {
                     if (mode.val() === 'classification') {
-                        text_element.text(text_element.text() + result.accuracy + '%')
+                        text_element.text(text_element.text() + result.accuracy + '%');
                     }
                     else if (mode.val() === 'regression') {
-                        text_element.text(text_element.text() + result.accuracy)
+                        text_element.text(text_element.text() + result.accuracy);
                     }
-                    finish(loading_text, file_kind)
+                    finish(loading_text, file_kind);
                     unlock_count++;
                     if (unlock_count>=3) {
                         selecter.removeAttr('disabled');
                         mode.removeAttr('disabled');
+                        start_botton.removeAttr('disabled');
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
                     var jsonObj = JSON.parse(xhr.responseText);
-                    text_element.text(text_element.text() + jsonObj.accuracy + '%')
+                    text_element.text(text_element.text() + jsonObj.accuracy + '%');
                     danger_alert(file_kind+jsonObj.message);
                     unlock_count++;
                     if (unlock_count>=3) {
                         selecter.removeAttr('disabled');
                         mode.removeAttr('disabled');
+                        start_botton.removeAttr('disabled');
                     }
                 }
             });
@@ -168,11 +171,12 @@
                         
             selecter.attr('disabled', 'disabled');
             mode.attr('disabled', 'disabled');
+            start_botton.attr('disabled', 'disabled');
             loading_text.show();
             
-            utility_check('upload', 'upload', left_accuracy, '{{ origin_file }}')
-            utility_check('output', 'output', right_accuracy, '{{ de_identification_file }}')
-            utility_check('output', 'upload', bottom_accuracy, '{{ utility_file }}')
+            utility_check('upload', 'upload', left_accuracy, '{{ origin_file }}');
+            utility_check('output', 'output', right_accuracy, '{{ de_identification_file }}');
+            utility_check('output', 'upload', bottom_accuracy, '{{ utility_file }}');
         }
     </script>
 {% endblock script %}
