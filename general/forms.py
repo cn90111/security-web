@@ -12,8 +12,8 @@ class AbstractForm(forms.Form):
         
     def _set_display_class(self):
         for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control'
-        
+            visible.field.widget.attrs['class'] = 'big-input-arrow'
+                
     def _set_suffix(self):
         for visible in self.visible_fields():
             visible.field.label_suffix = '：'

@@ -3,8 +3,10 @@
 {% block title %}k-Anonymity {{ block.super }}{% endblock title %}
 
 {% block hint %}
-    <cell cell_title="{% trans '說明' %}">
-        <p>{% trans '1：去識別化後的檔案可用性高，但執行速度較慢，可先執行 t-Closeness 測試是否符合需求' %}</p>
-        <p>{% trans '2：將游標懸浮至參數上可獲得參數進一步的說明' %}</p>
-    </cell>
+    <div>
+        <font>{% trans '1：去識別化後的檔案可用性高，但執行速度較慢，可先執行 t-Closeness 測試是否符合需求' %}</font>
+    </div>
+    <div>
+        <font>{% trans '2：將游標懸浮至參數上可獲得參數進一步的說明' %}</font>
+    </div>
 {% endblock hint %}

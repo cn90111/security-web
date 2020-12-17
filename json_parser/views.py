@@ -132,9 +132,13 @@ class CustomView(View):
         if not file_name:
             return redirect('home')
             
-        title_id_pair = request.POST.get('title_id_pair', None)        
+        title_id_pair = request.POST.get('title_id_pair', None)
+        interval_dict = request.POST.get('interval_dict', None)
+        almost_number_is_empty_dict = request.POST.get('almost_number_is_empty_dict', None)
         request_dict = self.get_request_dict(request, *arg, **kwargs)
         request_dict['title_id_pair'] = title_id_pair
+        request_dict['interval_dict'] = interval_dict
+        request_dict['almost_number_is_empty_dict'] = almost_number_is_empty_dict
         return render(request, 'general/parameter_custom.html', request_dict)
     
     def get_request_dict(self, request, *arg, **kwargs):
@@ -183,9 +187,13 @@ class AdvancedSettingsView(CustomView):
         if not file_name:
             return redirect('home')
             
-        title_id_pair = request.POST.get('title_id_pair', None)            
+        title_id_pair = request.POST.get('title_id_pair', None)
+        title_id_pair = request.POST.get('interval_dict', None)
+        almost_number_is_empty_dict = request.POST.get('almost_number_is_empty_dict', None)
         request_dict = self.get_request_dict(request, *arg, **kwargs)
         request_dict['title_id_pair'] = title_id_pair
+        request_dict['interval_dict'] = interval_dict
+        request_dict['almost_number_is_empty_dict'] = almost_number_is_empty_dict
         return render(request, 'general/parameter_custom.html', request_dict)
         
     def get_request_dict(self, request, *arg, **kwargs):

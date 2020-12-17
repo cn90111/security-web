@@ -3,28 +3,45 @@
 {% block title %}function home{% endblock title %}
 
 {% block content %}
-    {% block hint %}{% endblock hint %}
-    <cell cell_title="{% trans '檔案上傳區' %}">
-        <div id="loading" class="row" style="display:none">            
-            <div class="col-md-1">
+    <div class="header_word hint-body">
+        <font id="hint_upload" name="hint_level_1" onclick="hint_click('hint_upload', 1)">{% trans '上傳前須知' %} ▼</font>
+        <div id="hint_upload_page" name="level_1_page" class="header_word" style="display:none">
+            <div class="hint-level-1">
+                <font id="hint_system" name="hint_level_2" onclick="hint_click('hint_system', 2)">{% trans '系統限制' %} ▼</font>
+                <div id="hint_system_page" name="level_2_page" class="en_little_content hint-level-2" style="display:none">
+                    {% block system_hint %}{% endblock system_hint %}
+                </div>
+            </div>
+            
+            <div class="hint-level-1">
+                <font id="hint_file" name="hint_level_2" onclick="hint_click('hint_file', 2)">{% trans '檔案限制' %} ▼</font>
+                <div id="hint_file_page" name="level_2_page" class="en_little_content hint-level-2" style="display:none">
+                    {% block file_hint %}{% endblock file_hint %}                
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div id="loading" class="row" style="display:none; margin:0px;">            
+            <div class="col-md-1" style="padding:0px">
                 <div class="spinner-border"></div>
             </div>
-            <p id="loading_text" class="col-md-11">{% trans '檔案上傳中請稍後' %}</p>
+            <font id="loading_text" class="col-md-11 content_word" style="padding:0px">{% trans '檔案上傳中請稍後' %}</font>
         </div>
-        <form id="form_file" enctype="multipart/form-data">
+        <form id="form_file" enctype="multipart/form-data" style="width:50%;">
             {% csrf_token %}
-            <div class="custom-file center" style="height:80px">
+            <div class="custom-file">
                 <input type="file" class="custom-file-input" name="file" id="customFile_csv" accept=".csv" >
-                <label class="custom-file-label" for="customFile_csv">{% trans '請選擇將要去識別化的CSV檔案(.csv)' %}</label>
+                <label class="custom-file-label" for="customFile_csv">{% trans '請選擇將要去識別化的 CSV 檔案 (.csv)' %}</label>
             </div>
         </form>
-    </cell>
+    </div>
 {% endblock content %}
 
 {% block script %}
     <script>
         page.title = "{% trans '檔案上傳' %}";
-        sidebar_highlight('{{ caller }}');
+        navbar_highlight('{{ caller }}');
     </script>
     
     <script>

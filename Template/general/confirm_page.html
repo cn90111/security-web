@@ -4,32 +4,51 @@
 
 {% block content %}
     <div id="question">
-        <cell cell_title="{{ cell_title }}">
-            <p>{{ cell_content }}</p>
-            <br>
-            <div class="form-row col-lg-12">
-                <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
-                    <button onclick="go_to_url()" type="button" class="btn btn-primary" style="width:100%">{% trans '是' %}</button>
-                </div>
-                <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
-                    <button onclick="dobule_check()" type="button" class="btn btn-primary" style="width:100%">{% trans '否' %}</button>
-                </div>
-            </div>
-        </cell>
+        <div class="header_word">
+            <font>{{ cell_content }}</font>
+        </div>
+        
+        <div style="padding-top:20px">
+            <font class="header_word">{% trans '操作列表' %}</font>
+        </div>
+        <table class="content_word" style="width:25%;">
+            <tr valign="top">
+                <td style="width:50%;">
+                    <a href="javascript:void(0)" onclick="go_to_url()" style="color:#0062AD">
+                        <font>{% trans '是' %}</font>
+                    </a>
+                </td>
+                <td style="width:50%;">
+                    <a href="javascript:void(0)" onclick="dobule_check()" style="color:#0062AD">
+                        <font>{% trans '否' %}</font>
+                    </a>
+                </td>
+            </tr>
+        </table>
     </div>
+    
     <div id="check" style="display:none">
-        <cell cell_title="{% trans '再次確認' %}">
-            <p>{% trans '確定執行新的去識別化嗎?先前的執行結果將不會保留' %}</p>
-            <br>
-            <div class="form-row col-lg-12">
-                <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
-                    <button onclick="new_start()" type="button" class="btn btn-primary" style="width:100%">{% trans '是' %}</button>
-                </div>
-                <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
-                    <button onclick="dobule_check()" type="button" class="btn btn-primary" style="width:100%">{% trans '否' %}</button>
-                </div>
-            </div>
-        </cell>
+        <div class="header_word">
+            <font>{% trans '確定執行新的去識別化嗎?先前的執行結果將不會保留' %}</font>
+        </div>
+        
+        <div style="padding-top:20px">
+            <font class="header_word">{% trans '操作列表' %}</font>
+        </div>
+        <table class="content_word" style="width:25%;">
+            <tr valign="top">
+                <td style="width:50%;">
+                    <a href="javascript:void(0)" onclick="new_start()" style="color:#0062AD">
+                        <font>{% trans '是' %}</font>
+                    </a>
+                </td>
+                <td style="width:50%;">
+                    <a href="javascript:void(0)" onclick="dobule_check()" style="color:#0062AD">
+                        <font>{% trans '否' %}</font>
+                    </a>
+                </td>
+            </tr>
+        </table>
     </div>
 {% endblock content %}
 
@@ -38,10 +57,12 @@
         function go_to_url() {
             window.location = "{{ yes_url }}";
         }
+        
         function dobule_check() {
             $('#question').toggle();
             $('#check').toggle();
         }
+        
         function new_start() {
             $.get("{% url 'initialize' %}");
             {% if break_url %}

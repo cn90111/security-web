@@ -14,8 +14,12 @@
         <link href="{% static 'plugins/bootstrap/customselect.css' %}" rel="stylesheet" />
         <link href="{% static 'plugins/bootstrap/spinner.css' %}" rel="stylesheet" />
         <link href="{% static 'font-awesome/css/font-awesome.css' %}" rel="stylesheet" />
+        <link href="{% static 'fonts/fonts1.css' %}" rel="stylesheet" />
         <link href="{% static 'css/style.css' %}" rel="stylesheet" />
-        <link href="{% static 'css/main-style.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/main-style1.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/hint-style.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/arrow-style1.css' %}" rel="stylesheet" />
+        <link href="{% static 'css/parameter-setting-style.css' %}" rel="stylesheet" />
         <!-- Page-Level CSS -->
         <link href="{% static 'plugins/morris/morris-0.4.3.min.css' %}" rel="stylesheet" />
         
@@ -29,26 +33,38 @@
         <script src="{% static 'plugins/morris/raphael-2.1.0.min.js' %}"></script>
         <script src="{% static 'plugins/morris/morris.js' %}"></script>
     </head>
-    <body>
+    <style>
+        font {
+            {% if LANGUAGE_CODE == 'zh-hant' %}
+                font-family: Helvetica, "Microsoft JhengHei";
+            {% elif LANGUAGE_CODE == 'en-us' %}
+                font-family: Avenir;
+            {% endif %}
+        }
+
+        {% if LANGUAGE_CODE == 'en-us' %}
+            .en_little_content{
+                font-size: 18px;
+            }
+        {% endif %}
+    </style>
+    <body style="color:#000000">
         <!--  wrapper -->
         <div id="wrapper">
             {% include 'navbar.html' %}
-            {% include 'sidebar.html' %}
             <!--  page-wrapper -->
-            <div id="page-wrapper">
-                <div class="row">
+            <div id="page-wrapper" style="margin-top:20px; margin-bottom:40px; min-height:250px;">
+                <div style="padding-bottom:20px">
                     <!-- Page Header -->
-                    <div class="col-lg-12">
-                        <h1 class="page-header">[[ title ]]</h1>
-                    </div>
+                    <font class="title_word">[[ title ]]</font>
                     <!--End Page Header -->
                 </div>
 
-                <div class="row">
+                <div class="row" style="margin:0px">
                     {% block content %}{% endblock content %}
                 </div>
             </div>
-            {% include 'footer.html' %}             
+            {% include 'footer.html' %}
         </div>
     </body>
 </html>
@@ -105,6 +121,36 @@
 
         document.body.appendChild(form);    // Not entirely sure if this is necessary
         form.submit();
+    }
+    
+    function hint_click(element_id, hint_level) {
+        var target_page = $('#'+element_id+'_page');
+        var same_level_element = $("font[name='hint_level_"+hint_level+"']");
+        var same_level_page = $("div[name='level_"+hint_level+"_page']");
+        var is_close = target_page.is(':hidden');
+        
+        same_level_page.hide();
+        
+        if (is_close) {
+            target_page.toggle();
+        }
+        
+        same_level_element.each(function() {
+            var temp = $(this).html();
+            temp = temp.split(' ');
+            temp.pop();
+            var mapping_page = $('#'+$(this).attr('id')+'_page');
+            if (mapping_page.is(':visible')) {
+                temp.push('▲');
+            } else {
+                temp.push('▼');
+            }
+            $(this).html(temp.join(' '));
+        });
+    }
+    
+    function maintain() {
+        warning_alert("{% trans '此功能維修中' %}")
     }
 </script>
 {% block script %}{% endblock script %}
