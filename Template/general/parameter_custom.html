@@ -3,259 +3,272 @@
 {% block title %}parameter custom{% endblock title %}
 
 {% block hint %}
-    <cell cell_title="{% trans '說明' %}">
-        <p>{% trans '1：請確認左邊的參數設定，進行下一步的調整' %}</p>
-        <p>{% trans '2：請確認右邊的檔案預覽，是否為您想要去識別化的檔案' %}</p>
-        <p>{% trans '3：將滑鼠懸停於選項之上可看到選項說明' %}</p>
-        <p>{% trans '4：設定完成後，將頁面滾動至最下方，並按下繼續執行' %}</p>
-        <p>{% trans '5：使用統一填入功能時，如果選擇選項為「自行設定資料關係」，請記得點選各欄位的下拉式選單，以開啟設定資料關係介面' %}</p>
-    </cell>
+    <div class="header_word hint-body">
+        <font id="hint_parameter" name="hint_level_1" onclick="hint_click('hint_parameter', 1)">{% trans '說明' %} ▼</font>
+        <div id="hint_parameter_page" name="level_1_page" class="header_word" style="display:none">
+            <div class="hint-level-1 en_little_content" style="padding-top:0px">
+                <div>
+                    <font>{% trans '1.請確認左邊的參數設定，進行下一步的調整' %}</font>
+                </div>
+                <div>
+                    <font>{% trans '2.請確認右邊的檔案預覽，是否為您想要去識別化的檔案' %}</font>
+                </div>
+                <div>
+                    <font>{% trans '3.將滑鼠懸停於被截斷的內容上，可看到完整的文字' %}</font>
+                </div>
+                <div>
+                    <font>{% trans '4.將滑鼠懸停於配對關係選項之上，可看到選項說明' %}</font>
+                </div>
+                <div>
+                    <font>{% trans '5.設定關係時，紅色代表尚未設定完成、藍色代表設定完成、灰色代表無法使用' %}</font>
+                </div>
+                {% if custom_mode == 'json_parser' %}
+                    <div>
+                        <font>{% trans '6.使用統一填入功能時，「自行設定資料關係」功能將無法選擇' %}</font>
+                    </div>
+                    <div>
+                        <font>{% trans '7.「自行設定資料關係」功能，在選擇指定字串後即可開啟此功能，將出現設定資料關係介面' %}</font>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
     {% if advanced_settings %}
-        <cell cell_title="{% trans '進階設定說明' %}">
-            <p>{% trans '1：進階設定時，選擇「資料為數值型資料」可進行手動設定區間大小' %}</p>
-            <p>{% trans '2：若在基礎設定時，已選擇了「資料為數值型資料」，請記得點選各欄位的下拉式選單，以開啟手動設定區間大小介面' %}</p>
-            <p>{% trans '3：使用統一填入功能時，若選擇了「資料為數值型資料」，請記得點選各欄位的下拉式選單，以開啟手動設定區間大小介面' %}</p>
-        </cell>
-    {% endif %}    
+        <div class="header_word hint-body">
+            <font id="hint_advance_parameter" name="hint_level_1" onclick="hint_click('hint_advance_parameter', 1)">{% trans '進階設定說明' %} ▼</font>
+            <div id="hint_advance_parameter_page" name="level_1_page" class="header_word" style="display:none">
+                <div class="hint-level-1 en_little_content" style="padding-top:0px">
+                    <div>
+                        <font>{% trans '1.進階設定時，選擇「資料為數值型資料」可進行手動設定區間大小' %}</font>
+                    </div>
+                    <div>
+                        <font>{% trans '2.若在基礎設定時，已選擇了「資料為數值型資料」，可藉由再次選擇目標資料，以進行手動設定' %}</font>
+                    </div>
+                    <div>
+                        <font>{% trans '3.使用統一填入功能後，可藉由再次選擇目標資料以進行手動設定' %}</font>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
     {% if almost_number_dict %}
-        <cell cell_title="{% trans '欄位空值設定說明' %}">
-            <p>{% trans '1：系統檢測出數值欄位中含有字串，若該字串的含意為空值，請選擇「資料中含有空值」，並將空值勾選，例如：?、nan、null' %}</p>
-            <p>{% trans '2：如果該字串為有意義的欄位，則選擇「資料中無空值」，例如 more、3+、3↑等字串' %}</p>
-        </cell>
+        <div class="header_word hint-body">
+            <font id="hint_number_string" name="hint_level_1" onclick="hint_click('hint_number_string', 1)">{% trans '數值字串設定說明' %} ▼</font>
+            <div id="hint_number_string_page" name="level_1_page" class="header_word" style="display:none">
+                <div class="hint-level-1 en_little_content" style="padding-top:0px">
+                    <div>
+                        <font>{% trans '1.出現此設定的原因為，檢測出數值欄位中含有字串' %}</font>
+                    </div>
+                    <div>
+                        <font>{% trans '2.若該字串的含意為空值，請選擇「資料中含有空值」，並將空值勾選，例如：?、nan、null' %}</font>
+                    </div>
+                    <div>
+                        <font>{% trans '3.如果該字串為有意義的欄位，則選擇「資料中無空值」，例如 more、3+、3↑等字串' %}</font>
+                    </div>
+                    <div>
+                        <font>{% trans '4.使用統一填入功能時，「資料中含有空值」功能將無法選擇' %}</font>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endif %}
 {% endblock hint %}
 
 {% block left_container %}
-    <div class="form-group col-md-6">
-        {% if almost_number_dict %}
-            <cell cell_title="{% trans '欄位空值設定' %}">
-                {% include 'general/almost_number_title.html' %}
-            </cell>
-        {% endif %}
+    <div class="form-group col-md-6" style="padding:0px; margin:0px;">
         {% if custom_mode == 'DPView' %}
-            <cell cell_title="{% trans '數字參數設定' %}">
-                {% include 'general/number_preprocessing.html.html' %}
-            </cell>
+            <div class="header_word">
+                <font>{% trans '數字參數設定' %}</font>
+            </div>            
+            <div style="padding-top:15px">
+                {% include 'general/number_preprocessing.html' %}
+            </div>
         {% elif custom_mode == 'json_parser' %}
-            <cell cell_title="{% trans '文字參數設定' %}">
+            <div class="header_word">
+                <font>{% trans '文字參數設定' %}</font>
+            </div>            
+            <div style="padding-top:15px">
                 {% include 'json_parser/json_title.html' %}
-            </cell>
+            </div>
             {% if advanced_settings %}
-                <cell cell_title="{% trans '數字參數設定' %}">
+                <div class="header_word">
+                    <font>{% trans '數字參數設定' %}</font>
+                </div>            
+                <div style="padding-top:15px">
                     {% include 'general/number_preprocessing.html' %}
-                </cell>
+                </div>
             {% endif %}
         {% else %}
             <h2>{% trans 'custom_mode錯誤，{{custom_mode}}不符合預期，請通知開發人員' %}</h2>
+        {% endif %}
+        
+        {% if almost_number_dict %}
+            <div class="header_word">
+                <font>{% trans '數值字串設定' %}</font>
+            </div>            
+            <div style="padding-top:15px">
+                {% include 'general/almost_number_title.html' %}
+            </div>
         {% endif %}
     </div>
 {% endblock left_container %}
 
 {% block right_container %}
-    <div id="preview_file" class="form-group col-md-6">
+    <div id="preview_file" class="form-group col-md-6" style="padding:0px; margin:0px;">
         {% trans '檔案預覽' as preview_file %}
         {% include 'general/display_file.html' with title=preview_file display_url=upload_display_url id="preview" %}
     </div>
     {% if custom_mode == 'json_parser' %}
-        {% include 'json_parser/json_pair.html' %}
+        <div id="string_container" class="form-group col-md-6" style="padding:0px; margin:0px; display:none;">
+            {% include 'json_parser/json_pair.html' %}
+        </div>
     {% endif %}
     {% if advanced_settings %}
-        {% include 'general/advanced_number_preprocessing.html' %}
+        <div id="number_container" class="form-group col-md-6" style="padding:0px; margin:0px; display:none;">
+            {% include 'general/advanced_number_preprocessing.html' %}
+        </div>
     {% endif %}
     {% if almost_number_dict %}
-        {% include 'general/almost_number_pair.html' %}
+        <div id="almost_number_container" class="form-group col-md-6" style="padding:0px; margin:0px; display:none;">
+            {% include 'general/almost_number_pair.html' %}
+        </div>
     {% endif %}
 {% endblock right_container %}
 
 {% block button %}
-    <cell cell_title="{% trans '操作列表' %}">
-        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
-            <button id="execute" type="button" class="btn btn-primary" style="width:100%">{% trans '繼續執行' %}</button>
-        </div>
-        {% if not advanced_settings %}
-            <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
-                <button onclick="advanced_settings()" type="button" class="btn btn-primary" style="width:100%">{% trans '進階設定' %}</button>
-            </div>
-        {% else %}
-            <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
-                <button onclick="base_settings()" type="button" class="btn btn-primary" style="width:100%">{% trans '基礎設定' %}</button>
-            </div>
-        {% endif %}
-        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
-            <button onclick="location.href='{{ previous_page_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '重新選擇檔案' %}</button>
-        </div>
-        <div class="form-group col-md-3" style="padding:0px;padding-left:15px;padding-right:15px;">
-            <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
-        </div>
-    </cell>    
+    <td>
+        <a id="execute" href="javascript:void(0)" style="color:#FF0000">
+            <font>{% trans '繼續執行' %}</font>
+        </a>
+    </td>
+    {% if not advanced_settings %}
+        <td>
+            <a href="javascript:void(0)" onclick="advanced_settings()" style="color:#0062AD">
+                <font>{% trans '進階設定' %}</font>
+            </a>
+        </td>
+    {% else %}
+        <td>
+            <a href="javascript:void(0)" onclick="base_settings()" style="color:#0062AD">
+                <font>{% trans '基礎設定' %}</font>
+            </a>
+        </td>
+    {% endif %}
+    <td>
+        <a href="{{ previous_page_url }}" style="color:#0062AD">
+            <font>{% trans '重選檔案' %}</font>
+        </a>
+    </td>
+    <td>
+        <a href="{% url 'home' %}" style="color:#0062AD">
+            <font>{% trans '返回首頁' %}</font>
+        </a>
+    </td>    
 {% endblock button %}
 
 {% block script %}
     <script>
         page.title = "{% trans '參數設定' %}";
-        sidebar_highlight('{{ caller }}');
+        navbar_highlight('{{ caller }}');
     </script> 
     
     <script>
-        {% if custom_mode == 'json_parser' %}
-            $("#all_string_relationship_select_pair").on("change", function() {
-                var string_element_dict = {{ string_element_dict|safe }};        
-                for (var column_title in string_element_dict) {
-                    document.getElementById(column_title+'_relationship_select_pair').selectedIndex  = $(this)[0].selectedIndex;
-                    relationship_set(column_title);
-                }
-                initize();
-                document.getElementById('preview_file').style.display = 'block'; 
-            });
-        {% endif %}
-        
-        {% if advanced_settings or custom_mode == 'DPView' %}
-            $("#all_number_relationship_select_pair").on("change", function() {
-                var number_title_list = {{ number_title_list|safe }};
-                for (var column_title of number_title_list) {
-                    document.getElementById(column_title+'_relationship_select_pair').selectedIndex  = $(this)[0].selectedIndex;
-                    relationship_set(column_title);
-                }
-                initize();
-                document.getElementById('preview_file').style.display = 'block'; 
-            });
-        {% endif %}
-        
-        {% if almost_number_dict %}
-            $("#all_almost_number_select_pair").on("change", function() {
-                var almost_number_dict = {{ almost_number_dict|safe }};
-                for (var column_title in almost_number_dict) {
-                    document.getElementById(column_title+'_relationship_select_pair').selectedIndex  = $(this)[0].selectedIndex;
-                    relationship_set(column_title);
-                }
-                initize();
-                document.getElementById('preview_file').style.display = 'block'; 
-            });
+        var title_id_pair = {};
+        {% if title_id_pair %}
+            title_id_pair = {{ title_id_pair|safe }};
         {% endif %}
         
         function initize() {
             document.getElementById('preview_file').style.display = 'none';    
             {% if custom_mode == 'json_parser' %}
-                var string_element_dict = {{ string_element_dict|safe }};
-                for (var column_title in string_element_dict) {
-                    document.getElementById(column_title+'_container').style.display = 'none';
-                }
+                document.getElementById('string_container').style.display = 'none';
             {% endif %}
             {% if advanced_settings %}
-                var number_title_list = {{ number_title_list|safe }};
-                for (var column_title of number_title_list) {
-                    document.getElementById(column_title+'_container').style.display = 'none';
-                }
+                document.getElementById('number_container').style.display = 'none';
             {% endif %}
             {% if almost_number_dict %}
-                var almost_number_dict = {{ almost_number_dict|safe }};
-                for (var column_title in almost_number_dict) {
-                    document.getElementById(column_title+'_container').style.display = 'none';
-                }
+                document.getElementById('almost_number_container').style.display = 'none';
             {% endif %}
-        }
-        
-        function get_select() {
-            var title_id_pair = {};
-            {% if custom_mode == 'json_parser' %}
-                var string_element_dict = {{ string_element_dict|safe }};
-                for (var column_title in string_element_dict) {
-                    title_id_pair[column_title] = document.getElementById(column_title+'_relationship_select_pair').selectedIndex;
-                }
-            {% endif %}
-            {% if advanced_settings or custom_mode == 'DPView' %}
-                var number_title_list = {{ number_title_list|safe }};
-                for (var column_title of number_title_list) {
-                    title_id_pair[column_title] = document.getElementById(column_title+'_relationship_select_pair').selectedIndex;
-                }
-            {% endif %}
-            {% if almost_number_dict %}
-                var almost_number_dict = {{ almost_number_dict|safe }};
-                for (var column_title in almost_number_dict) {
-                    title_id_pair[column_title] = document.getElementById(column_title+'_relationship_select_pair').selectedIndex;
-                }
-            {% endif %}
-            return title_id_pair;
         }
         
         function base_settings() {
             var url = "{{ base_settings_url }}";
             var data = {
-                'title_id_pair' : JSON.stringify(get_select()),
+                'title_id_pair' : JSON.stringify(title_id_pair),
+                'interval_dict' : JSON.stringify(interval_dict),
             };
+            {% if almost_number_dict %}
+                data['almost_number_is_empty_dict'] = JSON.stringify(almost_number_is_empty_dict);            
+            {% endif %}
             post_to_url(url, data);
         }
         
         function advanced_settings() {
             var url = "{{ advanced_settings_url }}";
             var data = {
-                'title_id_pair' : JSON.stringify(get_select()),
+                'title_id_pair' : JSON.stringify(title_id_pair),
             };
+            {% if interval_dict %}
+                data['interval_dict'] = JSON.stringify({{ interval_dict|safe }});
+            {% endif %}
+            {% if almost_number_dict %}
+                data['almost_number_is_empty_dict'] = JSON.stringify(almost_number_is_empty_dict);            
+            {% endif %}
             post_to_url(url, data);
         }
     
-        function relationship_set(column_title) {
-            relationship = get_select_result(column_title);
-            introduction = document.getElementById(column_title+'_introduction');
-            {% if custom_mode == 'json_parser' %}
-                removeRed(document.getElementById(column_title+'_title').classList);
+        function relationship_set(type, element) {
+            relationship = get_select_result(type, element);
+            introduction = document.getElementById(type+'_introduction');
+            if (type == 'string') {
                 initize();
                 if (relationship == 'custom') {
-                    document.getElementById(column_title+'_container').style.display = 'block';
+                    document.getElementById('string_container').style.display = 'block';
                     introduction.textContent = "{% trans '資料關係可自行輸入，使用下拉式選單時，也可以藉由輸入內容來查詢所要的選項，但要選擇其他選項時，需刪除先前所輸入的內容' %}";
-                    json_pair_enabled(column_title);
-                    return;
-                } else if (relationship == 'address') {
-                    document.getElementById('preview_file').style.display = 'block'; 
-                    json_pair_disabled(column_title);
-                    return;
-                } else if (relationship == 'unrelated') {
-                    document.getElementById('preview_file').style.display = 'block';
-                    json_pair_disabled(column_title);
-                    return;
+                    create_string_pair(element);
                 } else {
                     document.getElementById('preview_file').style.display = 'block';
                 }
-            {% endif %}
+            }
             
             {% if advanced_settings %}
-                initize();
-                if (relationship == 'number') {
-                    document.getElementById(column_title+'_container').style.display = 'block';
-                    introduction.textContent = "{% trans '可直接輸入數字或使用按鈕調整區間' %}";
-                    advanced_number_preprocessing_enabled(column_title);
-                } else if (relationship == 'single') {
-                    document.getElementById('preview_file').style.display = 'block';
-                    advanced_number_preprocessing_disabled(column_title);
-                } else if (relationship == 'category') {
-                    document.getElementById('preview_file').style.display = 'block';
-                    advanced_number_preprocessing_disabled(column_title);
-                } else {
-                    document.getElementById('preview_file').style.display = 'block';
+                if (type == 'number') {
+                    initize();
+                    if (relationship == 'number') {
+                        document.getElementById('number_container').style.display = 'block';
+                        introduction.textContent = "{% trans '直接輸入數字即可設定，新增區間時將自動平分數值，請先設定所要的區間數再微調' %}";
+                        create_number_interval(element);
+                    } else {
+                        document.getElementById('preview_file').style.display = 'block';
+                    }
                 }
             {% endif %}
             
             {% if almost_number_dict %}
-                initize();
-                if (relationship == 'have_empty') {
-                    document.getElementById(column_title+'_container').style.display = 'block';
-                    introduction.textContent = "{% trans '請勾選代表空值的字串' %}";
-                } else if (relationship == 'have_not_empty') {
-                    document.getElementById('preview_file').style.display = 'block';
-                } else {
-                    document.getElementById('preview_file').style.display = 'block';
-                }
+                if(type == 'almost_number'){
+                    initize();
+                    if (relationship == 'have_empty') {
+                        document.getElementById('almost_number_container').style.display = 'block';
+                        introduction.textContent = "{% trans '請勾選代表空值的字串' %}";
+                        create_almost_number_checkbox(element);
+                    } else {
+                        document.getElementById('preview_file').style.display = 'block';
+                    }
+                }                
             {% endif %}
         }
         
-        function get_select_result(column_title) {
-            return document.getElementById(column_title+'_relationship_select_pair').value;
+        function get_select_result(type, element) {
+            var select = $('#'+ type + '_relationship_select_pair');            
+            var index;
+            if (element in title_id_pair) {
+                index = title_id_pair[element];
+            } else {
+                return null;
+            }
+            return select.children().eq(index).val();
         }
-        
-        function removeRed(classList) {
-            classList.remove('text-danger');
-        }
-                
+                        
         $(function () {
             var url = "{{ title_check }}";
             var data = {
@@ -285,13 +298,14 @@
                     var number_title_list = {{ number_title_list|safe }};
                     var number_title_pair_dict = {};
                     for (var number_title of number_title_list) {
-                        var type = get_select_result(number_title);
+                        var type = get_select_result('number', number_title);
                         if(!type) {
                             danger_alert(number_title+"{% trans '尚未選擇資料類型' %}");
                             return;
                         }
                         number_title_pair_dict[number_title] = type;
                     }
+                    
                     var url = "{{ create_json }}";
                     var data = {
                         'csrfmiddlewaretoken' : '{{ csrf_token }}',
@@ -299,47 +313,20 @@
                         'number_title_pair_dict' : JSON.stringify(number_title_pair_dict),
                     };
                     
-                    {% if advanced_settings %}
-                        var interval_dict = {};
-                        for (var number_title of number_title_list) {
-                            var type = get_select_result(number_title);
-                            if (type == 'number') {
-                                var i = 0;
-                                interval_value_list = [];
-                                
-                                while (temp_interval = document.getElementsByClassName(number_title+'_interval_'+i)[0]) {
-                                    interval_value_list.push(parseFloat(temp_interval.value));
-                                    i++;
-                                }
-                                
-                                if(interval_value_list.length == 0) {
-                                    danger_alert(number_title+"{% trans '尚未確認間隔數量' %}");
-                                    return;
-                                }
-                                interval_dict[number_title] = interval_value_list;
+                    {% if advanced_settings %}                        
+                        for (var number_title in interval_dict) {
+                            var temp = [];
+                            for (var number of interval_dict[number_title]) {
+                                temp.push(parseFloat(number));
                             }
+                            interval_dict[number_title] = temp;
                         }
                         data['interval_dict'] = JSON.stringify(interval_dict);
                         data['type_pair'] = JSON.stringify({{ type_pair|safe }});
                     {% endif %}
                     {% if almost_number_dict %}
-                        var almost_number_dict = {{ almost_number_dict|safe }};
-                        var almost_number_is_empty_dict = {};
-                        for (var column_title in almost_number_dict) {
-                            var type = get_select_result(column_title);
-                            if (type == 'have_empty') {
-                                var empty_list = [];
-                                for (var element of almost_number_dict[column_title]) {
-                                    if (document.getElementById
-                                        (column_title+'_'+element+'_is_empty').checked) {
-                                        empty_list.push(element);
-                                    }
-                                }
-                                almost_number_is_empty_dict[column_title] = empty_list;
-                            }
-                        }
-                        data['almost_number_dict'] = JSON.stringify(almost_number_dict);
                         data['almost_number_is_empty_dict'] = JSON.stringify(almost_number_is_empty_dict);
+                        data['almost_number_dict'] = JSON.stringify({{ almost_number_dict|safe }});
                     {% endif %}
                     
                     $.ajax({
@@ -365,6 +352,7 @@
                     var lose_required = false;
                     
                     var structure_mode = {};
+                    
                     for (var column_title in string_element_dict) {
                         var relationship = get_select_result(column_title);
                         

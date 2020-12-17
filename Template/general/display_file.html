@@ -1,13 +1,12 @@
 {% load i18n %}
-<cell cell_title="{{ title }}{% trans '(前200筆)' %}">
-    <div class="modal-body" style="padding:0px">
-        <div id={{ id }} aligh="center" style="height:250px; overflow:scroll; border:2px black solid;">
-            <div style="padding:10px">
-                <div class="spinner-border"></div>
-            </div>
-        </div>
+<div class="header_word">
+    <font>{{ title }}{% trans '(前200筆)' %}</font>
+</div> 
+<div class="modal-body" style="padding:15px 10px 0px 0px;">
+    <div id={{ id }} class="content_word scroll-bar" style="height:180px; overflow:scroll; border:1px black solid;">
+        
     </div>
-</cell>
+</div>
 
 <script type="application/javascript">
     $(function () {

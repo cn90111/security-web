@@ -246,7 +246,6 @@ class DisplayCsvView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         path = Path()
-        
         method = kwargs.get('method').lower()
         file_name = request.GET.get('File', None)
         caller = path.get_caller(request)
@@ -258,9 +257,43 @@ class DisplayCsvView(View):
         else:
             raise AttributeError(gettext('無此method：') + method)
         df = pd.read_csv(file_path, keep_default_na=False)
-        tables = df.head(200).to_html()
+        
+        tables = self.get_html(df.head(200))        
         return JsonResponse(tables, safe=False)
 
+    def get_html(self, dataframe):
+        temp_list = []
+        temp_list.append('<table style="margin:0px 50px; width:100px; table-layout: fixed;">')
+        temp_list.append('<tr>')
+        temp_list.append('<td style="width:100px; white-space:nowrap; overflow:hidden; text-overflow: ellipsis; padding-right:15px">')
+        temp_list.append('<font>')
+        temp_list.append('id')
+        temp_list.append('</font>')
+        temp_list.append('</td>')
+        for title in dataframe.columns:
+            temp_list.append('<td style="width:100px; white-space:nowrap; overflow:hidden; text-overflow: ellipsis;  padding-right:15px">')
+            temp_list.append('<font data-toggle="tooltip" title="'+title+'">')
+            temp_list.append(title)
+            temp_list.append('</font>')
+            temp_list.append('</td>')
+        temp_list.append('</tr>')
+        for index, row in dataframe.iterrows():
+            temp_list.append('<tr>')
+            temp_list.append('<td style="width:100px; white-space:nowrap; overflow:hidden; text-overflow: ellipsis; padding-right:15px">')
+            temp_list.append('<font>')
+            temp_list.append(str(index).zfill(3))
+            temp_list.append('</font>')
+            temp_list.append('</td>')
+            for element in row:
+                temp_list.append('<td style="width:100px; white-space:nowrap; overflow:hidden; text-overflow: ellipsis; padding-right:15px">')
+                temp_list.append('<font data-toggle="tooltip" title="'+str(element)+'">')
+                temp_list.append(str(element))
+                temp_list.append('</font>')
+                temp_list.append('</td>')
+            temp_list.append('</tr>')
+        temp_list.append('</table>')
+        return ''.join(temp_list)
+        
 class DownloadView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):

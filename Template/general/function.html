@@ -7,47 +7,83 @@
     {% trans '分' as minute %}
     {% trans '秒' as second %}
     {% trans '目前進度：' as completion_rate %}
-    {% block hint %}{% endblock hint %}
-    <cell cell_title="{% trans '參數設定' %}">
-        <div class="container" style="width:inherit;">
-            <form id="parameter_form">
-                {% csrf_token %}
-                {% for field in form %}
-                    {% if forloop.counter0|divisibleby:3 %}
-                        <div class="form-row">
-                    {% endif %}
-                    <div class="form-group col-md-4">
-                        <p data-toggle="tooltip" title="{{ field.help_text }}">{{ field.label_tag }}</p>
-                        {{ field }}
-                        {% for error in field.errors %}
-                            <p style="color: red">{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                    {% if forloop.last or forloop.counter|divisibleby:3 %}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-                <div class="form-row">
-                    <div class="form-group col-md-2">
-                        <button id="execute" type="button" class="btn btn-primary" style="width:100%">{% trans '執行' %}</button>
-                    </div>
-                    <div class="form-group col-md-2">
-                        <div onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</div>
-                    </div>
-                </div>
-            </form>
-    	</div>
-        <div class="progress-div" style="width:90%;  left:5%;">
-            <label> {% trans '進度條' %} </label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <span id="Check_Txt" style="color:red">{% trans '執行時間：' %}<span id="Check_i">0 {{ hour }} 0 {{ minute }} 0 {{ second }}</span>
-            <div id="bar" class="progress progress-striped active">
-                <div class="progress-bar progress-bar-warning" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" style="width:0%">
-                </div>
-            </div>
-            <div class="progress-text progress-bar-striped active"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; ">
+    <div class="header_word hint-body">
+        <font id="hint_run" name="hint_level_1" onclick="hint_click('hint_run', 1)">{% trans '去識別化說明' %} ▼</font>
+        <div id="hint_run_page" name="level_1_page" class="header_word" style="display:none">
+            <div class="hint-level-1 en_little_content" style="padding-top:0px">
+                {% block hint %}{% endblock hint %}
             </div>
         </div>
-    </cell>
+    </div>
+    
+    <div>
+        <form id="parameter_form">
+            <table class="content_word" style="width:100%">
+                {% csrf_token %}
+                {% for field in form %}
+                    {% if forloop.counter0|divisibleby:2 %}
+                        <tr valign="top">
+                    {% endif %}
+                    <td>
+                        <font data-toggle="tooltip" title="{{ field.help_text }}">{{ field.label }}</font>
+                    </td>
+                    <td>
+                        {{ field }}
+                    </td>
+                    {% if forloop.last or forloop.counter|divisibleby:2 %}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </table>
+            
+            <div style="padding-top:20px">
+                <font class="header_word">{% trans '操作列表' %}</font>
+            </div>
+            <table class="content_word" style="width:25%;">
+                <tr valign="top">
+                    <td>
+                        <a id="execute" href="javascript:void(0)" style="color:#FF0000">
+                            <font>{% trans '繼續執行' %}</font>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'home' %}" style="color:#0062AD">
+                            <font>{% trans '返回首頁' %}</font>
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    
+    <div class="progress-div" style="padding-top:20px">
+        <table class="content_word" style="width:50%;">
+            <tr valign="top">
+                <td style="width:25%;">
+                    <font>{% trans '進度條' %}</font>
+                </td>
+                <td>
+                    <span id="Check_Txt" style="color:red">
+                        <font>
+                            {% trans '執行時間：' %}
+                        </font>
+                    <span id="Check_i">
+                        <font>
+                            0 {{ hour }} 0 {{ minute }} 0 {{ second }}
+                        </font>
+                    </span>
+                </td>
+            </tr>
+        </table>
+        <div id="bar" class="progress progress-striped active">
+            <div class="progress-bar progress-bar-warning" aria-valuemax="100" aria-valuemin="0" aria-valuenow="0" style="width:0%">
+            </div>
+        </div>
+        <div class="progress-text progress-bar-striped active"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; ">
+            <font id="progress_log" class="content_word">
+            </font>
+        </div>
+    </div>
 {% endblock content %}
 
 {% block script %}
@@ -57,13 +93,13 @@
     {% trans '目前進度：' as completion_rate %}
     <script>
         page.title = "{% trans '去識別化' %}";
-        sidebar_highlight('{{ caller }}');
+        navbar_highlight('{{ caller }}');
     </script>
     
     <script>
         var SetMinute = 0;
         var progress_bar_jquary = $('.progress-bar');
-        var progress_text_jquary = $('.progress-text');
+        var progress_text_jquary = $('#progress_log');
         var execute_jquary = $('#execute');
         var now_progress = 0;
         

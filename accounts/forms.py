@@ -15,7 +15,7 @@ class TwUserCreationForm(UserCreationForm):
         
     def _set_display_class(self):
         for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control'
+            pass
         
     def _set_label(self, username, password1, password2):
         username.label = '使用者名稱'

@@ -4,29 +4,38 @@
 
 {% block content %}
     {% block hint %}{% endblock hint %}
-    <div style="width:100%;">
+    <div>
         <form id="parameter_form">
             {% csrf_token %}
             {% block up_container %}
             {% endblock up_container %}
-            <div class="form-row" style="width:100%;">
+            <div class="form-row" style="width:100%; margin:0px;">
                 {% block left_container %}
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6" style="padding:0px; margin:0px;">
                     </div>
                 {% endblock left_container %}
                 {% block right_container %}
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-6" style="padding:0px; margin:0px;">
                     </div>
                 {% endblock right_container %}
             </div>
             {% block bottom_container %}
             {% endblock bottom_container %}
-            <div class="form-row col-lg-12">
-                {% block button %}
-                    <div class="form-group col-md-2">
-                        <button id="execute" type="button" class="btn btn-primary" style="width:100%">{% trans '繼續執行' %}</button>
-                    </div>
-                {% endblock button %}
+            <div style="padding-top:20px">
+                <font class="header_word">{% trans '操作列表' %}</font>
+            </div>
+            <div class="content_word" style="width:50%;">
+                <table style="width:100%;">
+                    <tr valign="top">
+                        {% block button %}
+                            <td>
+                                <a id="execute" href="javascript:void(0)">
+                                    <font>{% trans '繼續執行' %}</font>
+                                </a>
+                            <td>
+                        {% endblock button %}
+                    </tr>
+                </table>
             </div>
         </form>
     </div>
