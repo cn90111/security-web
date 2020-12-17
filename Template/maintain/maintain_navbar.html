@@ -5,42 +5,85 @@
 {% trans '刪除帳號' as delete_account %}
 <div>
     <!-- navbar top -->
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="navbar">
+    <nav style="border-bottom-style:dotted; border-width:1px; border-color:#707070;">
         <!-- navbar-header -->
-        <div class="navbar-header" style="padding-top:20px">
-            <a class="navbar-brand" href="javascript:void(0)" onclick="maintain()">
-                <font size="6" color="white" style="font-weight:bold;">Data Anonymization System</font>
+        <div>
+            <a href="javascript:void(0)" onclick="maintain()">
+                <font class="home_word">{% trans '資料匿名化系統' %}</font>
             </a>
         </div>
-        <!-- end navbar-header -->
-        <!-- navbar-top-links -->
-        <ul class="nav navbar-top-links navbar-right">
+        <ul class="nav navbar-top-links">
             <!-- main dropdown -->
+            <li>
+                <a href="javascript:void(0)" onclick="maintain()">
+                    <font>{% trans '首頁' %}</font>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0)" onclick="maintain()">
+                    <font>DPView</font>
+                </a>
+            </li>
+            <li>
+                <a href="javascript:void(0)" onclick="maintain()">
+                    <font>k-Anonymity</font>
+                </a>
+            </li>
+            {% if false %}
+                <li>
+                    <a href="javascript:void(0)" onclick="maintain()">
+                        <font>l-Diversity</font>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:void(0)" onclick="maintain()">
+                        <font>k-Anonymity</font>
+                    </a>
+                </li>
+            {% endif %}
+            <li>
+                <a href="javascript:void(0)" onclick="maintain()">
+                    <font>{% trans '更新日誌' %}</font>
+                </a>
+            </li>
             <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)">
-                    <i class="fa fa-user fa-3x"></i>
+                    <font>{% trans '語言切換' %}</font>
                 </a>
-                <!-- dropdown user-->
-                <ul class="dropdown-menu dropdown-user">
-                    <li><a href="javascript:void(0)" onclick="maintain()"><i class="fa fa-key fa-fw"></i>{% trans '更改密碼' %}</a>
-                    </li>
-                    <li class="divider"></li>
-                    <li><a href="javascript:void(0)" onclick="maintain()"><i class="fa fa-sign-out fa-fw"></i>{% trans '登出' %}</a>
-                    </li>
-                    <li><a href="javascript:void(0)" onclick="maintain()"><i class="fa fa-trash-o fa-fw"></i>{% trans '刪除帳號' %}</a>
-                    </li>
+                <ul class="nav nav-second-level dropdown-menu dropdown-user" style="font-size: 18px;">
+                    <form id="i18n" action="{% url 'set_language' %}" method="post">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path|remove_language_code }}"/>
+                        <input name="language" type="hidden" value="{{ LANGUAGE_CODE }}" />
+                    </form>
+                    {% for code, name in LANGUAGES %}
+                        <li>
+                            <a href="javascript:void(0)" name="language_item" onclick="switch_language('{{ code }}')">
+                                <font>{{ name }}</font>                            
+                            </a>
+                        </li>
+                    {% endfor %}
                 </ul>
-                <!-- end dropdown-user -->
+                <!-- second-level-items -->
+            </li>
+            <li class="dropdown">
+                {% if user.is_authenticated %}
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:void(0)" onclick="maintain()">
+                        <font>{{ user.username }}</font>
+                    </a>
+                {% else %}
+                    <a class="dropdown-toggle" href="javascript:void(0)" onclick="maintain()">
+                        <font>{% trans '尚未登入' %}</font>
+                    </a>
+                {% endif %}
             </li>
             <!-- end main dropdown -->
         </ul>
-        <!-- end navbar-top-links -->
-
     </nav>
-<!-- end navbar top -->
-    <div id="alert" style="display:none;z-index:100;position:fixed;width:100%;opacity:0.9;" class="alert row">
-        <h3 id="alert_text" class="col-md-11"></h3>
-        <button type="button" class="close" style="padding-top:20px" onclick="close_alert()" aria-label="Close">
+    <!-- end navbar top -->
+    <div id="alert" class="alert row" style="display:none; width:100%; opacity:0.9; margin:0px; padding:5px">
+        <font id="alert_text" class="col-md-11 title_word"></font>
+        <button type="button" class="close" onclick="close_alert()" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
@@ -80,5 +123,10 @@
         
     function close_alert() {
         alert_jquery.hide();
-    }    
+    }
+    
+    function switch_language(language) {
+        $("[name='language']").val(language);
+        $('#i18n').submit();
+    }
 </script>

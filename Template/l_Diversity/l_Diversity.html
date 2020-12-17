@@ -3,8 +3,10 @@
 {% block title %}l-Diversity {{ block.super }}{% endblock title %}
 
 {% block hint %}
-    <cell cell_title="{% trans '說明' %}">
-        <p>{% trans '1：執行速度較快，但去識別化後的檔案不一定具備可用性' %}</p>
-        <p>{% trans '2：將游標懸浮至參數上可獲得參數進一步的說明' %}</p>
-    </cell>
+    <div>
+        <font>{% trans '1：執行速度較快，但去識別化後的檔案不一定具備可用性' %}</font>
+    </div>
+    <div>
+        <font>{% trans '2：將游標懸浮至參數上可獲得參數進一步的說明' %}</font>
+    </div>
 {% endblock hint %}

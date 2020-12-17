@@ -7,64 +7,111 @@
     {% trans '原始檔案' as origin_file %}
     {% trans '去識別化檔案' as de_identification_file %}
     {% trans '可用度檢測檔案' as utility_file %}
-    <cell cell_title="{% trans '說明' %}">
-        <p>{% trans '1：請選擇用以量測的機器學習方法，以及預測目標是分類問題或是回歸問題，選擇後請按下確定' %}</p>
-        <p>{% trans '2：將會以資料集最後一欄做為量測目標(Label)' %}</p>
-        <p>{% trans '3：上方為以80%原始檔案訓練，20%原始檔案驗證的準確度' %}</p>
-        <p>{% trans '4：中間為以80%去識別化檔案訓練，20%去識別化檔案驗證的準確度' %}</p>
-        <p>{% trans '5：下方為以80%去識別化檔案訓練，20%原始檔案檔案驗證的準確度' %}</p>
-    </cell>
-    <cell cell_title="{% trans '可用性檢測' %}">
-        <form id="parameter_form">
-            {% csrf_token %}            
-            <div class="form-row">                
-                <label for="machine_learning_mode_select">{% trans '模型預測目標：' %}</label>
-                <div class="form-group col-md-11">
-                    <select class="form-control" id="machine_learning_mode_select">
-                        <option value="classification">{% trans '分類預測' %}</option>
-                        <option value="regression">{% trans '回歸預測' %}</option>
-                    </select>
+    <div class="header_word hint-body">
+        <font id="hint_utility" name="hint_level_1" onclick="hint_click('hint_utility', 1)">{% trans '說明' %} ▼</font>
+        <div id="hint_utility_page" name="level_1_page" class="header_word" style="display:none">
+            <div class="hint-level-1 en_little_content" style="padding-top:0px">
+                <div>
+                    <font>{% trans '1：請選擇用以量測的機器學習方法，以及預測目標是分類問題或是回歸問題，選擇後請按下確定' %}</font>
                 </div>
-                <div class="col-md-1">
+                <div>
+                    <font>{% trans '2：將會以資料集最後一欄做為量測目標(Label)' %}</font>
                 </div>
-            </div>
-            <div class="form-row">                
-                <label for="machine_learning_select">{% trans '用以量測的機器學習：' %}</label>
-                <div class="form-group col-md-11">
-                    <select class="form-control" id="machine_learning_select">
-                        {% for item in machine_learning_list %}
-                            <option value="{{ item }}">{{ item }}</option>
-                        {% endfor %}
-                    </select>
+                <div>
+                    <font>{% trans '3：上方為以80%原始檔案訓練，20%原始檔案驗證的準確度' %}</font>
                 </div>
-                <div class="col-md-1">
-                    <button id="start_botton" onclick="check_start()" type="button" class="btn btn-primary" style="width:100%">{% trans '確定' %}</button>
+                <div>
+                    <font>{% trans '4：中間為以80%去識別化檔案訓練，20%去識別化檔案驗證的準確度' %}</font>
                 </div>
-            </div>
-            <p id="loading" style="display:none">{% trans '量測中請稍後' %}</p>
-            <div>
-                <div class="form-group">
-                    <p id="left_accuracy">{% trans '原始檔案準確度(accuracy)：' %}</p>
+                <div>
+                    <font>{% trans '5：下方為以80%去識別化檔案訓練，20%原始檔案檔案驗證的準確度' %}</font>
                 </div>
-                <div class="form-group">
-                    <p id="right_accuracy">{% trans '去識別化檔案準確度(accuracy)：' %}</p>
-                </div>
-                <div class="form-group">
-                    <p id="bottom_accuracy">{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}</p>
-                </div>
-            </div>
-        </form>
-    </cell>
-    <cell cell_title="{% trans '操作列表' %}">
-        <div class="form-row">
-            <div class="form-group col-md-2">
-                <button onclick="location.href='{{ download_output_url }}'" type="button" class="btn btn-primary" style="width:100%">{% trans '下載去識別化檔案' %}</button>
-            </div>
-            <div class="form-group col-md-2">
-                <button onclick="location.href='{% url 'home' %}'" type="button" class="btn btn-primary" style="width:100%">{% trans '返回主選單' %}</button>
             </div>
         </div>
-    </cell>
+    </div>
+    
+    <form id="parameter_form">
+        {% csrf_token %}
+        <table style="width:100%; margin-bottom:20px">
+            <tr class="header_word">
+                <td style="width:50%">
+                    <font for="machine_learning_mode_select">{% trans '模型預測目標：' %}</font>
+                </td>
+                <td style="width:50%">
+                    <font for="machine_learning_select">{% trans '用以量測的機器學習：' %}</font>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:50%">
+                    <div style="padding-right:10px">
+                        <select id="machine_learning_mode_select" class="form-control content_word select-arrow" style="padding:0px; height:100%; color:#000000;">
+                            <option value="classification">
+                                <font>
+                                    {% trans '分類預測' %}
+                                </font>
+                            </option>
+                            <option value="regression">
+                                <font>
+                                    {% trans '回歸預測' %}
+                                </font>
+                            </option>
+                        </select>
+                    </div>
+                </td>
+                <td style="width:50%">
+                    <div style="padding-right:10px">
+                        <select id="machine_learning_select" class="form-control content_word select-arrow" style="padding:0px; height:100%; color:#000000;">
+                            {% for item in machine_learning_list %}
+                                <option value="{{ item }}">
+                                    <font>
+                                        {{ item }}
+                                    </font>
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        
+        <font id="loading" class="content_word" style="color:#FF0000; display:none; margin-bottom:10px;">{% trans '量測中請稍後' %}</font>
+        <div class="en_little_content">
+            <div>
+                <font id="left_accuracy">{% trans '原始檔案準確度(accuracy)：' %}</font>
+            </div>
+            <div>
+                <font id="right_accuracy">{% trans '去識別化檔案準確度(accuracy)：' %}</font>
+            </div>
+            <div>
+                <font id="bottom_accuracy">{% trans '以去識別化訓練，檢測原始檔案準確度(accuracy)：' %}</font>
+            </div>
+        </div>
+    </form>
+    
+    <div style="padding-top:20px">
+        <font class="header_word">{% trans '操作列表' %}</font>
+    </div>
+    <table class="content_word" style="width:50%;">
+        <tr valign="top">
+            <td style="width:25%;">
+                <a id="start_botton" href="javascript:void(0)" onclick="check_start()" style="color:#FF0000">
+                    <font>{% trans '開始量測' %}</font>
+                </a>
+            </td>
+            <td style="width:25%;">
+                <a href="{{ download_output_url }}" style="color:#0062AD">
+                    <font>{% trans '下載成果' %}</font>
+                </a>
+            </td>
+            <td style="width:25%;">
+                <a href="{% url 'home' %}" style="color:#0062AD">
+                    <font>{% trans '返回首頁' %}</font>
+                </a>
+            </td>
+            <td style="width:25%;">
+            </td>
+        </tr>
+    </table>
 {% endblock content %}
 
 {% block script %}
@@ -74,7 +121,7 @@
     {% trans '可用度檢測檔案' as utility_file %}
     <script>
         page.title = "{% trans '可用性評估' %}";
-        sidebar_highlight('{{ caller }}');
+        navbar_highlight('{{ caller }}');
     </script>
     
     <script>
