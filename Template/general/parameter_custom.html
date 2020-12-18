@@ -200,6 +200,9 @@
             {% if almost_number_dict %}
                 data['almost_number_is_empty_dict'] = JSON.stringify(almost_number_is_empty_dict);            
             {% endif %}
+            {% if custom_mode == 'json_parser' %}
+                data['structure_dict'] = JSON.stringify(structure_dict);            
+            {% endif %}
             post_to_url(url, data);
         }
         
@@ -213,6 +216,9 @@
             {% endif %}
             {% if almost_number_dict %}
                 data['almost_number_is_empty_dict'] = JSON.stringify(almost_number_is_empty_dict);            
+            {% endif %}
+            {% if custom_mode == 'json_parser' %}
+                data['structure_dict'] = JSON.stringify(structure_dict);            
             {% endif %}
             post_to_url(url, data);
         }
@@ -259,7 +265,7 @@
         }
         
         function get_select_result(type, element) {
-            var select = $('#'+ type + '_relationship_select_pair');            
+            var select = $('#'+ type + '_relationship_select_pair');
             var index;
             if (element in title_id_pair) {
                 index = title_id_pair[element];
@@ -349,12 +355,10 @@
             $(function () {
                 $('#execute').on('click', function () {
                     var string_element_dict = {{ string_element_dict|safe }};
-                    var lose_required = false;
                     
                     var structure_mode = {};
-                    
                     for (var column_title in string_element_dict) {
-                        var relationship = get_select_result(column_title);
+                        var relationship = get_select_result('string', column_title);
                         
                         if(!relationship) {
                             danger_alert(column_title+"{% trans '尚未選擇欄位處理方式' %}");
@@ -368,111 +372,66 @@
                         }
                     }
                     
-                    var structure_dict = {};
-                    for (var column_title in string_element_dict) {
-                        var datalist_title = document.
-                            getElementById(column_title+'_title');
-                        var table = document.getElementById(column_title+'_table');
-                        var string_pair = {};
-                        for (var count = 0; count<table.tBodies[0].rows.length; count++) {
-                            var element = document.
-                                getElementById(column_title+'_element_'+count);
-                            var pair_to_element = document.
-                                getElementById(column_title+'_pair_label_'+count);
-                                
-                            if (!element.value && element.required) {
-                                lose_required = true;
-                                datalist_title.classList.add('text-danger');
-                                break;
+                    for (var column_title in structure_mode) {
+                        if (structure_mode[column_title] == 'custom') {
+                            if (column_title in structure_dict) {
+                                element_pair_dict = structure_dict[column_title];
+                                for (var element in element_pair_dict) {
+                                    if (!element_pair_dict[element] || element_pair_dict[element] == "") {
+                                        danger_alert(column_title + " {% trans '尚有對應關係還沒填寫，請點擊下拉式選單，以開啟自訂介面' %}");
+                                        return
+                                    }
+                                }
                             }
-                            if (!pair_to_element.value && pair_to_element.required) {
-                                lose_required = true;
-                                datalist_title.classList.add('text-danger');
-                                break;
-                            }
-                            string_pair[element.value] = pair_to_element.value;
                         }
-                        structure_dict[column_title] = string_pair;
                     }
                     
-                    if (lose_required) {
-                        danger_alert("{% trans '尚有對應關係還沒填寫，未填寫的欄位已由紅色標出，請點擊下拉式選單，以開啟自訂介面' %}");
-                    }
-                    else {
-                        var url = "{{ create_json }}";
-                        data = {
-                            'csrfmiddlewaretoken' : '{{ csrf_token }}',
-                            'csv_name' : '{{ file_name }}',
-                            'structure_mode' : JSON.stringify(structure_mode),
-                            'structure_dict' : JSON.stringify(structure_dict),
-                        };
-                        {% if advanced_settings %}
-                            var number_title_list = {{ number_title_list|safe }};
-                            var number_title_pair_dict = {};
-                            for (var number_title of number_title_list) {
-                                var type = get_select_result(number_title);
-                                if(!type) {
-                                    danger_alert(number_title+"{% trans '尚未選擇資料類型' %}");
-                                    return;
-                                }
-                                number_title_pair_dict[number_title] = type;
+                    var url = "{{ create_json }}";
+                    data = {
+                        'csrfmiddlewaretoken' : '{{ csrf_token }}',
+                        'csv_name' : '{{ file_name }}',
+                        'structure_mode' : JSON.stringify(structure_mode),
+                        'structure_dict' : JSON.stringify(structure_dict),
+                    };
+                    {% if advanced_settings %}
+                        var number_title_list = {{ number_title_list|safe }};
+                        var number_title_pair_dict = {};
+                        for (var number_title of number_title_list) {
+                            var type = get_select_result('number', number_title);
+                            if(!type) {
+                                danger_alert(number_title+"{% trans '尚未選擇資料類型' %}");
+                                return;
                             }
-                            data['number_title_pair_dict'] = JSON.stringify(number_title_pair_dict);  
-                            
-                            var interval_dict = {};
-                            for (var number_title of number_title_list) {
-                                var type = get_select_result(number_title);
-                                
-                                if (type == 'number') {
-                                    var i = 0;
-                                    interval_value_list = [];
-                                    
-                                    while (temp_interval = document.getElementsByClassName(number_title+'_interval_'+i)[0]) {
-                                        interval_value_list.push(parseFloat(temp_interval.value));
-                                        i++;
-                                    }
-                                    
-                                    if(interval_value_list.length == 0) {
-                                        danger_alert(number_title+"{% trans '尚未確認間隔數量' %}");
-                                        return;
-                                    }
-                                    interval_dict[number_title] = interval_value_list;
-                                }
+                            number_title_pair_dict[number_title] = type;
+                        }
+                        data['number_title_pair_dict'] = JSON.stringify(number_title_pair_dict);  
+                        
+                        for (var number_title in interval_dict) {
+                            var temp = [];
+                            for (var number of interval_dict[number_title]) {
+                                temp.push(parseFloat(number));
                             }
-                            data['interval_dict'] = JSON.stringify(interval_dict);
-                            data['type_pair'] = JSON.stringify({{ type_pair|safe }});
-                        {% endif %}
-                        {% if almost_number_dict %}
-                            var almost_number_dict = {{ almost_number_dict|safe }};
-                            var almost_number_is_empty_dict = {};
-                            for (var column_title in almost_number_dict) {
-                                var type = get_select_result(column_title);
-                                if (type == 'have_empty') {
-                                    var empty_list = [];
-                                    for (var element of almost_number_dict[column_title]) {
-                                        if (document.getElementById
-                                            (column_title+'_'+element+'_is_empty').checked) {
-                                            empty_list.push(element);
-                                        }
-                                    }
-                                    almost_number_is_empty_dict[column_title] = empty_list;
-                                }
-                            }
-                            data['almost_number_is_empty_dict'] = JSON.stringify(almost_number_is_empty_dict);
-                        {% endif %}
-                        $.ajax({
-                            url: url,
-                            type: 'POST',
-                            data: data,
-                            success: function () {
-                                window.location = '{{ execute_url }}';
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                var jsonObj = JSON.parse(xhr.responseText);
-                                danger_alert(jsonObj.message);
-                            }
-                        });
-                    }
+                            interval_dict[number_title] = temp;
+                        }
+                        data['interval_dict'] = JSON.stringify(interval_dict);
+                        data['type_pair'] = JSON.stringify({{ type_pair|safe }});
+                    {% endif %}
+                    {% if almost_number_dict %}
+                        data['almost_number_is_empty_dict'] = JSON.stringify(almost_number_is_empty_dict);
+                        data['almost_number_dict'] = JSON.stringify({{ almost_number_dict|safe }});
+                    {% endif %}
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: data,
+                        success: function () {
+                            window.location = '{{ execute_url }}';
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            var jsonObj = JSON.parse(xhr.responseText);
+                            danger_alert(jsonObj.message);
+                        }
+                    });
                 })
             })
         </script>

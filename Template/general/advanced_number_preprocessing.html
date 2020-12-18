@@ -40,7 +40,7 @@
         for (i=0; i<interval_quantity; i++) {
             tr = interval_area.insertRow(-1);
             td = tr.insertCell(-1);
-            td.innerHTML = '<input type="number" step="any" value="'+interval_list[i]+'" class="remove-input-arrow interval_'+i+'" style="width:100%" required>';            
+            td.innerHTML = '<input type="number" step="any" value="'+interval_list[i]+'" class="remove-input-arrow interval_'+i+' custom_font" style="width:100%" required>';            
             td.style = "padding-bottom:5px; padding-right:5px; width:45%;"
             
             td = tr.insertCell(-1);
@@ -48,7 +48,7 @@
             td.style = "padding-bottom:5px; padding-right:5px; width:5%;"
             
             td = tr.insertCell(-1);
-            td.innerHTML = '<input type="number" step="any" value="'+interval_list[i+1]+'" class="remove-input-arrow interval_'+(i+1)+'" style="width:100%" required>';
+            td.innerHTML = '<input type="number" step="any" value="'+interval_list[i+1]+'" class="remove-input-arrow interval_'+(i+1)+' custom_font" style="width:100%" required>';
             td.style = "padding-bottom:5px; padding-right:5px; width:45%;"
             
             td = tr.insertCell(-1);
