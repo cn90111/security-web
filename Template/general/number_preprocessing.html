@@ -73,7 +73,7 @@
     })
     
     $(function () {        
-        $('#number_title_select').change(function() {        
+        $('#number_title_select').click(function() {        
             var value = $(this).val();            
             var option_list = $('#number_relationship_select_pair option');
             var number_relationship_select_pair = $('#number_relationship_select_pair');
@@ -108,7 +108,7 @@
             }
         });
         
-        $('#number_relationship_select_pair').change(function() {
+        $('#number_relationship_select_pair').click(function() {
             var element = $('#number_title_select').val();
             var id = $(this).children(":selected").index();
             var option_color = $(this).children(":selected")[0].style.color;

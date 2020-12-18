@@ -34,7 +34,7 @@
         <script src="{% static 'plugins/morris/morris.js' %}"></script>
     </head>
     <style>
-        font {
+        font, .custom_font {
             {% if LANGUAGE_CODE == 'zh-hant' %}
                 font-family: Helvetica, "Microsoft JhengHei";
             {% elif LANGUAGE_CODE == 'en-us' %}
