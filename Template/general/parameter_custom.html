@@ -383,6 +383,14 @@
                                     }
                                 }
                             }
+                        } else {
+                            var string_element_dict = {{ string_element_dict|safe }};
+                            var string_element_list = string_element_dict[column_title];
+                            temp = {};
+                            for (var element of string_element_list) {
+                                temp[element] = null;
+                            }
+                            structure_dict[column_title] = temp;
                         }
                     }
                     
