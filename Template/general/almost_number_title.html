@@ -68,7 +68,7 @@
     })
     
     $(function () {        
-        $('#almost_number_title_select').change(function() {        
+        $('#almost_number_title_select').click(function() {        
             var value = $(this).val();            
             var option_list = $('#almost_number_relationship_select_pair option');
             var almost_number_relationship_select_pair = $('#almost_number_relationship_select_pair');
@@ -105,7 +105,7 @@
             }
         });
         
-        $('#almost_number_relationship_select_pair').change(function() {
+        $('#almost_number_relationship_select_pair').click(function() {
             var element = $('#almost_number_title_select').val();
             var id = $(this).children(":selected").index();
             var option_color = $(this).children(":selected")[0].style.color;

@@ -134,10 +134,12 @@ class CustomView(View):
             
         title_id_pair = request.POST.get('title_id_pair', None)
         interval_dict = request.POST.get('interval_dict', None)
+        structure_dict = request.POST.get('structure_dict', None)
         almost_number_is_empty_dict = request.POST.get('almost_number_is_empty_dict', None)
         request_dict = self.get_request_dict(request, *arg, **kwargs)
         request_dict['title_id_pair'] = title_id_pair
         request_dict['interval_dict'] = interval_dict
+        request_dict['structure_dict'] = almost_number_is_empty_dict
         request_dict['almost_number_is_empty_dict'] = almost_number_is_empty_dict
         return render(request, 'general/parameter_custom.html', request_dict)
     
@@ -188,11 +190,13 @@ class AdvancedSettingsView(CustomView):
             return redirect('home')
             
         title_id_pair = request.POST.get('title_id_pair', None)
-        title_id_pair = request.POST.get('interval_dict', None)
+        interval_dict = request.POST.get('interval_dict', None)
+        structure_dict = request.POST.get('structure_dict', None)
         almost_number_is_empty_dict = request.POST.get('almost_number_is_empty_dict', None)
         request_dict = self.get_request_dict(request, *arg, **kwargs)
         request_dict['title_id_pair'] = title_id_pair
         request_dict['interval_dict'] = interval_dict
+        request_dict['structure_dict'] = structure_dict
         request_dict['almost_number_is_empty_dict'] = almost_number_is_empty_dict
         return render(request, 'general/parameter_custom.html', request_dict)
         
