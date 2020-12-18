@@ -139,7 +139,7 @@ class CustomView(View):
         request_dict = self.get_request_dict(request, *arg, **kwargs)
         request_dict['title_id_pair'] = title_id_pair
         request_dict['interval_dict'] = interval_dict
-        request_dict['structure_dict'] = almost_number_is_empty_dict
+        request_dict['structure_dict'] = structure_dict
         request_dict['almost_number_is_empty_dict'] = almost_number_is_empty_dict
         return render(request, 'general/parameter_custom.html', request_dict)
     

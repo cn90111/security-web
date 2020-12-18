@@ -181,7 +181,7 @@ class JsonParser():
         return json_dict
         
     def create_json_file(self, file_path, file_name, structure_mode, structure_dict, type_pair=None, interval_dict=None):
-        for key in structure_mode:
+        for key in structure_mode:            
             mode = structure_mode[key]
             if mode == 'tw_address':
                 structure_dict[key] = \
