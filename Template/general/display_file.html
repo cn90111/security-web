@@ -17,10 +17,15 @@
     $(function () {
         var display_table = $('#{{ id }}');
         var url = '{{ display_url }}';
+        wait_reason = "{% trans '檔案讀取中，請稍後' %}";
+        ready = false;
+        
         $.getJSON(url, {
                 'File' : '{{ file_name }}',
                 'caller' : '{{ caller }}',
             }, function (table) {
+                wait_reason = '';
+                ready = true;
                 display_table.html(table);
             }
         )

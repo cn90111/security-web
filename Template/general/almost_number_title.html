@@ -8,13 +8,13 @@
         {% else %}
             <div class="form-row" style="margin:0px">
                 <div class="form-check col-md-6 left-element">
-                    <select id="almost_number_title_select" class="form-control content_word select-arrow" style="padding:0px; height:100%; color:#707070;">
+                    <select id="almost_number_title_select" class="form-control content_word select-arrow" style="padding:0px; height:100%; color:#707070;" data-toggle="tooltip" title="{% trans '紅色為尚未設定完成、藍色為已設定完成' %}">
                         <option selected disabled value="need_almost_number_setting" style="color:#707070;">
                             <font>
                                 {% trans '需設定數字字串關係' %}
                             </font>
                         </option>
-                        <option value="all_almost_number_title" style="color:#000000;">
+                        <option value="all_almost_number_title" style="color:#000000;" data-toggle="tooltip" title="{% trans '僅能做粗淺的設定，詳細設定依舊需要個別點入設定' %}{% trans '，例如設定哪些字串為空值' %}">
                             <font>
                                 {% trans '將全部欄位皆設定為' %}
                             </font>
@@ -29,8 +29,8 @@
                     </select>
                 </div>
                 <div class="form-check col-md-6 left-element">
-                    <select class="form-control content_word select-arrow" id="almost_number_relationship_select_pair" style="padding:0px; height:100%; color:#707070;">
-                        <option selected value="almost_number_setting" style="color:#707070;" disabled>
+                    <select class="form-control content_word select-arrow" id="almost_number_relationship_select_pair" style="padding:0px; height:100%; color:#707070;" data-toggle="tooltip" title="{% trans '選項若為灰色，代表無法在當前模式下使用' %}{% trans '，請切換「需設定數字字串關係」下拉式選單內的值' %}">
+                        <option selected value="almost_number_setting" style="color:#707070;" disabled data-toggle="tooltip" title="{% trans '請選擇符合字串的選項' %}">
                             <font>
                                 {% trans '數字字串關係' %}
                             </font>
@@ -80,7 +80,7 @@
                 option_list.css('color','#000000');
                 option_list[0].disabled = true;
                 option_list[0].style.color = '#707070';
-                if (value != 'all_almost_number_title') {                
+                if (value && value != 'all_almost_number_title') {                
                     if (value in title_id_pair) {
                         var index = title_id_pair[value];
                         option_list[index].selected = true;
@@ -111,8 +111,10 @@
             var option_color = $(this).children(":selected")[0].style.color;
             
             $(this).css('color', option_color);
-            if (element != 'need_almost_number_setting') {
+            if (element && element != 'need_almost_number_setting') {
                 if (id != 0) {
+                    wait_reason = "{% trans '資料設定中，請稍後' %}";
+                    ready = false;
                     if (element == 'all_almost_number_title') {
                         for (var column_title in {{ almost_number_dict|safe }}) {
                             title_id_pair[column_title] = id;
@@ -127,6 +129,8 @@
                         $('#almost_number_title_select').children('[value='+element+']')[0].style.color = '#0062AD';
                         $('#almost_number_title_select').css('color', '#0062AD');
                     }
+                    wait_reason = '';
+                    ready = true;
                 }
             }
         });

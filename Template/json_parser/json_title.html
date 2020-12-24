@@ -8,13 +8,13 @@
         {% else %}
             <div class="form-row" style="margin:0px">
                 <div class="form-check col-md-6 left-element">
-                    <select id="string_title_select" class="form-control content_word select-arrow" style="padding:0px; height:100%; color:#707070;">
+                    <select id="string_title_select" class="form-control content_word select-arrow" style="padding:0px; height:100%; color:#707070;" data-toggle="tooltip" title="{% trans '紅色為尚未設定完成、藍色為已設定完成' %}">
                         <option selected disabled value="need_string_setting" style="color:#707070;">
                             <font>
                                 {% trans '需設定字串關係' %}
                             </font>
                         </option>
-                        <option value="all_string_title" style="color:#000000;">
+                        <option value="all_string_title" style="color:#000000;" data-toggle="tooltip" title="{% trans '僅能做粗淺的設定，詳細設定依舊需要個別點入設定' %}{% trans '，例如設定字串從屬關係' %}">
                             <font>
                                 {% trans '將全部欄位皆設定為' %}
                             </font>
@@ -29,8 +29,8 @@
                     </select>
                 </div>
                 <div class="form-check col-md-6 left-element">
-                    <select class="form-control content_word select-arrow" id="string_relationship_select_pair" style="padding:0px; height:100%; color:#707070;">
-                        <option selected disabled value="string_setting" style="color:#707070;">
+                    <select class="form-control content_word select-arrow" id="string_relationship_select_pair" style="padding:0px; height:100%; color:#707070;" data-toggle="tooltip" title="{% trans '選項若為灰色，代表無法在當前模式下使用' %}{% trans '，請切換「需設定字串關係」下拉式選單內的值' %}">
+                        <option selected disabled value="string_setting" style="color:#707070;" data-toggle="tooltip" title="{% trans '請選擇符合字串的選項' %}">
                             <font>
                                 {% trans '字串關係' %}
                             </font>
@@ -80,7 +80,7 @@
             var option_color = $(this).children(":selected")[0].style.color;
             
             $(this).css('color', option_color);
-            if (value != 'need_string_setting') {
+            if (value && value != 'need_string_setting') {
                 option_list.attr('disabled', false);
                 option_list.css('color','#000000');
                 option_list[0].disabled = true;
@@ -116,8 +116,10 @@
             var option_color = $(this).children(":selected")[0].style.color;
             
             $(this).css('color', option_color);
-            if (element != 'need_string_setting') {
+            if (element && element != 'need_string_setting') {
                 if (id != 0) {
+                    wait_reason = "{% trans '資料設定中，請稍後' %}";
+                    ready = false;
                     if (element == 'all_string_title') {
                         for (var column_title in {{ string_element_dict|safe }}) {
                             title_id_pair[column_title] = id;
@@ -132,6 +134,8 @@
                         $('#string_title_select').children('[value='+element+']')[0].style.color = '#0062AD';
                         $('#string_title_select').css('color', '#0062AD');
                     }
+                    wait_reason = '';
+                    ready = true;
                 }
             }
         });

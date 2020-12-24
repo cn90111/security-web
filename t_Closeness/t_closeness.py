@@ -14,13 +14,12 @@ from django.http import JsonResponse
 from django.conf import settings
 from django.utils.translation import gettext
 
-from general.exception import BreakProgramException
+from general.exception import BreakProgramException, ParameterException
 from general.models import ExecuteModel
 
-import datetime
+import logging
 from datetime import date 
 today = date.today()
-import logging
 logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(message)s',datefmt='%Y-%m-%d %H:%M:%S',filename= str(today) +'_log.txt')
 
 def show_progress(request):
@@ -54,14 +53,10 @@ def run(request):
     progress_count = 0
     file.num_progress = 5
     file.log = 'Building data information...'
-    logging.info('Building data information...')
+    logging.info('t_Closeness Building data information...')
     file.save()
     if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
-    #file_name = 'dataset1.csv'
-    #dict_file_name = file_name[:-4] + '_dict.json'
-    #k = 7
-    #t = 0.01
     k = int(request.GET.get('k', None))
     t = float(request.GET.get('t', 100000))
     df_data = pd.read_csv(settings.UPLOAD_ROOT + 't_Closeness/' + username + '/' + directory_name + '/' + file_name, keep_default_na=False)
@@ -71,10 +66,6 @@ def run(request):
     for attr_id in range(attr_num):
         if file.skip:
             raise BreakProgramException(gettext('程式成功終止'))
-        print("({attr_id}) {attr_name}    ".format(attr_id=attr_id, attr_name=column_name[attr_id]), end='')
-    #print("\nWhich is sensitive attribute?")
-    #sa_id = int(input("\nWhich is sensitive attribute?"))
-    #sa_id = 1
     sa_id = attr_num - 1
     qi_list = []
     for attr_id in range(attr_num):
@@ -243,8 +234,8 @@ def run(request):
                         generalized_category = data_dict[column_name[attr_id]]['category_generalize'][(generalized_category, category_list[i])]
                     k_anony_sub_data.append(generalized_category)
                 else:
-                    print("Unknown attribute type")
-                    exit(-1)
+                    logging.error('t_Closeness unknown attribute type')
+                    return
             else:
                 k_anony_sub_data.append([original_data[target_id][attr_id] for target_id, dist in candidates])
         k_anony_data.append(k_anony_sub_data)
@@ -293,7 +284,7 @@ def run(request):
         if len(above_t_cluster_id) == 0:
             break
         elif len(above_t_cluster_id) == 1:
-            print("Warning: One cluster above t.")
+            logging.warning('t_Closeness one cluster above t.')
             cluster_id = above_t_cluster_id[0]
             cluster_distribution_dict = {}
             for ele in distribution_dict.keys():
@@ -336,10 +327,6 @@ def run(request):
         del(k_anony_data[target_cluster_id])
         del(k_anony_data[above_t_cluster_id[0]])
     
-    
-    # In[ ]:
-    
-    
     # Generalize numerical attributes
     for attr_id in range(attr_num):
         if attr_id in qi_list:
@@ -362,7 +349,7 @@ def run(request):
     
     file.num_progress = 99
     file.log = 'Save file...'
-    logging.info('Save file...')
+    logging.info('t_Closeness save file...')
     file.save()
     if file.skip:
         raise BreakProgramException(gettext('程式成功終止'))
@@ -395,5 +382,5 @@ def run(request):
     
     file.num_progress = 100
     file.log = 'OVER'
-    logging.info('OVER')
+    logging.info('t_Closeness OVER')
     file.save()
