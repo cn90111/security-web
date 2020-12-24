@@ -1,7 +1,36 @@
 {% load i18n %}
 
 <div class="header_word hint-body">
-    <font id="hint_upload_log_24" name="hint_level_1" onclick="hint_click('hint_upload_log_24', 1)">{% trans '最新更新'%} {% trans '12/18 ver 2.0.1' %} ▼</font>
+    <font id="hint_upload_log_25" name="hint_level_1" onclick="hint_click('hint_upload_log_25', 1)">{% trans '最新更新'%} {% trans '12/24 ver 2.0.2' %} ▼</font>
+    <div id="hint_upload_log_25_page" name="level_1_page" class="header_word" style="display:none">
+        <div class="hint-level-1 en_little_content" style="padding-top:0px">
+            <div>
+                <font style="color:green">{% trans '新增項目：' %}</font>
+            </div>
+            <div>
+                <font style="color:green">{% trans '1. 去識別化表單增加最小值限制' %}</font>
+            </div>
+            <div>
+                <font style="color:green">{% trans '2. 在參數配對頁面，增加更多懸浮提示' %}</font>
+            </div>
+            <div>
+                <font style="color:green">{% trans '3. 加入檔案過大時防護機制，當預覽頁面尚未跑完、變數數值尚未設定完成時，無法進行後續操作' %}</font>
+            </div>
+            <div>
+                <font style="color:red">{% trans '調整項目：' %}</font>
+            </div>
+            <div>
+                <font style="color:red">{% trans '1. 資料為空值，不做任何選擇代表全為非空值 → 一定要選擇選項' %}</font>
+            </div>
+            <div>
+                <font style="color:red">{% trans '2. 修正點擊「需設定關係」下拉式選單後，不選擇任何項目，將會錯誤開啟「資料關係」的下拉式選單' %}</font>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="header_word hint-body">
+    <font id="hint_upload_log_24" name="hint_level_1" onclick="hint_click('hint_upload_log_24', 1)">{% trans '12/18 ver 2.0.1' %} ▼</font>
     <div id="hint_upload_log_24_page" name="level_1_page" class="header_word" style="display:none">
         <div class="hint-level-1 en_little_content" style="padding-top:0px">
             <div>

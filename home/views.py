@@ -9,8 +9,12 @@ from general.models import ExecuteModel
 from .models import VisitCountModel
 
 import os
-
 import shutil
+
+import logging
+from datetime import date
+today = date.today()
+logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(message)s',datefmt='%Y-%m-%d %H:%M:%S',filename= str(today) +'_log.txt')
 
 @login_required
 def index(request):
@@ -30,6 +34,7 @@ def index(request):
 class MaintainView(View):
     def get(self, request, *arg, **kwargs):
         for objects in ExecuteModel.objects.all():
+            logging.info('maintain delect: ' + objects)
             objects.delete()
         return render(request, 'maintain/maintain_page.html')
 
@@ -52,6 +57,7 @@ class InitializeView(View):
                 shutil.rmtree(path+directory_path)
         if ExecuteModel.objects.filter(user_name=username).exists():
             file = ExecuteModel.objects.get(user_name=username)
+            logging.info(username + 'initialize ExecuteModel')
             file.delete()
         finish = True
         return JsonResponse(finish, safe=False)

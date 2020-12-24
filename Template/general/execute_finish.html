@@ -59,5 +59,8 @@
     <script>
         page.title = "{% trans '去識別化結果' %}";
         navbar_highlight('{{ caller }}');
+        
+        var wait_reason = '';
+        var ready = true; // change in display_file and left_container
     </script>
 {% endblock script %}

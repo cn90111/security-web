@@ -6,3 +6,6 @@ class PairLoopException(Exception):
     
 class NotAddressException(Exception):
     pass
+    
+class ParameterException(Exception):
+    pass
