@@ -97,6 +97,12 @@
 </script>
 
 <script>
+    {% if alert_message %}
+        $(function () {
+            danger_alert('{{alert_message}}');
+        })
+    {% endif %}
+
     // https://blog.xuite.net/dizzy03/murmur/60259945-%5BJavascript%5D%5B%E8%BD%89%5D+%E7%94%A8JavaScript%E7%99%BC%E5%87%BAPost+Request
     function post_to_url(path, params) {
         // The rest of this code assumes you are not using a library.

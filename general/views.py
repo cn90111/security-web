@@ -11,7 +11,7 @@ from django.urls import reverse
 from general.machine_learning import MachineLearning
 from general.function import Path
 from general.function import ContentDetection
-from general.exception import BreakProgramException
+from general.exception import BreakProgramException, ParameterException
 from pandas.io.parsers import ParserError
 from general.models import ExecuteModel
 
@@ -50,10 +50,11 @@ class FileView(View):
                     if check_result:
                         return check_result
             except Exception as e:
-                print(e)
+                logging.critical('FileView unknown error', exc_info=True)
                 return JsonResponse({'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
             else:
                 return HttpResponse(status=204)
+            logging.critical('FileView unknown error', exc_info=True)
             return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)
         else:
             return JsonResponse({'message':gettext('檔案格式錯誤')}, status=415)
@@ -179,28 +180,36 @@ class AbstractMethodView(View):
         path = Path()
         caller = path.get_caller(request)
         username = request.user.get_username()
-        file_name = str(request.GET.get('csv_name',None))
+        file_name = str(request.GET.get('csv_name', None))
         form = self.get_form(request.GET)
-        if ExecuteModel.objects.filter(user_name=username).exists():
-            return JsonResponse({'message':gettext('您正在執行另一個檔案，檔名為:'+ExecuteModel.objects.get(user_name=username).file_name+'，若想執行目前的檔案，請先把另一個檔案關閉')}, status=423)
-        else:
-            ExecuteModel.objects.create(user_name=username, file_name=file_name, caller=caller, finish=False)
+        
         if form.is_valid():
+            if ExecuteModel.objects.filter(user_name=username).exists():
+                return JsonResponse({'message':gettext('您正在執行另一個檔案，檔名為:'+ExecuteModel.objects.get(user_name=username).file_name+'，若想執行目前的檔案，請先回到首頁選擇執行新的去識別化')}, status=423)
+            else:
+                ExecuteModel.objects.create(user_name=username, file_name=file_name, caller=caller, finish=False)
             try:
                 self.method_run(request)
             except BreakProgramException as e:
-                print(e)
+                logging.info(username + ' success stop file')
                 ExecuteModel.objects.filter(user_name=username).delete()
                 return JsonResponse({'message':gettext('程式已終止')}, status=404)
+            except ParameterException as e:
+                logging.error(username + ' parameter error')
+                ExecuteModel.objects.filter(user_name=username).delete()
+                return JsonResponse({'message':str(e)}, status=404)
             except Exception as e:
-                print(e)
+                logging.critical(username + 'AbstractMethodView unknown error, stop run', exc_info=True)
                 ExecuteModel.objects.filter(user_name=username).delete()
                 return JsonResponse({'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
             else:
+                logging.info(username + ' run finish', exc_info=True)
                 ExecuteModel.objects.filter(user_name=username).update(finish=True)
                 return HttpResponse(status=204)
+            logging.critical(username + 'AbstractMethodView unknown error, stop run', exc_info=True)
             return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)
         else:
+            logging.info(username + ' form error', exc_info=True)
             return JsonResponse({'message':gettext('表單格式錯誤')}, status=400)
     
     def get_form(self, requestContent):
@@ -217,27 +226,32 @@ class CheckFileStatus(View):
     def get(self, request, *arg, **kwargs):
         path = Path()        
         username = request.user.get_username()
-        try:
+        file = None
+        
+        if ExecuteModel.objects.filter(user_name=username).exists():
             file = ExecuteModel.objects.get(user_name=username)
             request_dict = {}
-            request_dict['finish'] = file.finish            
+            request_dict['finish'] = file.finish
             return JsonResponse(request_dict)
-        except Exception as e:
-            return JsonResponse(None, safe=False)
+        return JsonResponse(None, safe=False)
 
 class AbstractBreakProgramView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         finish = False
-        username = request.user.get_username()        
+        username = request.user.get_username()
+        file = None        
+        
         try:
             file = ExecuteModel.objects.get(user_name=username)
-            self.break_program(file)
-            file.delete()
-            finish = True
-            return JsonResponse(finish, safe=False)
         except Exception as e:
+            logging.warning(username + ' not in ExecuteModel(AbstractBreakProgramView)', exc_info=True)
             return JsonResponse(finish, safe=False)
+            
+        self.break_program(file)
+        file.delete()
+        finish = True
+        return JsonResponse(finish, safe=False)
         
     def break_program(self, file):
         raise AttributeError('應藉由子類別實作此方法，method.break_program(file)')
@@ -324,7 +338,11 @@ class FinishView(View):
         file_name = kwargs.get('csv_name')
         caller = path.get_caller(request)
         username = request.user.get_username()
-        ExecuteModel.objects.filter(user_name=username).delete()
+        
+        try:
+            ExecuteModel.objects.filter(user_name=username).delete()       
+        except Exception as e:
+            logging.warning(username + ' not in ExecuteModel(FinishView)', exc_info=True)
         
         request_dict = {}
         request_dict = self.set_url_path(request_dict, caller, file_name)
@@ -384,10 +402,10 @@ class CheckUtilityView(View):
             elif machine_learning_mode == 'regression': 
                 accuracy = ml.score()
         except ValueError as e:
-            print(e)
+            logging.critical('CheckUtilityView unknown error', exc_info=True)
             return JsonResponse({'accuracy':accuracy, 'message':gettext('程式執行失敗，請嘗試切換模型預測目標，若仍然失敗，請聯絡服務人員為您服務')}, status=404)
         except Exception as e:
-            print(e)
+            logging.critical('CheckUtilityView unknown error', exc_info=True)
             return JsonResponse({'accuracy':accuracy, 'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
         else:
             return JsonResponse({'accuracy':accuracy}, status=200)
@@ -417,10 +435,11 @@ class TitleCheckView(View):
             if result:
                 return result
         except Exception as e:
-            print(e)
+            logging.critical('TitleCheckView unknown error', exc_info=True)
             return JsonResponse({'message':gettext('程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務')}, status=404)
         else:
             return HttpResponse(status=204)
+        logging.critical('TitleCheckView unknown error', exc_info=True)
         return JsonResponse({'message':gettext('有尚未捕捉到的例外，請回報服務人員，謝謝')}, status=404)    
     
     def title_check(self, dataframe):
@@ -439,7 +458,13 @@ class FileFinishView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         username = request.user.get_username()
-        file = ExecuteModel.objects.get(user_name=username)
+        try:
+            file = ExecuteModel.objects.get(user_name=username)        
+        except Exception as e:
+            logging.error(username + ' not in ExecuteModel(FileFinishView)', exc_info=True)
+            request_dict = {}
+            request_dict['alert_message'] = gettext('檔案已不在資料庫中，需重新操作')
+            return render(request, 'home.html', request_dict)
         caller = file.caller
         yes_url = reverse(caller+':finish', args=[file.file_name])
     
@@ -453,7 +478,15 @@ class FileRunningView(View):
     @method_decorator(login_required)
     def get(self, request, *arg, **kwargs):
         username = request.user.get_username()
-        file = ExecuteModel.objects.get(user_name=username)
+        
+        try:
+            file = ExecuteModel.objects.get(user_name=username)        
+        except Exception as e:
+            logging.error(username + ' not in ExecuteModel(FileRunningView)', exc_info=True)
+            request_dict = {}
+            request_dict['alert_message'] = gettext('檔案已不在資料庫中，需重新操作')
+            return render(request, 'home.html', request_dict)
+            
         caller = file.caller
         yes_url = reverse(caller+':execute_page', args=[file.file_name])
         break_url = reverse(caller+':break_program')

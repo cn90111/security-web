@@ -15,12 +15,18 @@ from general.exception import NotAddressException
 from json_parser.json_parser import JsonParser
 import json
 
+import logging
+from datetime import date
+today = date.today()
+logging.basicConfig(level=logging.INFO,format='[%(levelname)s] %(asctime)s : %(message)s',datefmt='%Y-%m-%d %H:%M:%S',filename= str(today) +'_log.txt')
+
 class ParserView(View):
     @method_decorator(login_required)
     def post(self, request, *arg, **kwargs):
         parser = JsonParser()
         path = Path()
         
+        username = request.user.get_username()
         file_name = request.POST.get('csv_name', None)
         structure_mode = json.loads(request.POST.get('structure_mode', None))
         structure_dict = json.loads(request.POST.get('structure_dict', None))
@@ -43,16 +49,16 @@ class ParserView(View):
                 type_pair=type_pair,
                 interval_dict=interval_dict,)
         except NotAddressException as e:
-            print(e)
             return JsonResponse({"message":str(e)}, status=400)
         except PairLoopException as e:
-            print(e)
             return JsonResponse({"message":str(e)}, status=400)
         except Exception as e:
-            print(e)
+            logging.critical(username + ' ParserView run fail', exc_info=True)
             return JsonResponse({"message":gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務")}, status=404)
         else:
+            logging.info(username + ' ParserView run success')
             return HttpResponse(status=204)
+        logging.critical(username + ' unknown error', exc_info=True)
         return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
     
     def pair_check(self, pair_dict):
@@ -81,6 +87,7 @@ class DPViewParserView(View):
         parser = JsonParser()
         path = Path()
         
+        username = request.user.get_username()
         file_path = str(request.POST.get('path', None))
         file_name = str(request.POST.get('csv_name',None))
         pair_dict = request.POST.get('number_title_pair_dict', None)
@@ -110,10 +117,12 @@ class DPViewParserView(View):
                 almost_number_dict=almost_number_dict,
                 almost_number_is_empty_dict=almost_number_is_empty_dict,)
         except Exception as e:
-            print(e)
+            logging.critical(username + ' ParserView run fail', exc_info=True)
             JsonResponse({"message":gettext("程式執行失敗，請稍後再試，若多次執行失敗，請聯絡服務人員為您服務")}, status=404)
         else:
+            logging.info(username + ' ParserView run success')
             return HttpResponse(status=204)
+        logging.critical(username + ' unknown error', exc_info=True)
         return JsonResponse({"message":gettext("有尚未捕捉到的例外，請回報服務人員，謝謝")}, status=404)
         
 class CustomView(View):
